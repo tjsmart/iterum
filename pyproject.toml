@@ -31,6 +31,9 @@ Documentation = "https://github.com/unknown/rust-iterator#readme"
 Issues = "https://github.com/unknown/rust-iterator/issues"
 Source = "https://github.com/unknown/rust-iterator"
 
+[tool.setuptools.package-data]
+rust_iterator = ["py.typed"]
+
 [tool.hatch.version]
 path = "rust_iterator/__about__.py"
 
