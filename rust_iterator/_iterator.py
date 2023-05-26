@@ -4,24 +4,80 @@ import builtins
 from dataclasses import dataclass
 from typing import Any
 from typing import Callable
-from typing import final
 from typing import Generic
 from typing import Iterable
 from typing import Iterator
 from typing import NoReturn
 from typing import overload
-from typing import TypeAlias
+from typing import Protocol
+from typing import Reversible
+from typing import TYPE_CHECKING
 from typing import TypeVar
 from typing import Union
 
+from _typeshed import SupportsLenAndGetItem
+from _typeshed import SupportsRAdd
 from typing_extensions import Self
 from typing_extensions import TypeGuard
+
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsRichComparison
 
 
 _T = TypeVar("_T")
 _U = TypeVar("_U")
 _V = TypeVar("_V")
 _R = TypeVar("_R")
+
+_SupportsRichComparisonT = TypeVar(
+    "_SupportsRichComparisonT", bound=SupportsRichComparison
+)
+
+_T_co = TypeVar("_T_co", covariant=True)
+_T_contra = TypeVar("_T_contra", contravariant=True)
+
+
+class SupportsAdd(Protocol[_T_contra, _T_co]):
+    def __add__(self, __x: _T_contra) -> _T_co:
+        ...
+
+
+_SupportsAddT = TypeVar("_SupportsAddT", bound=SupportsAdd)
+
+
+class SupportsMul(Protocol[_T_contra, _T_co]):
+    def __mul__(self, __x: _T_contra) -> _T_co:
+        ...
+
+
+_SupportsMulT = TypeVar("_SupportsMulT", bound=SupportsMul)
+
+
+# def __init__(self, __sequence: Reversible[_T]) -> None: ...
+# @overload
+# def __init__(self, __sequence: SupportsLenAndGetItem[_T]) -> None: ...
+
+
+_ReversibleT = TypeVar("_ReversibleT", bound=Reversible)
+_SupportsLenAndGetItemT = TypeVar(
+    "_SupportsLenAndGetItemT", bound=SupportsLenAndGetItem
+)
+
+
+# _AddableT1 = TypeVar("_AddableT1", bound=SupportsAdd[Any, Any])
+# _AddableT2 = TypeVar("_AddableT2", bound=SupportsAdd[Any, Any])
+
+
+class _SupportsSumWithNoDefaultGiven(
+    SupportsAdd[Any, Any], SupportsRAdd[int, Any], Protocol
+):
+    ...
+
+
+_SupportsSumNoDefaultT = TypeVar(
+    "_SupportsSumNoDefaultT", bound=_SupportsSumWithNoDefaultGiven
+)
 
 
 @dataclass(frozen=True)
@@ -120,7 +176,6 @@ class Ordering(Enum):
     Greater = create_singleton("Greater")
 
 
-@final
 class RustIterator(Generic[_T]):
     def __init__(self, __iterable: Iterable[_T], /) -> None:
         self._iter = iter(__iterable)
@@ -129,6 +184,9 @@ class RustIterator(Generic[_T]):
         # TODO: Should this stop at first None?
         # Introducing my own None type is looking more appealing...
         return self._iter
+
+    def __next__(self) -> _T:
+        return next(self._iter)
 
     def next(self) -> _T | None:
         try:
@@ -235,13 +293,17 @@ class RustIterator(Generic[_T]):
         # If iter stops at first None, how is this any different??
         return RustIterator(MapWhile(self, predicate))
 
-    def max(self) -> _T | None:
+    def max(
+        self: RustIterator[_SupportsRichComparisonT],
+    ) -> _SupportsRichComparisonT | None:
         try:
             return builtins.max(self)
         except ValueError:
             return None
 
-    def min(self) -> _T | None:
+    def min(
+        self: RustIterator[_SupportsRichComparisonT],
+    ) -> _SupportsRichComparisonT | None:
         try:
             return builtins.min(self)
         except ValueError:
@@ -276,7 +338,7 @@ class RustIterator(Generic[_T]):
                 return i
         return None
 
-    def product(self) -> _T | None:
+    def product(self: RustIterator[_SupportsMulT]) -> _SupportsMulT | None:
         return self.reduce(lambda acc, x: acc * x)
 
     def reduce(self, f: Callable[[_T, _T], _T], /) -> _T | None:
@@ -285,11 +347,8 @@ class RustIterator(Generic[_T]):
             return None
         return self.fold(first, f)
 
-    def reversed(self) -> RustIterator[_T]:
-        return RustIterator(reversed(self))
-
-    def rposition(self, predicate: Callable[[_T], bool], /) -> int | None:
-        return self.reversed().position(predicate)
+    # TODO: def reversed ... , how do we include type information for whether we are reversible?
+    # TODO: def rposition ... , how do we include type information for whether we are reversible?
 
     def scan(self, init: _U, f: Callable[[_U, _T], _U], /) -> RustIterator[_U]:
         return RustIterator(Scan(self._iter, init, f))
@@ -308,8 +367,26 @@ class RustIterator(Generic[_T]):
     def step_by(self, step: int, /) -> RustIterator[_T]:
         return RustIterator(StepBy(self, step))
 
-    def sum(self) -> _T:
-        return sum(self)
+    @overload
+    def sum(
+        self: RustIterator[_SupportsSumNoDefaultT],
+    ) -> _SupportsSumNoDefaultT | None:
+        ...
+
+    @overload
+    def sum(
+        self: RustIterator[_SupportsSumNoDefaultT], *, default: _U
+    ) -> _SupportsSumNoDefaultT | _U:
+        ...
+
+    def sum(
+        self: RustIterator[_SupportsSumNoDefaultT], *, default: _U | None = None
+    ) -> _SupportsSumNoDefaultT | _U | None:
+        first = self.next()
+        if first is None:
+            return default
+
+        return sum(self, start=first)
 
     def take(self, n: int, /) -> RustIterator[_T]:
         return RustIterator(Take(self, n))
@@ -394,8 +471,10 @@ class Peekable(RustIterator[_T]):
 
     def __iter__(self) -> Iterator[_T]:
         while True:
-            if isinstance(self._peek, NotSet):
+            if isinstance(self._peek, NotSetType):
                 yield next(self._iter)
+            elif self._peek is None:
+                return
             else:
                 yield self._peek
                 self._peek = NotSet
