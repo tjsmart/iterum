@@ -203,9 +203,40 @@ class RustIterator(Generic[_T]):
     def chain(self, other: Iterable[_T], /) -> RustIterator[_T]:
         return RustIterator(itertools.chain(self, other))
 
-    def cmp(self, other: Iterable[object], /) -> Ordering:
-        # TODO: https://doc.rust-lang.org/std/cmp/trait.Ord.html#lexicographical-comparison
+    @overload
+    def cmp(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> Ordering:
         ...
+
+    @overload
+    def cmp(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> Ordering:
+        ...
+
+    def cmp(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> Ordering:
+        other = RustIterator(other)
+        for left, right in self.zip(other):
+            if left > right:  # type: ignore | reason: ask for forgiveness not permission
+                return Ordering.Greater
+            if right < left:  # type: ignore | reason: ask for forgiveness not permission
+                return Ordering.Less
+
+        nxt_left = self.next()
+        nxt_right = other.next()
+        if nxt_left is None and nxt_right is None:
+            return Ordering.Equal
+        if nxt_left is None:
+            return Ordering.Less
+        if nxt_right is None:
+            return Ordering.Greater
+
+        raise AssertionError("Unreachable!")
 
     def collect(self) -> list[_T]:
         return list(self)
@@ -222,8 +253,25 @@ class RustIterator(Generic[_T]):
     def enumerate(self) -> RustIterator[tuple[int, _T]]:
         return RustIterator(enumerate(self))
 
-    def eq(self, other: Iterable[object], /) -> bool:
-        return self.cmp(other) is Ordering.Equal
+    @overload
+    def eq(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
+
+    @overload
+    def eq(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def eq(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        return cmp is Ordering.Equal
 
     def filter(self, predicate: Callable[[_T], bool], /) -> RustIterator[_T]:
         # TODO: filter == filterfalse?
@@ -260,11 +308,45 @@ class RustIterator(Generic[_T]):
     def fuse(self) -> RustIterator[_T | None]:
         return RustIterator(Fuse(self))
 
-    def ge(self, other: Iterable[object], /) -> bool:
-        return self.cmp(other) in (Ordering.Greater, Ordering.Equal)
+    @overload
+    def ge(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
 
-    def gt(self, other: Iterable[object], /) -> bool:
-        return self.cmp(other) == Ordering.Greater
+    @overload
+    def ge(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def ge(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        return cmp in (Ordering.Greater, Ordering.Equal)
+
+    @overload
+    def gt(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
+
+    @overload
+    def gt(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def gt(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        return cmp == Ordering.Greater
 
     def inspect(self, f: Callable[[_T], object], /) -> RustIterator[_T]:
         def predicate(x: _T) -> _T:
@@ -280,11 +362,45 @@ class RustIterator(Generic[_T]):
 
         return last
 
-    def le(self, other: Iterable[object], /) -> bool:
-        return self.cmp(other) in (Ordering.Less, Ordering.Equal)
+    @overload
+    def le(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
 
-    def lt(self, other: Iterable[object], /) -> bool:
-        return self.cmp(other) == Ordering.Less
+    @overload
+    def le(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def le(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        return cmp in (Ordering.Less, Ordering.Equal)
+
+    @overload
+    def lt(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
+
+    @overload
+    def lt(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def lt(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        return cmp == Ordering.Less
 
     def map(self, f: Callable[[_T], _U], /) -> RustIterator[_U]:
         return RustIterator(map(f, self))
@@ -309,8 +425,25 @@ class RustIterator(Generic[_T]):
         except ValueError:
             return None
 
-    def ne(self, other: Iterable[object], /) -> bool:
-        return not self.eq(other)
+    @overload
+    def ne(
+        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+    ) -> bool:
+        ...
+
+    @overload
+    def ne(
+        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+    ) -> bool:
+        ...
+
+    def ne(
+        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        /,
+    ) -> bool:
+        eq = self.eq(other)  # type: ignore | reason: ask for forgiveness not permission
+        return not eq
 
     def nth(self, n: int, /) -> _T | None:
         for i, x in enumerate(self):
