@@ -23,7 +23,9 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+  "typing_extensions",
+]
 dynamic = ["version"]
 
 [project.urls]

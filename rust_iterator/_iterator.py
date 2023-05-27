@@ -1,223 +1,73 @@
 from __future__ import annotations
 
 import builtins
-from dataclasses import dataclass
-from typing import Any
+import itertools
 from typing import Callable
 from typing import Generic
 from typing import Iterable
 from typing import Iterator
-from typing import NoReturn
 from typing import overload
-from typing import Protocol
-from typing import Reversible
 from typing import TYPE_CHECKING
 from typing import TypeVar
-from typing import Union
 
-from _typeshed import SupportsLenAndGetItem
-from _typeshed import SupportsRAdd
-from typing_extensions import Self
-from typing_extensions import TypeGuard
+from ._notset import NotSet
+from ._notset import NotSetType
+from ._ordering import Ordering
 
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparison
+    from ._type_helpers import T
+    from ._type_helpers import SupportsMulT
+    from ._type_helpers import SupportsRichComparisonT
+    from ._type_helpers import SupportsSumNoDefaultT
 
 
-_T = TypeVar("_T")
-_U = TypeVar("_U")
-_V = TypeVar("_V")
-_R = TypeVar("_R")
-
-_SupportsRichComparisonT = TypeVar(
-    "_SupportsRichComparisonT", bound=SupportsRichComparison
-)
-
-_T_co = TypeVar("_T_co", covariant=True)
-_T_contra = TypeVar("_T_contra", contravariant=True)
+U = TypeVar("U")
+V = TypeVar("V")
 
 
-class SupportsAdd(Protocol[_T_contra, _T_co]):
-    def __add__(self, __x: _T_contra) -> _T_co:
-        ...
-
-
-_SupportsAddT = TypeVar("_SupportsAddT", bound=SupportsAdd)
-
-
-class SupportsMul(Protocol[_T_contra, _T_co]):
-    def __mul__(self, __x: _T_contra) -> _T_co:
-        ...
-
-
-_SupportsMulT = TypeVar("_SupportsMulT", bound=SupportsMul)
-
-
-# def __init__(self, __sequence: Reversible[_T]) -> None: ...
-# @overload
-# def __init__(self, __sequence: SupportsLenAndGetItem[_T]) -> None: ...
-
-
-_ReversibleT = TypeVar("_ReversibleT", bound=Reversible)
-_SupportsLenAndGetItemT = TypeVar(
-    "_SupportsLenAndGetItemT", bound=SupportsLenAndGetItem
-)
-
-
-# _AddableT1 = TypeVar("_AddableT1", bound=SupportsAdd[Any, Any])
-# _AddableT2 = TypeVar("_AddableT2", bound=SupportsAdd[Any, Any])
-
-
-class _SupportsSumWithNoDefaultGiven(
-    SupportsAdd[Any, Any], SupportsRAdd[int, Any], Protocol
-):
-    ...
-
-
-_SupportsSumNoDefaultT = TypeVar(
-    "_SupportsSumNoDefaultT", bound=_SupportsSumWithNoDefaultGiven
-)
-
-
-@dataclass(frozen=True)
-class Some(Generic[_T]):
-    value: _T
-
-    def unwrap(self) -> _T:
-        ...
-
-
-# @dataclass(frozen=True)
-# class Nil(Generic[_T]):
-#     def unwrap(self) -> NoReturn:
-#         ...
-#
-#
-# Option: TypeAlias = Union[Some, Nil]
-
-
-class NilType:
-    ...
-
-
-Nil = NilType()
-
-
-_C = TypeVar("_C", bound=type)
-
-
-class Singleton:
-    __slots__ = ()
-    __instance = None
-
-    def __new__(cls) -> Self:
-        if cls.__instance is None:
-            return cls()
-        return cls.__instance
-
-
-class NotSetType(Singleton):
-    __slots__ = ()
-
-    # def __instancecheck__(self, value: object | NotSetType) -> TypeGuard[Self]:
-    def __instancecheck__(self, value):
-        return value is self
-
-    @classmethod
-    def is_set(cls, value: _T | NotSetType) -> TypeGuard[_T]:
-        return not value is cls()
-
-
-NotSet = NotSetType()
-
-
-@dataclass(frozen=True)
-class Option(Generic[_T]):
-    _option: Union[Some[_T], NilType]
-
-    @overload
-    def __init__(self, /) -> None:
-        ...
-
-    @overload
-    def __init__(self, value: _T, /) -> None:
-        ...
-
-    def __init__(self, value: _T | NotSetType = NotSet, /) -> None:
-        if isinstance(value, NotSetType):
-            self._option: option[_T] = Option()
-        else:
-            reveal_type(value)
-
-        self._option = Nil if isintance(value, NotSetType) else Some(value)
-
-    def unwrap(self) -> _T | NoReturn:
-        if isinstance(self, Some):
-            return self.value
-
-        raise ValueError("Attempted unwrap of nil value.")
-
-
-import itertools
-
-
-from enum import Enum, unique
-
-
-def create_singleton(name: str) -> object:
-    return type(name, (Singleton,), {})()
-
-
-@unique
-class Ordering(Enum):
-    Less = create_singleton("Less")
-    Equal = create_singleton("Equal")
-    Greater = create_singleton("Greater")
-
-
-class RustIterator(Generic[_T]):
-    def __init__(self, __iterable: Iterable[_T], /) -> None:
+class RustIterator(Generic[T]):
+    def __init__(self, __iterable: Iterable[T], /) -> None:
         self._iter = iter(__iterable)
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         # TODO: Should this stop at first None?
         # Introducing my own None type is looking more appealing...
         return self._iter
 
-    def __next__(self) -> _T:
+    def __next__(self) -> T:
         return next(self._iter)
 
-    def next(self) -> _T | None:
+    def next(self) -> T | None:
         try:
             return next(self._iter)
         except StopIteration:
             return None
 
-    def all(self, f: Callable[[_T], bool], /) -> bool:
+    def all(self, f: Callable[[T], bool], /) -> bool:
         return all(map(f, self._iter))
 
-    def any(self, f: Callable[[_T], bool], /) -> bool:
+    def any(self, f: Callable[[T], bool], /) -> bool:
         return any(map(f, self._iter))
 
-    def chain(self, other: Iterable[_T], /) -> RustIterator[_T]:
+    def chain(self, other: Iterable[T], /) -> RustIterator[T]:
         return RustIterator(itertools.chain(self, other))
 
     @overload
     def cmp(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> Ordering:
         ...
 
     @overload
     def cmp(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> Ordering:
         ...
 
     def cmp(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> Ordering:
         other = RustIterator(other)
@@ -238,7 +88,7 @@ class RustIterator(Generic[_T]):
 
         raise AssertionError("Unreachable!")
 
-    def collect(self) -> list[_T]:
+    def collect(self) -> list[T]:
         return list(self)
 
     def count(self) -> int:
@@ -247,82 +97,82 @@ class RustIterator(Generic[_T]):
             return 0
         return last[0] + 1
 
-    def cycle(self) -> RustIterator[_T]:
+    def cycle(self) -> RustIterator[T]:
         return RustIterator(itertools.cycle(self))
 
-    def enumerate(self) -> RustIterator[tuple[int, _T]]:
+    def enumerate(self) -> RustIterator[tuple[int, T]]:
         return RustIterator(enumerate(self))
 
     @overload
     def eq(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def eq(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def eq(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp is Ordering.Equal
 
-    def filter(self, predicate: Callable[[_T], bool], /) -> RustIterator[_T]:
+    def filter(self, predicate: Callable[[T], bool], /) -> RustIterator[T]:
         # TODO: filter == filterfalse?
         return RustIterator(itertools.filterfalse(predicate, self))
 
-    def filter_map(self, predicate: Callable[[_T], _R | None], /) -> RustIterator[_R]:
+    def filter_map(self, predicate: Callable[[T], U | None], /) -> RustIterator[U]:
         return RustIterator(FilterMap(self, predicate))
 
-    def find(self, predicate: Callable[[_T], bool], /) -> _T | None:
+    def find(self, predicate: Callable[[T], bool], /) -> T | None:
         for x in self:
             if predicate(x):
                 return x
         return None
 
-    def find_map(self, predicate: Callable[[_T], _R | None], /) -> _R | None:
+    def find_map(self, predicate: Callable[[T], U | None], /) -> U | None:
         return self.filter_map(predicate).next()
 
-    def flat_map(self, f: Callable[[_T], Iterable[_U]], /) -> RustIterator[_U]:
+    def flat_map(self, f: Callable[[T], Iterable[U]], /) -> RustIterator[U]:
         return self.map(f).flatten()
 
-    def flatten(self: RustIterator[Iterable[_U]]) -> RustIterator[_U]:
+    def flatten(self: RustIterator[Iterable[U]]) -> RustIterator[U]:
         return RustIterator(y for x in self._iter for y in x)
 
-    def fold(self, init: _U, f: Callable[[_U, _T], _U], /) -> _U:
+    def fold(self, init: U, f: Callable[[U, T], U], /) -> U:
         acc = init
         for x in self:
             acc = f(acc, x)
         return acc
 
-    def for_each(self, f: Callable[[_T], object], /) -> None:
+    def for_each(self, f: Callable[[T], object], /) -> None:
         for x in self:
             f(x)
 
-    def fuse(self) -> RustIterator[_T | None]:
+    def fuse(self) -> RustIterator[T | None]:
         return RustIterator(Fuse(self))
 
     @overload
     def ge(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def ge(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def ge(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -330,32 +180,32 @@ class RustIterator(Generic[_T]):
 
     @overload
     def gt(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def gt(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def gt(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Greater
 
-    def inspect(self, f: Callable[[_T], object], /) -> RustIterator[_T]:
-        def predicate(x: _T) -> _T:
+    def inspect(self, f: Callable[[T], object], /) -> RustIterator[T]:
+        def predicate(x: T) -> T:
             f(x)
             return x
 
         return self.map(predicate)
 
-    def last(self) -> _T | None:
+    def last(self) -> T | None:
         last = None
         while (nxt := self.next()) is not None:
             last = nxt
@@ -364,19 +214,19 @@ class RustIterator(Generic[_T]):
 
     @overload
     def le(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def le(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def le(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -384,42 +234,42 @@ class RustIterator(Generic[_T]):
 
     @overload
     def lt(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def lt(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def lt(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Less
 
-    def map(self, f: Callable[[_T], _U], /) -> RustIterator[_U]:
+    def map(self, f: Callable[[T], U], /) -> RustIterator[U]:
         return RustIterator(map(f, self))
 
-    def map_while(self, predicate: Callable[[_T], _U | None], /) -> RustIterator[_U]:
+    def map_while(self, predicate: Callable[[T], U | None], /) -> RustIterator[U]:
         # If iter stops at first None, how is this any different??
         return RustIterator(MapWhile(self, predicate))
 
     def max(
-        self: RustIterator[_SupportsRichComparisonT],
-    ) -> _SupportsRichComparisonT | None:
+        self: RustIterator[SupportsRichComparisonT],
+    ) -> SupportsRichComparisonT | None:
         try:
             return builtins.max(self)
         except ValueError:
             return None
 
     def min(
-        self: RustIterator[_SupportsRichComparisonT],
-    ) -> _SupportsRichComparisonT | None:
+        self: RustIterator[SupportsRichComparisonT],
+    ) -> SupportsRichComparisonT | None:
         try:
             return builtins.min(self)
         except ValueError:
@@ -427,25 +277,25 @@ class RustIterator(Generic[_T]):
 
     @overload
     def ne(
-        self: RustIterator[_SupportsRichComparisonT], other: Iterable[object], /
+        self: RustIterator[SupportsRichComparisonT], other: Iterable[object], /
     ) -> bool:
         ...
 
     @overload
     def ne(
-        self: RustIterator[object], other: Iterable[_SupportsRichComparisonT], /
+        self: RustIterator[object], other: Iterable[SupportsRichComparisonT], /
     ) -> bool:
         ...
 
     def ne(
-        self: RustIterator[_SupportsRichComparisonT] | RustIterator[object],
-        other: Iterable[object] | Iterable[_SupportsRichComparisonT],
+        self: RustIterator[SupportsRichComparisonT] | RustIterator[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
         /,
     ) -> bool:
         eq = self.eq(other)  # type: ignore | reason: ask for forgiveness not permission
         return not eq
 
-    def nth(self, n: int, /) -> _T | None:
+    def nth(self, n: int, /) -> T | None:
         for i, x in enumerate(self):
             if i > n:
                 return None
@@ -455,26 +305,26 @@ class RustIterator(Generic[_T]):
 
     # TODO: def partial_cmp...
 
-    def partition(self, f: Callable[[_T], bool], /) -> tuple[list[_T], list[_T]]:
+    def partition(self, f: Callable[[T], bool], /) -> tuple[list[T], list[T]]:
         matches, notmatches = [], []
         for x in self:
             matches.append(x) if f(x) else notmatches.append(x)
 
         return matches, notmatches
 
-    def peekable(self) -> Peekable[_T]:
+    def peekable(self) -> Peekable[T]:
         return Peekable(self)
 
-    def position(self, predicate: Callable[[_T], bool], /) -> int | None:
+    def position(self, predicate: Callable[[T], bool], /) -> int | None:
         for i, x in enumerate(self):
             if predicate(x):
                 return i
         return None
 
-    def product(self: RustIterator[_SupportsMulT]) -> _SupportsMulT | None:
+    def product(self: RustIterator[SupportsMulT]) -> SupportsMulT | None:
         return self.reduce(lambda acc, x: acc * x)
 
-    def reduce(self, f: Callable[[_T, _T], _T], /) -> _T | None:
+    def reduce(self, f: Callable[[T, T], T], /) -> T | None:
         first = self.next()
         if first is None:
             return None
@@ -483,58 +333,58 @@ class RustIterator(Generic[_T]):
     # TODO: def reversed ... , how do we include type information for whether we are reversible?
     # TODO: def rposition ... , how do we include type information for whether we are reversible?
 
-    def scan(self, init: _U, f: Callable[[_U, _T], _U], /) -> RustIterator[_U]:
+    def scan(self, init: U, f: Callable[[U, T], U], /) -> RustIterator[U]:
         return RustIterator(Scan(self._iter, init, f))
 
     # TODO: def size_hint ...
 
-    def skip(self, n: int, /) -> RustIterator[_T]:
+    def skip(self, n: int, /) -> RustIterator[T]:
         for _ in range(n):
             if self.next() is None:
                 break
         return self
 
-    def skip_while(self, predicate: Callable[[_T], bool], /) -> RustIterator[_T]:
+    def skip_while(self, predicate: Callable[[T], bool], /) -> RustIterator[T]:
         return RustIterator(SkipWhile(self, predicate))
 
-    def step_by(self, step: int, /) -> RustIterator[_T]:
+    def step_by(self, step: int, /) -> RustIterator[T]:
         return RustIterator(StepBy(self, step))
 
     @overload
     def sum(
-        self: RustIterator[_SupportsSumNoDefaultT],
-    ) -> _SupportsSumNoDefaultT | None:
+        self: RustIterator[SupportsSumNoDefaultT],
+    ) -> SupportsSumNoDefaultT | None:
         ...
 
     @overload
     def sum(
-        self: RustIterator[_SupportsSumNoDefaultT], *, default: _U
-    ) -> _SupportsSumNoDefaultT | _U:
+        self: RustIterator[SupportsSumNoDefaultT], *, default: U
+    ) -> SupportsSumNoDefaultT | U:
         ...
 
     def sum(
-        self: RustIterator[_SupportsSumNoDefaultT], *, default: _U | None = None
-    ) -> _SupportsSumNoDefaultT | _U | None:
+        self: RustIterator[SupportsSumNoDefaultT], *, default: U | None = None
+    ) -> SupportsSumNoDefaultT | U | None:
         first = self.next()
         if first is None:
             return default
 
         return sum(self, start=first)
 
-    def take(self, n: int, /) -> RustIterator[_T]:
+    def take(self, n: int, /) -> RustIterator[T]:
         return RustIterator(Take(self, n))
 
-    def take_while(self, predicate: Callable[[_T], bool], /) -> RustIterator[_T]:
+    def take_while(self, predicate: Callable[[T], bool], /) -> RustIterator[T]:
         return RustIterator(TakeWhile(self, predicate))
 
-    def try_fold(self, init: _U, f: Callable[[_U, _T], _U], /) -> _U | None:
+    def try_fold(self, init: U, f: Callable[[U, T], U], /) -> U | None:
         # TODO: this feels unsafe
         try:
             return self.fold(init, f)
         except Exception:
             return None
 
-    def try_for_each(self, f: Callable[[_T], object], /) -> None:
+    def try_for_each(self, f: Callable[[T], object], /) -> None:
         for x in self:
             try:
                 f(x)
@@ -542,37 +392,37 @@ class RustIterator(Generic[_T]):
                 return
 
     def unzip(
-        self: RustIterator[tuple[_U, _V]], /
-    ) -> tuple[RustIterator[_U], RustIterator[_V]]:
+        self: RustIterator[tuple[U, V]], /
+    ) -> tuple[RustIterator[U], RustIterator[V]]:
         return tuple(zip(*self))
 
-    def zip(self, other: Iterable[_U], /) -> RustIterator[tuple[_T, _U]]:
+    def zip(self, other: Iterable[U], /) -> RustIterator[tuple[T, U]]:
         return RustIterator(zip(self, other))
 
 
-class FilterMap(Generic[_T, _U]):
+class FilterMap(Generic[T, U]):
     def __init__(
         self,
-        __iterable: Iterable[_T],
-        predicate: Callable[[_T], _U | None],
+        __iterable: Iterable[T],
+        predicate: Callable[[T], U | None],
         /,
     ) -> None:
         self._iter = RustIterator(__iterable)
         self._predicate = predicate
 
-    def __iter__(self) -> Iterator[_U]:
+    def __iter__(self) -> Iterator[U]:
         for x in self._iter:
             r = self._predicate(x)
             if r is not None:
                 yield r
 
 
-class Fuse(Generic[_T]):
-    def __init__(self, __iterable: Iterable[_T]) -> None:
+class Fuse(Generic[T]):
+    def __init__(self, __iterable: Iterable[T]) -> None:
         self._iter = RustIterator(__iterable)
         self._found_none = False
 
-    def __iter__(self) -> Iterator[_T | None]:
+    def __iter__(self) -> Iterator[T | None]:
         while not self._found_none:
             nxt = self._iter.next()
             self._found_none = nxt is None
@@ -582,14 +432,14 @@ class Fuse(Generic[_T]):
             yield None
 
 
-class MapWhile(Generic[_T, _U]):
+class MapWhile(Generic[T, U]):
     def __init__(
-        self, __iterable: Iterable[_T], predicate: Callable[[_T], _U | None], /
+        self, __iterable: Iterable[T], predicate: Callable[[T], U | None], /
     ) -> None:
         self._iter = RustIterator(__iterable)
         self._predicate = predicate
 
-    def __iter__(self) -> Iterator[_U]:
+    def __iter__(self) -> Iterator[U]:
         for x in self._iter:
             r = self._predicate(x)
             if r is None:
@@ -597,12 +447,12 @@ class MapWhile(Generic[_T, _U]):
             yield r
 
 
-class Peekable(RustIterator[_T]):
-    def __init__(self, __iterable: Iterable[_T], /) -> None:
+class Peekable(RustIterator[T]):
+    def __init__(self, __iterable: Iterable[T], /) -> None:
         self._iter = RustIterator(__iterable)
-        self._peek: _T | None | NotSetType = NotSet
+        self._peek: T | None | NotSetType = NotSet
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         while True:
             if isinstance(self._peek, NotSetType):
                 yield next(self._iter)
@@ -612,7 +462,7 @@ class Peekable(RustIterator[_T]):
                 yield self._peek
                 self._peek = NotSet
 
-    def peek(self) -> _T | None:
+    def peek(self) -> T | None:
         if isinstance(self._peek, NotSetType):
             try:
                 self._peek = next(self._iter)
@@ -622,35 +472,35 @@ class Peekable(RustIterator[_T]):
         return self._peek
 
 
-class Scan(Generic[_T, _U]):
+class Scan(Generic[T, U]):
     def __init__(
         self,
-        __iterable: Iterable[_T],
-        init: _U,
-        predicate: Callable[[_U, _T], _U],
+        __iterable: Iterable[T],
+        init: U,
+        predicate: Callable[[U, T], U],
         /,
     ) -> None:
         self._iter = RustIterator(__iterable)
         self._predicate = predicate
         self._acc = init
 
-    def __iter__(self) -> Iterator[_U]:
+    def __iter__(self) -> Iterator[U]:
         for x in self._iter:
             self._acc = self._predicate(self._acc, x)
             yield self._acc
 
 
-class SkipWhile(Generic[_T]):
+class SkipWhile(Generic[T]):
     def __init__(
         self,
-        __iterable: Iterable[_T],
-        predicate: Callable[[_T], bool],
+        __iterable: Iterable[T],
+        predicate: Callable[[T], bool],
         /,
     ) -> None:
         self._iter = RustIterator(__iterable)
         self._predicate = predicate
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         for x in self._iter:
             if self._predicate(x):
                 yield x
@@ -659,40 +509,40 @@ class SkipWhile(Generic[_T]):
         return self._iter
 
 
-class StepBy(Generic[_T]):
-    def __init__(self, __iterable: Iterable[_T], step: int, /) -> None:
+class StepBy(Generic[T]):
+    def __init__(self, __iterable: Iterable[T], step: int, /) -> None:
         if step <= 0:
             raise ValueError(f"Step must be positive, provided: {step}")
 
         self._iter = RustIterator(__iterable)
         self._step = step
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         for i, x in enumerate(self._iter):
             if i % self._step:
                 yield x
 
 
-class Take(Generic[_T]):
-    def __init__(self, __iterable: Iterable[_T], n: int, /) -> None:
+class Take(Generic[T]):
+    def __init__(self, __iterable: Iterable[T], n: int, /) -> None:
         self._iter = RustIterator(__iterable)
         self._n = n
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         for i, x in enumerate(self._iter):
             if i >= self._n:
                 return
             yield x
 
 
-class TakeWhile(Generic[_T]):
+class TakeWhile(Generic[T]):
     def __init__(
-        self, __iterable: Iterable[_T], predicate: Callable[[_T], bool], /
+        self, __iterable: Iterable[T], predicate: Callable[[T], bool], /
     ) -> None:
         self._iter = RustIterator(__iterable)
         self._predicate = predicate
 
-    def __iter__(self) -> Iterator[_T]:
+    def __iter__(self) -> Iterator[T]:
         for x in self._iter:
             if not self._predicate(x):
                 return
