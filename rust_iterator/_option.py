@@ -133,7 +133,7 @@ class Some(Generic[T]):
     def filter(self, predicate: Callable[[T], bool], /) -> Option[T]:
         return self if predicate(self._value) else Nil()
 
-    def flatten(self: Some[Option[U]]) -> Option[U]:
+    def flatten(self: Some[O]) -> O:
         if isinstance(self._value, (Some, Nil)):
             return self._value
         else:
@@ -198,9 +198,25 @@ class Some(Generic[T]):
         left, right = self._value
         return Some(left), Some(right)
 
+    @overload
+    def xor(self, optb: Some[T], /) -> Nil:
+        ...
+
+    @overload
+    def xor(self, optb: Nil, /) -> Some[T]:
+        ...
+
     def xor(self, optb: Option[T], /) -> Option[T]:
         # TODO: some things, like this can be overloaded to give a smarter type hint
         return self if isinstance(optb, Nil) else nil
+
+    @overload
+    def zip(self, other: Some[U], /) -> Some[tuple[T, U]]:
+        ...
+
+    @overload
+    def zip(self, other: Nil, /) -> Nil:
+        ...
 
     def zip(self, other: Option[U], /) -> Option[tuple[T, U]]:
         return nil if isinstance(other, Nil) else Some((self._value, other._value))
