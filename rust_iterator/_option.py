@@ -5,13 +5,12 @@ from typing import Generic
 from typing import Literal
 from typing import NoReturn
 from typing import overload
+from typing import TYPE_CHECKING
 from typing import TypeAlias
 from typing import TypeVar
 
-from typing_extensions import reveal_type
-
-from ._iterator import RustIterator
 from ._singleton import Singleton
+
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -19,6 +18,9 @@ V = TypeVar("V")
 
 S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")
+
+if TYPE_CHECKING:
+    from ._iter import Iter
 
 
 class Nil(Singleton):
@@ -59,8 +61,10 @@ class Nil(Singleton):
     def is_some(self) -> Literal[False]:
         return False
 
-    def iter(self) -> RustIterator[T]:
-        return RustIterator([])
+    def iter(self) -> Iter[T]:
+        from ._iter import Iter
+
+        return Iter([])
 
     def map(self, f: Callable[[T], U], /) -> Nil:
         return self
@@ -155,8 +159,10 @@ class Some(Generic[T]):
     def is_some(self) -> Literal[True]:
         return True
 
-    def iter(self) -> RustIterator[T]:
-        return RustIterator([self._value])
+    def iter(self) -> Iter[T]:
+        from ._iter import Iter
+
+        return Iter([self._value])
 
     def map(self, f: Callable[[T], U], /) -> Some[U]:
         return Some(f(self._value))

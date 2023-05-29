@@ -14,10 +14,10 @@ from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_some
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
+from rust_iterator import Iter
 from rust_iterator import Nil
 from rust_iterator import nil
 from rust_iterator import Option
-from rust_iterator import RustIterator
 from rust_iterator import Some
 
 
@@ -91,7 +91,7 @@ def option_is_some():
 
 
 def option_iter():
-    assert_type(option.iter(), RustIterator[int])
+    assert_type(option.iter(), Iter[int])
 
 
 def option_map():

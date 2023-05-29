@@ -14,10 +14,10 @@ from .option_helpers import map_to_value
 from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
+from rust_iterator import Iter
 from rust_iterator import Nil
 from rust_iterator import nil
 from rust_iterator import Option
-from rust_iterator import RustIterator
 from rust_iterator import Some
 
 T = TypeVar("T")
@@ -67,7 +67,7 @@ def nil_is_some():
 
 
 def nil_iter():
-    assert_type(nil.iter(), RustIterator)
+    assert_type(nil.iter(), Iter)
 
 
 def nil_map():
