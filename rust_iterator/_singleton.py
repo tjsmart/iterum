@@ -9,7 +9,7 @@ class Singleton:
 
     def __new__(cls) -> Self:
         if cls.__instance is None:
-            return cls()
+            cls.__instance = super().__new__(cls)
         return cls.__instance
 
 

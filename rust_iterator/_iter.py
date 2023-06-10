@@ -12,18 +12,30 @@ from typing import TypeVar
 
 from ._notset import NotSet
 from ._notset import NotSetType
+from ._option import Nil
+from ._option import nil
+from ._option import Option
+from ._option import Some
+from ._option import UnwrapNilError
 from ._ordering import Ordering
 
 
 if TYPE_CHECKING:
-    from ._type_helpers import T
     from ._type_helpers import SupportsMulT
     from ._type_helpers import SupportsRichComparisonT
     from ._type_helpers import SupportsSumNoDefaultT
 
 
+T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
+
+
+# TODO: Idea! for double-ended iteretor functionality
+# have Iter(...) return either an Iter or a DoubleEndedIter if input is a sequence
+# Something similar to pathlib.Path
+# then rev, rposition, etc can be implemented
+# also size hint
 
 
 class Iter(Generic[T]):
@@ -31,24 +43,22 @@ class Iter(Generic[T]):
         self._iter = iter(__iterable)
 
     def __iter__(self) -> Iterator[T]:
-        # TODO: Should this stop at first None?
-        # Introducing my own None type is looking more appealing...
         return self._iter
 
     def __next__(self) -> T:
         return next(self._iter)
 
-    def next(self) -> T | None:
+    def next(self) -> Option[T]:
         try:
-            return next(self._iter)
+            return Some(next(self))
         except StopIteration:
-            return None
+            return nil
 
     def all(self, f: Callable[[T], bool], /) -> bool:
-        return all(map(f, self._iter))
+        return all(map(f, self))
 
     def any(self, f: Callable[[T], bool], /) -> bool:
-        return any(map(f, self._iter))
+        return any(map(f, self))
 
     def chain(self, other: Iterable[T], /) -> Iter[T]:
         return Iter(itertools.chain(self, other))
@@ -71,31 +81,48 @@ class Iter(Generic[T]):
         /,
     ) -> Ordering:
         other = Iter(other)
-        for left, right in self.zip(other):
-            if left > right:  # type: ignore | reason: ask for forgiveness not permission
-                return Ordering.Greater
-            if right < left:  # type: ignore | reason: ask for forgiveness not permission
-                return Ordering.Less
+        while True:
+            match self.next(), other.next():
+                case Some(left), Some(right):
+                    if left > right:  # type: ignore | reason: ask for forgiveness not permission
+                        return Ordering.Greater
+                    if left < right:  # type: ignore | reason: ask for forgiveness not permission
+                        return Ordering.Less
+                    continue
+                case Some(), Nil():
+                    return Ordering.Greater
 
-        nxt_left = self.next()
-        nxt_right = other.next()
-        if nxt_left is None and nxt_right is None:
-            return Ordering.Equal
-        if nxt_left is None:
-            return Ordering.Less
-        if nxt_right is None:
-            return Ordering.Greater
+                case Nil(), Some():
+                    return Ordering.Less
 
-        raise AssertionError("Unreachable!")
+                case Nil(), Nil():
+                    return Ordering.Equal
 
-    def collect(self) -> list[T]:
-        return list(self)
+                case _:
+                    raise AssertionError("Unreachable!")
+
+    @overload
+    def collect(self, container: type[list], /) -> list[T]:
+        ...
+
+    @overload
+    def collect(self, container: type[set], /) -> set[T]:
+        ...
+
+    @overload
+    def collect(self, container: type[tuple], /) -> tuple[T]:
+        ...
+
+    @overload
+    def collect(self, container: Callable[[Iterable[T]], U], /) -> U:
+        ...
+
+    def collect(self, container: Callable[[Iterable[T]], U], /) -> U:
+        return container(self)
 
     def count(self) -> int:
         last = self.enumerate().last()
-        if last is None:
-            return 0
-        return last[0] + 1
+        return last.map_or(0, lambda last: last[0] + 1)
 
     def cycle(self) -> Iter[T]:
         return Iter(itertools.cycle(self))
@@ -117,29 +144,28 @@ class Iter(Generic[T]):
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
-        return cmp is Ordering.Equal
+        return cmp == Ordering.Equal
 
     def filter(self, predicate: Callable[[T], bool], /) -> Iter[T]:
-        # TODO: filter == filterfalse?
-        return Iter(itertools.filterfalse(predicate, self))
+        return Iter(filter(predicate, self))
 
-    def filter_map(self, predicate: Callable[[T], U | None], /) -> Iter[U]:
+    def filter_map(self, predicate: Callable[[T], Option[U]], /) -> Iter[U]:
         return Iter(FilterMap(self, predicate))
 
-    def find(self, predicate: Callable[[T], bool], /) -> T | None:
+    def find(self, predicate: Callable[[T], bool], /) -> Option[T]:
         for x in self:
             if predicate(x):
-                return x
-        return None
+                return Some(x)
+        return nil
 
-    def find_map(self, predicate: Callable[[T], U | None], /) -> U | None:
+    def find_map(self, predicate: Callable[[T], Option[U]], /) -> Option[U]:
         return self.filter_map(predicate).next()
 
     def flat_map(self, f: Callable[[T], Iterable[U]], /) -> Iter[U]:
         return self.map(f).flatten()
 
     def flatten(self: Iter[Iterable[U]]) -> Iter[U]:
-        return Iter(y for x in self._iter for y in x)
+        return Iter(y for x in self for y in x)
 
     def fold(self, init: U, f: Callable[[U, T], U], /) -> U:
         acc = init
@@ -151,7 +177,7 @@ class Iter(Generic[T]):
         for x in self:
             f(x)
 
-    def fuse(self) -> Iter[T | None]:
+    def fuse(self) -> Iter[T]:
         return Iter(Fuse(self))
 
     @overload
@@ -193,9 +219,9 @@ class Iter(Generic[T]):
 
         return self.map(predicate)
 
-    def last(self) -> T | None:
-        last = None
-        while (nxt := self.next()) is not None:
+    def last(self) -> Option[T]:
+        last = nil
+        while (nxt := self.next()) is not nil:
             last = nxt
 
         return last
@@ -235,25 +261,60 @@ class Iter(Generic[T]):
     def map(self, f: Callable[[T], U], /) -> Iter[U]:
         return Iter(map(f, self))
 
-    def map_while(self, predicate: Callable[[T], U | None], /) -> Iter[U]:
-        # If iter stops at first None, how is this any different??
+    def map_while(self, predicate: Callable[[T], Option[U]], /) -> Iter[U]:
         return Iter(MapWhile(self, predicate))
 
     def max(
         self: Iter[SupportsRichComparisonT],
-    ) -> SupportsRichComparisonT | None:
+    ) -> Option[SupportsRichComparisonT]:
         try:
-            return builtins.max(self)
+            return Some(builtins.max(self))
         except ValueError:
-            return None
+            return nil
+
+    def max_by(self, compare: Callable[[T, T], Ordering], /) -> Option[T]:
+        max_ = self.next()
+        if max_ is nil:
+            return nil
+        else:
+            max_ = max_.unwrap()
+
+        for nxt in self:
+            if compare(max_, nxt) is Ordering.Less:
+                max_ = nxt
+
+        return Some(max_)
+
+    def max_by_key(
+        self, f: Callable[[T], SupportsRichComparisonT], /
+    ) -> Option[SupportsRichComparisonT]:
+        return self.map(f).max()
 
     def min(
         self: Iter[SupportsRichComparisonT],
-    ) -> SupportsRichComparisonT | None:
+    ) -> Option[SupportsRichComparisonT]:
         try:
-            return builtins.min(self)
+            return Some(builtins.min(self))
         except ValueError:
-            return None
+            return nil
+
+    def min_by(self, compare: Callable[[T, T], Ordering], /) -> Option[T]:
+        min_ = self.next()
+        if min_ is nil:
+            return nil
+        else:
+            min_ = min_.unwrap()
+
+        for nxt in self:
+            if compare(min_, nxt) is Ordering.Greater:
+                min_ = nxt
+
+        return Some(min_)
+
+    def min_by_key(
+        self, f: Callable[[T], SupportsRichComparisonT], /
+    ) -> Option[SupportsRichComparisonT]:
+        return self.map(f).min()
 
     @overload
     def ne(self: Iter[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
@@ -271,15 +332,41 @@ class Iter(Generic[T]):
         eq = self.eq(other)  # type: ignore | reason: ask for forgiveness not permission
         return not eq
 
-    def nth(self, n: int, /) -> T | None:
+    def nth(self, n: int, /) -> Option[T]:
         for i, x in enumerate(self):
             if i > n:
-                return None
+                return nil
             if i == n:
-                return x
-        return None
+                return Some(x)
+        return nil
 
-    # TODO: def partial_cmp...
+    @overload
+    def partial_cmp(
+        self: Iter[SupportsRichComparisonT], other: Iterable[object], /
+    ) -> Some[Ordering]:
+        ...
+
+    @overload
+    def partial_cmp(
+        self: Iter[object], other: Iterable[SupportsRichComparisonT], /
+    ) -> Some[Ordering]:
+        ...
+
+    @overload
+    def partial_cmp(self: Iter[object], other: Iterable[object], /) -> Option[Ordering]:
+        ...
+
+    def partial_cmp(
+        self: Iter[SupportsRichComparisonT] | Iter[object],
+        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        /,
+    ) -> Option[Ordering]:
+        try:
+            value = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
+        except TypeError:
+            return nil
+        else:
+            return Some(value)
 
     def partition(self, f: Callable[[T], bool], /) -> tuple[list[T], list[T]]:
         matches, notmatches = [], []
@@ -291,32 +378,34 @@ class Iter(Generic[T]):
     def peekable(self) -> Peekable[T]:
         return Peekable(self)
 
-    def position(self, predicate: Callable[[T], bool], /) -> int | None:
+    # TODO: should this simply map to an object and just rely on truthy/falsey behavior?
+    def position(self, predicate: Callable[[T], bool], /) -> Option[int]:
         for i, x in enumerate(self):
             if predicate(x):
-                return i
-        return None
+                return Some(i)
+        return nil
 
-    def product(self: Iter[SupportsMulT]) -> SupportsMulT | None:
+    def product(self: Iter[SupportsMulT]) -> Option[SupportsMulT]:
         return self.reduce(lambda acc, x: acc * x)
 
-    def reduce(self, f: Callable[[T, T], T], /) -> T | None:
+    def reduce(self, f: Callable[[T, T], T], /) -> Option[T]:
         first = self.next()
-        if first is None:
-            return None
-        return self.fold(first, f)
+        if first is nil:
+            return nil
+        else:
+            return Some(self.fold(first.unwrap(), f))
 
     # TODO: def reversed ... , how do we include type information for whether we are reversible?
     # TODO: def rposition ... , how do we include type information for whether we are reversible?
 
-    def scan(self, init: U, f: Callable[[U, T], U], /) -> Iter[U]:
-        return Iter(Scan(self._iter, init, f))
+    def scannable(self, init: U, /) -> Scannable[T, U]:
+        return Scannable(self, init)
 
     # TODO: def size_hint ...
 
     def skip(self, n: int, /) -> Iter[T]:
         for _ in range(n):
-            if self.next() is None:
+            if self.next() is nil:
                 break
         return self
 
@@ -326,26 +415,14 @@ class Iter(Generic[T]):
     def step_by(self, step: int, /) -> Iter[T]:
         return Iter(StepBy(self, step))
 
-    @overload
-    def sum(
-        self: Iter[SupportsSumNoDefaultT],
-    ) -> SupportsSumNoDefaultT | None:
-        ...
-
-    @overload
-    def sum(
-        self: Iter[SupportsSumNoDefaultT], *, default: U
-    ) -> SupportsSumNoDefaultT | U:
-        ...
-
-    def sum(
-        self: Iter[SupportsSumNoDefaultT], *, default: U | None = None
-    ) -> SupportsSumNoDefaultT | U | None:
+    def sum(self: Iter[SupportsSumNoDefaultT]) -> Option[SupportsSumNoDefaultT]:
+        # NOTE: This forces users to pick a default or suffer the unwrapping consequences
+        # a more reasonable interface since an implicit default isn't a thing
         first = self.next()
-        if first is None:
-            return default
+        if first is nil:
+            return nil
 
-        return sum(self, start=first)
+        return Some(sum(self, start=first.unwrap()))
 
     def take(self, n: int, /) -> Iter[T]:
         return Iter(Take(self, n))
@@ -353,19 +430,30 @@ class Iter(Generic[T]):
     def take_while(self, predicate: Callable[[T], bool], /) -> Iter[T]:
         return Iter(TakeWhile(self, predicate))
 
-    def try_fold(self, init: U, f: Callable[[U, T], U], /) -> U | None:
-        # TODO: this feels unsafe
-        try:
-            return self.fold(init, f)
-        except Exception:
-            return None
-
-    def try_for_each(self, f: Callable[[T], object], /) -> None:
+    def try_fold(
+        self,
+        init: U,
+        f: Callable[[U, T], U],
+        /,
+        *,
+        exception: type[BaseException] | tuple[type[BaseException], ...] = Exception,
+    ) -> Option[U]:
+        acc = init
         for x in self:
             try:
-                f(x)
-            except Exception:
-                return
+                acc = f(acc, x)
+            except exception:
+                return nil
+
+        return Some(acc)
+
+    # This would be the same as a for each...
+    # def try_for_each(self, f: Callable[[T], object], /) -> None:
+    #     for x in self:
+    #         try:
+    #             f(x)
+    #         except Exception:
+    #             return
 
     def unzip(self: Iter[tuple[U, V]], /) -> tuple[Iter[U], Iter[V]]:
         return tuple(zip(*self))
@@ -374,11 +462,14 @@ class Iter(Generic[T]):
         return Iter(zip(self, other))
 
 
+# TODO: More careful consideration about overloading iter and/or next needs to be done
+
+
 class FilterMap(Generic[T, U]):
     def __init__(
         self,
         __iterable: Iterable[T],
-        predicate: Callable[[T], U | None],
+        predicate: Callable[[T], Option[U]],
         /,
     ) -> None:
         self._iter = Iter(__iterable)
@@ -387,28 +478,26 @@ class FilterMap(Generic[T, U]):
     def __iter__(self) -> Iterator[U]:
         for x in self._iter:
             r = self._predicate(x)
-            if r is not None:
-                yield r
+            if isinstance(r, Some):
+                yield r.unwrap()
 
 
 class Fuse(Generic[T]):
     def __init__(self, __iterable: Iterable[T]) -> None:
         self._iter = Iter(__iterable)
-        self._found_none = False
+        self._found_nil = False
 
-    def __iter__(self) -> Iterator[T | None]:
-        while not self._found_none:
-            nxt = self._iter.next()
-            self._found_none = nxt is None
-            yield nxt
-
+    def __iter__(self) -> Iterator[T]:
         while True:
-            yield None
+            nxt = self._iter.next()
+            if nxt is nil:
+                break
+            yield nxt.unwrap()
 
 
 class MapWhile(Generic[T, U]):
     def __init__(
-        self, __iterable: Iterable[T], predicate: Callable[[T], U | None], /
+        self, __iterable: Iterable[T], predicate: Callable[[T], Option[U]], /
     ) -> None:
         self._iter = Iter(__iterable)
         self._predicate = predicate
@@ -416,52 +505,91 @@ class MapWhile(Generic[T, U]):
     def __iter__(self) -> Iterator[U]:
         for x in self._iter:
             r = self._predicate(x)
-            if r is None:
+            if r is nil:
                 return
-            yield r
+            yield r.unwrap()
 
 
 class Peekable(Iter[T]):
     def __init__(self, __iterable: Iterable[T], /) -> None:
-        self._iter = Iter(__iterable)
-        self._peek: T | None | NotSetType = NotSet
+        self._iter = iter(__iterable)
+        self._peek: Option[T] | NotSetType = NotSet
 
     def __iter__(self) -> Iterator[T]:
         while True:
-            if isinstance(self._peek, NotSetType):
-                yield next(self._iter)
-            elif self._peek is None:
-                return
-            else:
-                yield self._peek
-                self._peek = NotSet
-
-    def peek(self) -> T | None:
-        if isinstance(self._peek, NotSetType):
             try:
-                self._peek = next(self._iter)
-            except:
-                self._peek = None
+                yield next(self)
+            except StopIteration:
+                return
+
+    def __next__(self) -> T:
+        if isinstance(self._peek, NotSetType):
+            return next(self._iter)
+        elif self._peek is nil:
+            raise StopIteration()
+        else:
+            nxt = self._peek.unwrap()
+            self._peek = NotSet
+            return nxt
+
+    @property
+    def peek(self) -> Option[T]:
+        if isinstance(self._peek, NotSetType):
+            self._peek = self.next()
 
         return self._peek
 
+    @peek.setter
+    def peek(self, value: T) -> None:
+        if self.peek.is_none():
+            raise IndexError("Cannot set peek value past end of the iterator")
 
-class Scan(Generic[T, U]):
+        self._peek = Some(value)
+
+
+# TODO: These helper classes should be using slots
+
+
+class Scannable(Iter[T], Generic[T, U]):
     def __init__(
         self,
         __iterable: Iterable[T],
         init: U,
-        predicate: Callable[[U, T], U],
         /,
     ) -> None:
+        self._state = init
         self._iter = Iter(__iterable)
-        self._predicate = predicate
-        self._acc = init
 
-    def __iter__(self) -> Iterator[U]:
-        for x in self._iter:
-            self._acc = self._predicate(self._acc, x)
-            yield self._acc
+    @property
+    def state(self) -> U:
+        return self._state
+
+    @state.setter
+    def state(self, value: U) -> None:
+        self._state = value
+
+    def scan(self, f: Callable[[U, T], Option[V]], /) -> Scan[T, U, V]:
+        return Scan(self, f)
+
+
+class Scan(Iter[T], Generic[T, U, V]):
+    def __init__(self, scannable: Scannable, f: Callable[[U, T], Option[V]], /):
+        self._scannable = scannable
+        self._f = f
+
+    def __iter__(self) -> Iterator[V]:
+        while True:
+            try:
+                yield next(self)
+            except StopIteration:
+                return
+
+    def __next__(self) -> V:
+        nxt = self._f(self._scannable.state, next(self._scannable))
+        try:
+            return nxt.unwrap()
+        except UnwrapNilError:
+            raise StopIteration()
 
 
 class SkipWhile(Generic[T]):
@@ -471,16 +599,17 @@ class SkipWhile(Generic[T]):
         predicate: Callable[[T], bool],
         /,
     ) -> None:
-        self._iter = Iter(__iterable)
+        self._iter = iter(__iterable)
         self._predicate = predicate
 
     def __iter__(self) -> Iterator[T]:
+        failhit = False
         for x in self._iter:
-            if self._predicate(x):
+            if failhit or (failhit := not self._predicate(x)):
                 yield x
-                break
 
-        return self._iter
+    def __next__(self) -> T:
+        return next(iter(self))
 
 
 class StepBy(Generic[T]):
@@ -493,8 +622,11 @@ class StepBy(Generic[T]):
 
     def __iter__(self) -> Iterator[T]:
         for i, x in enumerate(self._iter):
-            if i % self._step:
+            if i % self._step == 0:
                 yield x
+
+    def __next__(self) -> T:
+        return next(iter(self))
 
 
 class Take(Generic[T]):

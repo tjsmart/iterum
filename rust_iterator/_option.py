@@ -6,8 +6,9 @@ from typing import Literal
 from typing import NoReturn
 from typing import overload
 from typing import TYPE_CHECKING
-from typing import TypeAlias
 from typing import TypeVar
+
+from typing_extensions import TypeAlias
 
 from ._singleton import Singleton
 
@@ -23,6 +24,16 @@ if TYPE_CHECKING:
     from ._iter import Iter
 
 
+class UnwrapNilError(RuntimeError):
+    def __init__(self, msg: str = "Attempted to unwrap nil") -> None:
+        super().__init__(msg)
+
+
+class ExpectNilError(RuntimeError):
+    def __init__(self, msg: str = "Expected some but option is nil") -> None:
+        super().__init__(msg)
+
+
 class Nil(Singleton):
     __slots__ = ()
 
@@ -34,7 +45,7 @@ class Nil(Singleton):
         return self
 
     def expect(self, msg: str, /) -> NoReturn:
-        raise RuntimeError(msg)
+        raise ExpectNilError(msg)
 
     def filter(self, predicate: Callable[[T], bool], /) -> Nil:
         return self
@@ -90,7 +101,7 @@ class Nil(Singleton):
         return self
 
     def unwrap(self) -> NoReturn:
-        raise RuntimeError("Called unwrap on a Nil value.")
+        raise UnwrapNilError()
 
     def unwrap_or(self, default: T, /) -> T:
         return default
@@ -121,8 +132,18 @@ nil = Nil()
 
 
 class Some(Generic[T]):
+    __match_args__ = ("_value",)
+
     def __init__(self, value: T, /) -> None:
         self._value = value
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Some):
+            return NotImplemented
+        return self._value == other._value
+
+    def __repr__(self) -> str:
+        return f"{Some.__name__}({self._value!r})"
 
     def also(self, optb: O, /) -> O:
         # 'and' is a keyword, so instead we use 'also'
@@ -228,4 +249,4 @@ class Some(Generic[T]):
         return nil if isinstance(other, Nil) else Some((self._value, other._value))
 
 
-Option: TypeAlias = Some[T] | Nil
+Option: TypeAlias = "Some[T] | Nil"
