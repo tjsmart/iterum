@@ -119,9 +119,7 @@ def some_unwrap_or_else():
 
 
 def some_unzip():
-    assert_type(
-        Some((1, "test")).unzip(), tuple[Some[Literal[1]], Some[Literal["test"]]]
-    )
+    assert_type(Some((1, "test")).unzip(), tuple[Some[int], Some[str]])
 
 
 def some_xor():

@@ -91,7 +91,7 @@ def option_is_some():
 
 
 def option_iter():
-    assert_type(option.iter(), Iter[int])
+    assert_type(option.iter(), Iter[int] | Iter)
 
 
 def option_map():

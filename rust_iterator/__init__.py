@@ -1,4 +1,6 @@
 from ._iter import Iter
+from ._iter import Peekable
+from ._iter import Scannable
 from ._option import Nil
 from ._option import nil
 from ._option import Option
@@ -11,6 +13,8 @@ __all__ = [
     "Nil",
     "nil",
     "Option",
-    "Ordering",
     "Some",
+    "Ordering",
+    "Peekable",
+    "Scannable",
 ]

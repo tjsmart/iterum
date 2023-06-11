@@ -354,7 +354,7 @@ def test_max_by_basic_usage():
 def test_max_by_key_basic_usage():
     a = [-3, 0, 1, 5, -10]
 
-    assert Iter(a).max_by_key(abs).unwrap() == 10
+    assert Iter(a).max_by_key(abs).unwrap() == -10
 
 
 def test_min_basic_usage():
@@ -375,6 +375,12 @@ def test_min_by_key_basic_usage():
     a = [-3, 0, 1, 5, -10]
 
     assert Iter(a).min_by_key(abs).unwrap() == 0
+
+
+def test_min_by_key_ensure_map_is_not_returned():
+    a = [-3, 0, 1, 5]
+
+    assert Iter(a).min_by_key(lambda x: -x).unwrap() == 5
 
 
 def test_ne_basic_usage():
