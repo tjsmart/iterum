@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "rust-iterator"
+name = "iterum"
 description = ''
 readme = "README.md"
 requires-python = ">=3.7"
@@ -29,15 +29,15 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/rust-iterator#readme"
-Issues = "https://github.com/unknown/rust-iterator/issues"
-Source = "https://github.com/unknown/rust-iterator"
+Documentation = "https://github.com/unknown/iterum#readme"
+Issues = "https://github.com/unknown/iterum/issues"
+Source = "https://github.com/unknown/iterum"
 
 [tool.setuptools.package-data]
-rust_iterator = ["py.typed"]
+iterum = ["py.typed"]
 
 [tool.hatch.version]
-path = "rust_iterator/__about__.py"
+path = "iterum/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -45,7 +45,7 @@ dependencies = [
   "pytest-cov",
 ]
 [tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=rust_iterator --cov=tests {args}"
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=iterum --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 
 [[tool.hatch.envs.test.matrix]]
@@ -55,7 +55,7 @@ python = ["37", "38", "39", "310", "311"]
 branch = true
 parallel = true
 omit = [
-  "rust_iterator/__about__.py",
+  "iterum/__about__.py",
 ]
 
 [tool.coverage.report]

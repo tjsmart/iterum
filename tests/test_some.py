@@ -1,4 +1,4 @@
-from rust_iterator import Some
+from iterum import Some
 
 
 def test_eq():

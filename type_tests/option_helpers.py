@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from rust_iterator import Nil
-from rust_iterator import Option
-from rust_iterator import Some
+from iterum import Nil
+from iterum import Option
+from iterum import Some
 
 
 def create_option() -> Option[int]:

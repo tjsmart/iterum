@@ -4,11 +4,11 @@ from functools import partial
 
 import pytest
 
-from rust_iterator import Iter
-from rust_iterator import nil
-from rust_iterator import Option
-from rust_iterator import Ordering
-from rust_iterator import Some
+from iterum import Iter
+from iterum import nil
+from iterum import Option
+from iterum import Ordering
+from iterum import Some
 
 
 def count_forever():
@@ -645,8 +645,8 @@ def test_unzip_basic_usage():
 
     left, right = Iter(a).unzip()
 
-    assert left == (1, 3, 5)
-    assert right == (2, 4, 6)
+    assert left == [1, 3, 5]
+    assert right == [2, 4, 6]
 
 
 @pytest.mark.xfail(reason="Just not cool enough...")
@@ -654,9 +654,9 @@ def test_unzip_multiple():
     a = [(1, (2, 3)), (4, (5, 6))]
 
     (x, (y, z)) = Iter(a).unzip()
-    assert x == (1, 4)
-    assert y == (2, 5)
-    assert z == (3, 6)
+    assert x == [1, 4]
+    assert y == [2, 5]
+    assert z == [3, 6]
 
 
 def test_zip_basic_usage():

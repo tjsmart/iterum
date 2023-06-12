@@ -26,6 +26,8 @@ if TYPE_CHECKING:
     from ._type_helpers import SupportsSumNoDefaultT
 
 
+# TODO: This should be an abstract base class instead
+
 T_co = TypeVar("T_co", covariant=True)
 U = TypeVar("U")
 V = TypeVar("V")

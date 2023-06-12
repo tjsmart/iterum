@@ -15,11 +15,11 @@ from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_some
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
-from rust_iterator import Iter
-from rust_iterator import Nil
-from rust_iterator import nil
-from rust_iterator import Option
-from rust_iterator import Some
+from iterum import Iter
+from iterum import Nil
+from iterum import nil
+from iterum import Option
+from iterum import Some
 
 T = TypeVar("T")
 U = TypeVar("U")
