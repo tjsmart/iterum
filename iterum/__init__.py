@@ -24,6 +24,7 @@ from ._option import Nil
 from ._option import nil
 from ._option import Option
 from ._option import Some
+from ._option import Swap
 from ._ordering import Ordering
 
 
@@ -59,4 +60,6 @@ __all__ = [
     "Zip",
     # used by Scan
     "State",
+    # used by swap operations in Option
+    "Swap",
 ]

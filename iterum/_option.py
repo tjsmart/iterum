@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
 from typing import Generic
 from typing import Literal
+from typing import NamedTuple
 from typing import NoReturn
 from typing import overload
 from typing import TYPE_CHECKING
@@ -13,6 +14,9 @@ from typing_extensions import TypeAlias
 
 from ._singleton import Singleton
 
+if TYPE_CHECKING:
+    from ._iterum import iterum
+
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -21,8 +25,14 @@ V = TypeVar("V")
 S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")  # noqa: E741
 
-if TYPE_CHECKING:
-    from ._iterum import iterum
+
+# TODO: add option tests
+# TODO: Everything needs to be documented, Ahh!!
+
+
+class Swap(NamedTuple, Generic[T, U]):
+    inserted: T
+    returned: U
 
 
 class UnwrapNilError(RuntimeError):
@@ -57,18 +67,14 @@ class Nil(Singleton):
     def flatten(self) -> Nil:
         return self
 
-    def get_or_insert(self, value: T, /) -> T:
-        # TODO: this is a problem...
-        # perhaps these will have to become standalone functions...
-        return value
+    def get_or_insert(self, value: T, /) -> Swap[Some[T], T]:
+        return Swap(Some(value), value)
 
-    def get_or_insert_with(self, f: Callable[[], T], /) -> T:
-        # TODO: this is a problem...
-        return f()
+    def get_or_insert_with(self, f: Callable[[], T], /) -> Swap[Some[T], T]:
+        return Swap(Some(value := f()), value)
 
-    def insert(self, value: T, /) -> T:
-        # TODO: this is a problem...
-        return value
+    def insert(self, value: T, /) -> Swap[Some[T], T]:
+        return Swap(Some(value), value)
 
     def is_none(self) -> Literal[True]:
         return True
@@ -97,12 +103,11 @@ class Nil(Singleton):
     def either_else(self, f: Callable[[], O], /) -> O:
         return f()
 
-    def replace(self, value: Any, /) -> Nil:
-        # TODO: this is a problem...
-        return nil
+    def replace(self, value: T, /) -> Swap[Some[T], Nil]:
+        return Swap(Some(value), nil)
 
-    def take(self) -> Nil:
-        return self
+    def take(self) -> Swap[Nil, Nil]:
+        return Swap(nil, self)
 
     def unwrap(self) -> NoReturn:
         raise UnwrapNilError()
@@ -168,15 +173,15 @@ class Some(Generic[T]):
         else:
             raise TypeError(f"Cannot flatten type: Some({type(self._value).__name__})")
 
-    def get_or_insert(self, value: T, /) -> T:
-        return self._value
+    def get_or_insert(self, value: T, /) -> Swap[Some[T], T]:
+        return Swap(Some(self._value), self._value)
 
-    def get_or_insert_with(self, f: Callable[[], T], /) -> T:
-        return self._value
+    def get_or_insert_with(self, f: Callable[[], T], /) -> Swap[Some[T], T]:
+        return Swap(Some(self._value), self._value)
 
-    def insert(self, value: T, /) -> T:
+    def insert(self, value: T, /) -> Swap[Some[T], T]:
         self._value = value
-        return value
+        return Swap(Some(self._value), self._value)
 
     def is_none(self) -> Literal[False]:
         return False
@@ -207,14 +212,13 @@ class Some(Generic[T]):
     def either_else(self, f: Callable[[], Option[T]], /) -> Some[T]:
         return self
 
-    def replace(self, value: T, /) -> Some[T]:
+    def replace(self, value: T, /) -> Swap[Some[T], Some[T]]:
         old = self._value
         self._value = value
-        return Some(old)
+        return Swap(Some(self._value), Some(old))
 
-    def take(self) -> Some[T]:
-        # TODO: this is a problem...
-        return self
+    def take(self) -> Swap[Nil, Some[T]]:
+        return Swap(nil, self)
 
     def unwrap(self) -> T:
         return self._value

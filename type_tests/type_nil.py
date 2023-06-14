@@ -19,6 +19,7 @@ from iterum import Nil
 from iterum import nil
 from iterum import Option
 from iterum import Some
+from iterum import Swap
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -47,15 +48,15 @@ def nil_flatten():
 
 
 def nil_get_or_insert():
-    assert_type(nil.get_or_insert(2), int)
+    assert_type(nil.get_or_insert(2), Swap[Some[int], int])
 
 
 def nil_get_or_insert_with():
-    assert_type(nil.get_or_insert_with(create_value), int)
+    assert_type(nil.get_or_insert_with(create_value), Swap[Some[int], int])
 
 
 def nil_insert():
-    assert_type(nil.insert(2), int)
+    assert_type(nil.insert(2), Swap[Some[int], int])
 
 
 def nil_is_none():
@@ -95,11 +96,11 @@ def nil_either_else():
 
 
 def nil_replace():
-    assert_type(nil.replace(1), Nil)
+    assert_type(nil.replace(1), Swap[Some[int], Nil])
 
 
 def nil_take():
-    assert_type(nil.take(), Nil)
+    assert_type(nil.take(), Swap[Nil, Nil])
 
 
 def nil_unwrap_or():

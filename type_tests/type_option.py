@@ -20,6 +20,7 @@ from iterum import Nil
 from iterum import nil
 from iterum import Option
 from iterum import Some
+from iterum import Swap
 
 
 T = TypeVar("T")
@@ -72,15 +73,15 @@ def option_flatten():
 
 
 def option_get_or_insert():
-    assert_type(option.get_or_insert(2), int)
+    assert_type(option.get_or_insert(2), Swap[Some[int], int])
 
 
 def option_get_or_insert_with():
-    assert_type(option.get_or_insert_with(create_value), int)
+    assert_type(option.get_or_insert_with(create_value), Swap[Some[int], int])
 
 
 def option_insert():
-    assert_type(option.insert(2), int)
+    assert_type(option.insert(2), Swap[Some[int], int])
 
 
 def option_is_none():
@@ -120,11 +121,13 @@ def option_either_else():
 
 
 def option_replace():
-    assert_type(option.replace(1), Option[int])
+    # assert_type(option.replace(1), Swap[Some[int], Option[int]])  # sad this doesn't work...
+    assert_type(option.replace(1), Swap[Some[int], Some[int]] | Swap[Some[int], Nil])
 
 
 def option_take():
-    assert_type(option.take(), Option[int])
+    # assert_type(option.take(), Swap[Nil, Option[int]])  # sad this doesn't work...
+    assert_type(option.take(), Swap[Nil, Some[int]] | Swap[Nil, Nil])
 
 
 def option_unwrap_or():
