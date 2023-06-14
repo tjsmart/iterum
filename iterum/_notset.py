@@ -15,7 +15,7 @@ class NotSetType(Singleton):
 
     @classmethod
     def is_set(cls, value: T | NotSetType) -> TypeGuard[T]:
-        return not value is cls()
+        return value is not cls()
 
 
 NotSet = NotSetType()

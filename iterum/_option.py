@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from typing import Callable
 from typing import Generic
 from typing import Literal
@@ -18,10 +19,10 @@ U = TypeVar("U")
 V = TypeVar("V")
 
 S = TypeVar("S", bound="Some")
-O = TypeVar("O", bound="Option")
+O = TypeVar("O", bound="Option")  # noqa: E741
 
 if TYPE_CHECKING:
-    from ._iter import Iter
+    from ._iterum import iterum
 
 
 class UnwrapNilError(RuntimeError):
@@ -37,17 +38,20 @@ class ExpectNilError(RuntimeError):
 class Nil(Singleton):
     __slots__ = ()
 
+    def __repr__(self) -> str:
+        return "nil"
+
     def also(self, optb: Option[U], /) -> Nil:
         # 'and' is a keyword, so instead we use 'also'
         return self
 
-    def also_then(self, f: Callable[[T], Option[U]], /) -> Nil:
+    def also_then(self, f: Callable[[Any], Option[U]], /) -> Nil:
         return self
 
     def expect(self, msg: str, /) -> NoReturn:
         raise ExpectNilError(msg)
 
-    def filter(self, predicate: Callable[[T], bool], /) -> Nil:
+    def filter(self, predicate: Callable[[Any], bool], /) -> Nil:
         return self
 
     def flatten(self) -> Nil:
@@ -72,18 +76,18 @@ class Nil(Singleton):
     def is_some(self) -> Literal[False]:
         return False
 
-    def iter(self) -> Iter[T]:
-        from ._iter import Iter
+    def iter(self) -> iterum[Any]:
+        from ._iterum import iterum
 
-        return Iter([])
+        return iterum([])
 
-    def map(self, f: Callable[[T], U], /) -> Nil:
+    def map(self, f: Callable[[Any], Any], /) -> Nil:
         return self
 
-    def map_or(self, default: U, f: Callable[[T], U], /) -> U:
+    def map_or(self, default: U, f: Callable[[Any], U], /) -> U:
         return default
 
-    def map_or_else(self, default: Callable[[], U], f: Callable[[T], U], /) -> U:
+    def map_or_else(self, default: Callable[[], U], f: Callable[[Any], U], /) -> U:
         return default()
 
     def either(self, optb: O, /) -> O:
@@ -93,7 +97,7 @@ class Nil(Singleton):
     def either_else(self, f: Callable[[], O], /) -> O:
         return f()
 
-    def replace(self, value: T, /) -> Nil:
+    def replace(self, value: Any, /) -> Nil:
         # TODO: this is a problem...
         return nil
 
@@ -180,10 +184,10 @@ class Some(Generic[T]):
     def is_some(self) -> Literal[True]:
         return True
 
-    def iter(self) -> Iter[T]:
-        from ._iter import Iter
+    def iter(self) -> iterum[T]:
+        from ._iterum import iterum
 
-        return Iter([self._value])
+        return iterum([self._value])
 
     def map(self, f: Callable[[T], U], /) -> Some[U]:
         return Some(f(self._value))

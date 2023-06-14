@@ -1,20 +1,35 @@
 from __future__ import annotations
 
-from typing import Any
 from typing import Generic
 from typing import Iterable
 from typing import TypeVar
 
 from typing_extensions import assert_type
 
-from iterum import Iter
+from iterum import Chain
+from iterum import Cycle
+from iterum import Enumerate
+from iterum import Filter
+from iterum import FilterMap
+from iterum import FlatMap
+from iterum import Flatten
+from iterum import Fuse
+from iterum import Inspect
+from iterum import iterum
+from iterum import Map
+from iterum import MapWhile
 from iterum import Nil
-from iterum import nil
 from iterum import Option
 from iterum import Ordering
 from iterum import Peekable
 from iterum import Scannable
+from iterum import Skip
+from iterum import SkipWhile
 from iterum import Some
+from iterum import StepBy
+from iterum import Take
+from iterum import TakeWhile
+from iterum import Zip
 
 T = TypeVar("T")
 # U = TypeVar("U")
@@ -38,12 +53,12 @@ def create_tuple_str_int() -> tuple[str, int]:
     ...
 
 
-itr = Iter([1, 2, 3])
+itr = iterum([1, 2, 3])
 
 
 def iter_init():
-    assert_type(Iter([1, 2, 3]), Iter[int])
-    assert_type(Iter("test"), Iter[str])
+    assert_type(iterum([1, 2, 3]), iterum[int])
+    assert_type(iterum("test"), iterum[str])
 
 
 def iter_dunder_iter():
@@ -68,12 +83,12 @@ def iter_any():
 
 
 def iter_chain():
-    assert_type(itr.chain({3, 4, 5}), Iter[int])
+    assert_type(itr.chain({3, 4, 5}), Chain[int])
 
 
 def iter_cmp():
-    assert_type(Iter([1, 2, 3]).cmp((object(),)), Ordering)
-    assert_type(Iter([object()]).cmp((1, 2)), Ordering)
+    assert_type(iterum([1, 2, 3]).cmp((object(),)), Ordering)
+    assert_type(iterum([object()]).cmp((1, 2)), Ordering)
 
 
 def iter_collect():
@@ -81,8 +96,8 @@ def iter_collect():
     assert_type(itr.collect(list), list[int])
     assert_type(itr.collect(set), set[int])
     assert_type(itr.collect(tuple), tuple[int, ...])
-    assert_type(Iter([create_tuple_str_int()]).collect(dict), dict[str, int])
-    assert_type(Iter("test").collect("".join), str)
+    assert_type(iterum([create_tuple_str_int()]).collect(dict), dict[str, int])
+    assert_type(iterum("test").collect("".join), str)
     assert_type(itr.collect(MyCollection), MyCollection)
 
 
@@ -91,24 +106,24 @@ def iter_count():
 
 
 def iter_cycle():
-    assert_type(itr.cycle(), Iter[int])
+    assert_type(itr.cycle(), Cycle[int])
 
 
 def iter_enumerate():
-    assert_type(itr.enumerate(), Iter[tuple[int, int]])
+    assert_type(itr.enumerate(), Enumerate[int])
 
 
 def iter_eq():
-    assert_type(Iter([1, 2, 3]).eq((object(),)), bool)
-    assert_type(Iter([object()]).eq((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).eq((object(),)), bool)
+    assert_type(iterum([object()]).eq((1, 2)), bool)
 
 
 def iter_filter():
-    assert_type(itr.filter(lambda _: False), Iter[int])
+    assert_type(itr.filter(lambda _: False), Filter[int])
 
 
 def iter_filter_map():
-    assert_type(itr.filter_map(lambda _: Some("test")), Iter[str])
+    assert_type(itr.filter_map(lambda _: Some("test")), FilterMap[str])
 
 
 def iter_find():
@@ -120,12 +135,14 @@ def iter_find_map():
 
 
 def iter_flat_map():
-    assert_type(itr.flat_map(lambda _: "test"), Iter[str])
+    assert_type(itr.flat_map(lambda _: "test"), FlatMap[str])
 
 
 def iter_flatten():
-    assert_type(Iter(["test", "this"]).flatten(), Iter[str])
-    assert_type(Iter([create_tuple_int(), create_tuple_int()]).flatten(), Iter[int])
+    assert_type(iterum(["test", "this"]).flatten(), Flatten[str])
+    assert_type(
+        iterum([create_tuple_int(), create_tuple_int()]).flatten(), Flatten[int]
+    )
 
 
 def iter_fold():
@@ -137,21 +154,21 @@ def iter_for_each():
 
 
 def iter_fuse():
-    assert_type(itr.fuse(), Iter[int])
+    assert_type(itr.fuse(), Fuse[int])
 
 
 def iter_ge():
-    assert_type(Iter([1, 2, 3]).ge((object(),)), bool)
-    assert_type(Iter([object()]).ge((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).ge((object(),)), bool)
+    assert_type(iterum([object()]).ge((1, 2)), bool)
 
 
 def iter_gt():
-    assert_type(Iter([1, 2, 3]).gt((object(),)), bool)
-    assert_type(Iter([object()]).gt((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).gt((object(),)), bool)
+    assert_type(iterum([object()]).gt((1, 2)), bool)
 
 
 def iter_inspect():
-    assert_type(itr.inspect(lambda _: "whatever"), Iter[int])
+    assert_type(itr.inspect(lambda _: "whatever"), Inspect[int])
 
 
 def iter_last():
@@ -159,21 +176,21 @@ def iter_last():
 
 
 def iter_le():
-    assert_type(Iter([1, 2, 3]).le((object(),)), bool)
-    assert_type(Iter([object()]).le((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).le((object(),)), bool)
+    assert_type(iterum([object()]).le((1, 2)), bool)
 
 
 def iter_lt():
-    assert_type(Iter([1, 2, 3]).lt((object(),)), bool)
-    assert_type(Iter([object()]).lt((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).lt((object(),)), bool)
+    assert_type(iterum([object()]).lt((1, 2)), bool)
 
 
 def iter_map():
-    assert_type(itr.map(lambda _: "test"), Iter[str])
+    assert_type(itr.map(lambda _: "test"), Map[str])
 
 
 def iter_map_while():
-    assert_type(itr.map_while(lambda _: Some("test")), Iter[str])
+    assert_type(itr.map_while(lambda _: Some("test")), MapWhile[str])
 
 
 def iter_max():
@@ -201,8 +218,8 @@ def iter_min_by_key():
 
 
 def iter_ne():
-    assert_type(Iter([1, 2, 3]).ne((object(),)), bool)
-    assert_type(Iter([object()]).ne((1, 2)), bool)
+    assert_type(iterum([1, 2, 3]).ne((object(),)), bool)
+    assert_type(iterum([object()]).ne((1, 2)), bool)
 
 
 def iter_nth():
@@ -210,9 +227,9 @@ def iter_nth():
 
 
 def iter_partial_cmp():
-    assert_type(Iter([1, 2, 3]).partial_cmp((object(),)), Some[Ordering])
-    assert_type(Iter([object()]).partial_cmp((1, 2)), Some[Ordering])
-    assert_type(Iter([object()]).partial_cmp((object(),)), Nil)
+    assert_type(iterum([1, 2, 3]).partial_cmp((object(),)), Some[Ordering])
+    assert_type(iterum([object()]).partial_cmp((1, 2)), Some[Ordering])
+    assert_type(iterum([object()]).partial_cmp((object(),)), Nil)
 
 
 def iter_partition():
@@ -223,7 +240,7 @@ def iter_partition():
         itr.partition(lambda _: False, tuple), tuple[tuple[int, ...], tuple[int, ...]]
     )
     assert_type(
-        Iter([create_tuple_str_int()]).partition(lambda _: False, dict),
+        iterum([create_tuple_str_int()]).partition(lambda _: False, dict),
         tuple[dict[str, int], dict[str, int]],
     )
     assert_type(
@@ -252,15 +269,15 @@ def iter_scannable():
 
 
 def iter_skip():
-    assert_type(itr.skip(10), Iter[int])
+    assert_type(itr.skip(10), Skip[int])
 
 
 def iter_skip_while():
-    assert_type(itr.skip_while(lambda _: False), Iter[int])
+    assert_type(itr.skip_while(lambda _: False), SkipWhile[int])
 
 
 def iter_step_by():
-    assert_type(itr.step_by(2), Iter[int])
+    assert_type(itr.step_by(2), StepBy[int])
 
 
 def iter_sum():
@@ -268,11 +285,11 @@ def iter_sum():
 
 
 def iter_take():
-    assert_type(itr.take(10), Iter[int])
+    assert_type(itr.take(10), Take[int])
 
 
 def iter_take_while():
-    assert_type(itr.take_while(lambda _: False), Iter[int])
+    assert_type(itr.take_while(lambda _: False), TakeWhile[int])
 
 
 def iter_try_fold():
@@ -280,7 +297,7 @@ def iter_try_fold():
 
 
 def iter_unzip():
-    itr = Iter([create_tuple_str_int()])
+    itr = iterum([create_tuple_str_int()])
     assert_type(itr.unzip(), tuple[list[str], list[int]])
     assert_type(itr.unzip(list), tuple[list[str], list[int]])
     assert_type(itr.unzip(set), tuple[set[str], set[int]])
@@ -288,4 +305,4 @@ def iter_unzip():
 
 
 def iter_zip():
-    assert_type(itr.zip(["test", "this"]), Iter[tuple[int, str]])
+    assert_type(itr.zip(["test", "this"]), Zip[int, str])

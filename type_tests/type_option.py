@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from typing import TypeVar
 
 from typing_extensions import assert_type
@@ -14,7 +15,7 @@ from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_some
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
-from iterum import Iter
+from iterum import iterum
 from iterum import Nil
 from iterum import nil
 from iterum import Option
@@ -91,7 +92,7 @@ def option_is_some():
 
 
 def option_iter():
-    assert_type(option.iter(), Iter[int] | Iter)
+    assert_type(option.iter(), iterum[int] | iterum[Any])
 
 
 def option_map():

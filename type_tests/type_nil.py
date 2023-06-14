@@ -14,7 +14,7 @@ from .option_helpers import map_to_value
 from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
-from iterum import Iter
+from iterum import iterum
 from iterum import Nil
 from iterum import nil
 from iterum import Option
@@ -67,7 +67,7 @@ def nil_is_some():
 
 
 def nil_iter():
-    assert_type(nil.iter(), Iter)
+    assert_type(nil.iter(), iterum)
 
 
 def nil_map():

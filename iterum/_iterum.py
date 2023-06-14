@@ -822,9 +822,9 @@ class SkipWhile(Iterum[T_co]):
 
         while self._fuse:
             nxt = next(self._iter)
-            self._fuse = self._predicate(nxt)
+            self._fuse = bool(self._predicate(nxt))
 
-        return nxt
+        return nxt  # type: ignore | reason: incorrectly reports unbound variable
 
 
 class StepBy(Iterum[T_co]):

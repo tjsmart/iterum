@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from functools import partial
+from typing import Iterable
+from typing import Iterator
 
 import pytest
 
@@ -182,9 +184,6 @@ def test_flat_map_basic_usage():
     merged = iterum(words).flat_map(iterum).collect("".join)
 
     assert merged == "alphabetagamma"
-
-
-from typing import Iterable, Iterator
 
 
 def foo(_: iterum[Iterable[int]]) -> None:
