@@ -96,6 +96,12 @@ class Nil(Singleton):
     def map_or_else(self, default: Callable[[], U], f: Callable[[Any], U], /) -> U:
         return default()
 
+    def ok_or(self, err: Exception, /) -> NoReturn:
+        raise err
+
+    def ok_or_else(self, err: Callable[[], Exception], /) -> NoReturn:
+        raise err()
+
     def either(self, optb: O, /) -> O:
         # 'or' is a keyword, so instead we use 'either'
         return optb
@@ -108,6 +114,8 @@ class Nil(Singleton):
 
     def take(self) -> Swap[Nil, Nil]:
         return Swap(nil, self)
+
+    # transpose ... without a Result concept there isn't any value
 
     def unwrap(self) -> NoReturn:
         raise UnwrapNilError()
@@ -203,7 +211,11 @@ class Some(Generic[T]):
     def map_or_else(self, default: Callable[[], U], f: Callable[[T], U], /) -> U:
         return f(self._value)
 
-    # TODO: any reason to implement ok variants?, transpose as well
+    def ok_or(self, err: Exception, /) -> T:
+        return self._value
+
+    def ok_or_else(self, err: Callable[[], Exception], /) -> T:
+        return self._value
 
     def either(self, optb: Option[T], /) -> Some[T]:
         # 'or' is a keyword, so instead we use 'either'
@@ -219,6 +231,8 @@ class Some(Generic[T]):
 
     def take(self) -> Swap[Nil, Some[T]]:
         return Swap(nil, self)
+
+    # transpose ... without a Result concept there isn't any value
 
     def unwrap(self) -> T:
         return self._value

@@ -108,6 +108,14 @@ def option_map_or_else():
     assert_type(option.map_or_else(map_to_value, map_value_to_value), str)
 
 
+def option_ok_or():
+    assert_type(option.ok_or(AssertionError()), int)
+
+
+def option_ok_or_else():
+    assert_type(option.ok_or_else(AssertionError), int)
+
+
 def option_either():
     assert_type(option.either(create_option()), Option[int])
     assert_type(option.either(Some(1)), Some[int])

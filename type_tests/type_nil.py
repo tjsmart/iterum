@@ -83,6 +83,14 @@ def nil_map_or_else():
     assert_type(nil.map_or_else(map_to_value, map_value_to_value), str)
 
 
+def nil_ok_or():
+    assert_type(nil.ok_or(AssertionError()), NoReturn)
+
+
+def nil_ok_or_else():
+    assert_type(nil.ok_or_else(AssertionError), NoReturn)
+
+
 def nil_either():
     assert_type(nil.either(create_option()), Option[int])
     assert_type(nil.either(Some(1)), Some[int])

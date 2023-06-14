@@ -91,6 +91,14 @@ def some_map_or_else():
     assert_type(some.map_or_else(map_to_value, map_value_to_value), str)
 
 
+def some_ok_or():
+    assert_type(some.ok_or(AssertionError()), int)
+
+
+def some_ok_or_else():
+    assert_type(some.ok_or_else(AssertionError), int)
+
+
 def some_either():
     assert_type(some.either(create_option()), Some[int])
     assert_type(some.either(Some(1)), Some[int])
