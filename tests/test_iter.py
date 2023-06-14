@@ -190,14 +190,12 @@ def foo(_: iterum[Iterable[int]]) -> None:
     ...
 
 
-# TODO: Fix typing issue with flatten here
 def test_flatten_basic_usage():
     data = [[1, 2, 3, 4], [5, 6]]
     flattened = iterum(data).flatten().collect(list)
     assert flattened == [1, 2, 3, 4, 5, 6]
 
 
-# TODO: Fix typing issue with flatten here
 def test_flatten_mapping_and_then_flattening():
     words = ["alpha", "beta", "gamma"]
 
@@ -412,7 +410,6 @@ def test_partial_cmp_basic_usage():
     assert iterum([1]).partial_cmp([1, 2]) == Some(Ordering.Less)
 
 
-# TODO: fix typing issues here
 def test_partial_cmp_results_determined_by_order():
     assert iterum([1, None]).partial_cmp([2, nil]) == Some(Ordering.Less)
     assert iterum([2, None]).partial_cmp([1, nil]) == Some(Ordering.Greater)

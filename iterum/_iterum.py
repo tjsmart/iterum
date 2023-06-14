@@ -20,10 +20,8 @@ from ._option import UnwrapNilError
 from ._ordering import Ordering
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparison
+    from ._type_helpers import SupportsRichComparison
     from ._type_helpers import SupportsMulT
-
-    # TODO: were using typevar's where we shouldn't
     from ._type_helpers import SupportsRichComparisonT
     from ._type_helpers import SupportsSumNoDefaultT
 
@@ -142,16 +140,16 @@ class Iterum(Iterator[T_co]):
         return Enumerate(self)
 
     @overload
-    def eq(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def eq(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def eq(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def eq(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def eq(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -196,32 +194,32 @@ class Iterum(Iterator[T_co]):
         return Fuse(self)
 
     @overload
-    def ge(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def ge(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def ge(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def ge(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def ge(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp in (Ordering.Greater, Ordering.Equal)
 
     @overload
-    def gt(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def gt(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def gt(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def gt(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def gt(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -238,32 +236,32 @@ class Iterum(Iterator[T_co]):
         return last
 
     @overload
-    def le(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def le(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def le(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def le(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def le(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp in (Ordering.Less, Ordering.Equal)
 
     @overload
-    def lt(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def lt(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def lt(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def lt(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def lt(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -297,7 +295,7 @@ class Iterum(Iterator[T_co]):
         return Some(max_)
 
     def max_by_key(
-        self, f: Callable[[T_co], SupportsRichComparisonT], /
+        self, f: Callable[[T_co], SupportsRichComparison], /
     ) -> Option[T_co]:
         def compare(x, y) -> Ordering:
             fx = f(x)
@@ -328,7 +326,7 @@ class Iterum(Iterator[T_co]):
         return Some(min_)
 
     def min_by_key(
-        self, f: Callable[[T_co], SupportsRichComparisonT], /
+        self, f: Callable[[T_co], SupportsRichComparison], /
     ) -> Option[T_co]:
         def compare(x, y) -> Ordering:
             fx = f(x)
@@ -338,16 +336,16 @@ class Iterum(Iterator[T_co]):
         return self.min_by(compare)
 
     @overload
-    def ne(self: Iterum[SupportsRichComparisonT], other: Iterable[object], /) -> bool:
+    def ne(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
         ...
 
     @overload
-    def ne(self: Iterum[object], other: Iterable[SupportsRichComparisonT], /) -> bool:
+    def ne(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
         ...
 
     def ne(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> bool:
         eq = self.eq(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -363,13 +361,13 @@ class Iterum(Iterator[T_co]):
 
     @overload
     def partial_cmp(
-        self: Iterum[SupportsRichComparisonT], other: Iterable[object], /
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
     ) -> Some[Ordering]:
         ...
 
     @overload
     def partial_cmp(
-        self: Iterum[object], other: Iterable[SupportsRichComparisonT], /
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
     ) -> Some[Ordering]:
         ...
 
@@ -378,8 +376,8 @@ class Iterum(Iterator[T_co]):
         ...
 
     def partial_cmp(
-        self: Iterum[SupportsRichComparisonT] | Iterum[object],
-        other: Iterable[object] | Iterable[SupportsRichComparisonT],
+        self: Iterum[SupportsRichComparison] | Iterum[object],
+        other: Iterable[object] | Iterable[SupportsRichComparison],
         /,
     ) -> Option[Ordering]:
         try:
