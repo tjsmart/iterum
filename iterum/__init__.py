@@ -13,9 +13,9 @@ from ._iterum import Map
 from ._iterum import MapWhile
 from ._iterum import Peekable
 from ._iterum import Scan
-from ._iterum import Scannable
 from ._iterum import Skip
 from ._iterum import SkipWhile
+from ._iterum import State
 from ._iterum import StepBy
 from ._iterum import Take
 from ._iterum import TakeWhile
@@ -50,7 +50,6 @@ __all__ = [
     "Map",
     "MapWhile",
     "Peekable",
-    "Scannable",
     "Scan",
     "Skip",
     "SkipWhile",
@@ -58,4 +57,6 @@ __all__ = [
     "Take",
     "TakeWhile",
     "Zip",
+    # used by Scan
+    "State",
 ]

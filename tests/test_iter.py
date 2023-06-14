@@ -11,6 +11,7 @@ from iterum import nil
 from iterum import Option
 from iterum import Ordering
 from iterum import Some
+from iterum import State
 
 
 def count_forever():
@@ -515,19 +516,19 @@ def test_reduce_basic_usage():
 
 
 def test_scan_not_so_basic_usage():
-    scan = iterum([1, 2, 3, 4]).scannable(1)
+    itr = iterum([1, 2, 3, 4])
 
-    def scanner(init: int, x: int) -> Option[int]:
-        scan.state = init * x
-        if scan.state > 6:
+    def scanner(state: State, x: int) -> Option[int]:
+        state.value *= x
+        if state.value > 6:
             return nil
-        return Some(-scan.state)
+        return Some(-state.value)
 
-    itr = scan.scan(scanner)
-    assert itr.next() == Some(-1)
-    assert itr.next() == Some(-2)
-    assert itr.next() == Some(-6)
-    assert itr.next() == nil
+    scan = itr.scan(1, scanner)
+    assert scan.next() == Some(-1)
+    assert scan.next() == Some(-2)
+    assert scan.next() == Some(-6)
+    assert scan.next() == nil
 
 
 def test_skip_basic_usage():

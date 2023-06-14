@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 
 T_co = TypeVar("T_co", covariant=True)
+T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 
@@ -40,13 +41,6 @@ V = TypeVar("V")
 
 
 class Iterum(Iterator[T_co]):
-    # def __iter__(self) -> Iterator[T_co]:
-    #     while True:
-    #         try:
-    #             yield next(self)
-    #         except StopIteration:
-    #             return
-
     def next(self) -> Option[T_co]:
         try:
             return Some(next(self))
@@ -457,8 +451,8 @@ class Iterum(Iterator[T_co]):
     # TODO: def reversed ... , how do we include type information for whether we are reversible?
     # TODO: def rposition ... , how do we include type information for whether we are reversible?
 
-    def scannable(self, init: U, /) -> Scannable[T_co, U]:
-        return Scannable(self, init)
+    def scan(self, init: U, f: Callable[[State[U], T_co], Option[V]], /) -> Scan[V]:
+        return Scan(self, init, f)
 
     # TODO: def size_hint ...
 
@@ -729,54 +723,40 @@ class Peekable(Iterum[T_co]):
         self._peek = Some(value)
 
 
-# TODO: Scannable sucks, can this be better, is it even close to correct?
-class Scannable(Iterum[T_co], Generic[T_co, U]):
-    __slots__ = ("_iter", "_state")
+class State(Generic[T]):
+    __slots__ = ("_value",)
+
+    def __init__(self, value: T, /) -> None:
+        self._value = value
+
+    @property
+    def value(self) -> T:
+        return self._value
+
+    @value.setter
+    def value(self, value: T) -> None:
+        self._value = value
+
+
+class Scan(Iterum[T_co]):
+    __slots__ = ("_iter", "_state", "_f")
 
     def __init__(
         self,
-        __iterable: Iterable[T_co],
-        init: U,
+        __iterable: Iterable[U],
+        init: V,
+        f: Callable[[State[V], U], Option[T_co]],
         /,
-    ) -> None:
-        self._state = init
-        self._iter = iterum(__iterable)
-
-    def __next__(self) -> T_co:
-        return next(self._iter)
-
-    @property
-    def state(self) -> U:
-        return self._state
-
-    @state.setter
-    def state(self, value: U) -> None:
-        self._state = value
-
-    def scan(self, f: Callable[[object, T_co], Option[U]], /) -> Scan[U]:
-        return Scan(self, f)
-
-
-class Scan(Iterum[T_co], Generic[T_co]):
-    __slots__ = ("_scannable", "_f")
-
-    def __init__(
-        self, scannable: Scannable[U, V], f: Callable[[V, U], Option[T_co]], /
     ):
-        self._scannable = scannable
+        self._iter = iter(__iterable)
+        self._state = State(init)
         self._f = f
 
-    def __iter__(self) -> Iterator[T_co]:
-        while True:
-            try:
-                yield next(self)
-            except StopIteration:
-                return
-
     def __next__(self) -> T_co:
-        nxt = self._f(self._scannable.state, next(self._scannable))
+        nxt = next(self._iter)
+        r = self._f(self._state, nxt)
         try:
-            return nxt.unwrap()
+            return r.unwrap()
         except UnwrapNilError:
             raise StopIteration()
 

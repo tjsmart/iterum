@@ -19,13 +19,15 @@ from iterum import iterum
 from iterum import Map
 from iterum import MapWhile
 from iterum import Nil
+from iterum import nil
 from iterum import Option
 from iterum import Ordering
 from iterum import Peekable
-from iterum import Scannable
+from iterum import Scan
 from iterum import Skip
 from iterum import SkipWhile
 from iterum import Some
+from iterum import State
 from iterum import StepBy
 from iterum import Take
 from iterum import TakeWhile
@@ -264,8 +266,14 @@ def iter_reduce():
     assert_type(itr.reduce(lambda _x, _y: 3), Option[int])
 
 
-def iter_scannable():
-    assert_type(itr.scannable("test"), Scannable[int, str])
+def iter_scan():
+    def scanner(state: State, x: int) -> Option[int]:
+        state.value *= x
+        if state.value > 6:
+            return nil
+        return Some(-state.value)
+
+    assert_type(itr.scan(1, scanner), Scan[int])
 
 
 def iter_skip():
