@@ -176,9 +176,8 @@ class Iterum(Iterator[T_co]):
     def find_map(self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
         return self.filter_map(predicate).next()
 
-    def flat_map(self, f: Callable[[T_co], Iterable[U]], /) -> Iterum[U]:
-        # TODO: make a flatmap class
-        return self.map(f).flatten()
+    def flat_map(self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
+        return FlatMap(self, f)
 
     def flatten(self: Iterum[Iterable[U]]) -> Flatten[U]:
         return Flatten(self)
@@ -465,12 +464,8 @@ class Iterum(Iterator[T_co]):
 
     # TODO: def size_hint ...
 
-    def skip(self, n: int, /) -> Iterum[T_co]:
-        # TODO: make a Skip class
-        for _ in range(n):
-            if self.next() is nil:
-                break
-        return self
+    def skip(self, n: int, /) -> Skip[T_co]:
+        return Skip(self, n)
 
     def skip_while(self, predicate: Callable[[T_co], object], /) -> SkipWhile[T_co]:
         return SkipWhile(self, predicate)
@@ -560,9 +555,6 @@ class Iterum(Iterator[T_co]):
         return Zip(self, other)
 
 
-# TODO: These helper classes should be using slots
-
-
 class Chain(Iterum[T_co]):
     __slots__ = ("_iter",)
 
@@ -600,6 +592,18 @@ class Filter(Iterum[T_co]):
         self, __iterable: Iterable[T_co], predicate: Callable[[T_co], object], /
     ) -> None:
         self._iter = builtins.filter(predicate, __iterable)
+
+    def __next__(self) -> T_co:
+        return next(self._iter)
+
+
+class FlatMap(Iterum[T_co]):
+    __slots__ = ("_iter", "_f")
+
+    def __init__(
+        self, __iterable: Iterable[U], f: Callable[[U], Iterable[T_co]], /
+    ) -> None:
+        self._iter = iterum(__iterable).map(f).flatten()
 
     def __next__(self) -> T_co:
         return next(self._iter)
@@ -777,6 +781,26 @@ class Scan(Iterum[T_co], Generic[T_co]):
             return nxt.unwrap()
         except UnwrapNilError:
             raise StopIteration()
+
+
+class Skip(Iterum[T_co]):
+    __slots__ = ("_iter", "_n")
+
+    def __init__(
+        self,
+        __iterable: Iterable[T_co],
+        n: int,
+        /,
+    ) -> None:
+        self._iter = iterum(__iterable)
+        self._n = n
+
+    def __next__(self) -> T_co:
+        if self._n:
+            self._iter.nth(self._n - 1)
+            self._n = 0
+
+        return next(self._iter)
 
 
 class SkipWhile(Iterum[T_co]):

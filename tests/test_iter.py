@@ -541,6 +541,13 @@ def test_skip_basic_usage():
     assert itr.next() == nil
 
 
+def test_skip_past_end():
+    itr = iterum([1, 2, 3]).skip(10)
+
+    assert itr.next() == nil
+    assert itr.next() == nil
+
+
 def test_skip_while_basic_usage():
     itr = iterum([-1, 0, 1]).skip_while(lambda x: x < 0)
 
