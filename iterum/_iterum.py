@@ -55,10 +55,10 @@ class Iterum(Iterator[T_co]):
         except StopIteration:
             return nil
 
-    def all(self, f: Callable[[T_co], bool], /) -> bool:
+    def all(self, f: Callable[[T_co], object], /) -> bool:
         return all(map(f, self))
 
-    def any(self, f: Callable[[T_co], bool], /) -> bool:
+    def any(self, f: Callable[[T_co], object], /) -> bool:
         return any(map(f, self))
 
     def chain(self: Iterum[T_co], other: Iterable[T_co], /) -> Chain[T_co]:
@@ -158,7 +158,7 @@ class Iterum(Iterator[T_co]):
         return cmp == Ordering.Equal
 
     def filter(
-        self: Iterum[T_co], predicate: Callable[[T_co], bool], /
+        self: Iterum[T_co], predicate: Callable[[T_co], object], /
     ) -> Filter[T_co]:
         return Filter(self, predicate)
 
@@ -167,7 +167,7 @@ class Iterum(Iterator[T_co]):
     ) -> FilterMap[U]:
         return FilterMap(self, predicate)
 
-    def find(self, predicate: Callable[[T_co], bool], /) -> Option[T_co]:
+    def find(self, predicate: Callable[[T_co], object], /) -> Option[T_co]:
         for x in self:
             if predicate(x):
                 return Some(x)
@@ -391,42 +391,44 @@ class Iterum(Iterator[T_co]):
             return Some(value)
 
     @overload
-    def partition(self, f: Callable[[T_co], bool], /) -> tuple[list[T_co], list[T_co]]:
-        ...
-
-    @overload
     def partition(
-        self, f: Callable[[T_co], bool], container: type[list], /
+        self, f: Callable[[T_co], object], /
     ) -> tuple[list[T_co], list[T_co]]:
         ...
 
     @overload
     def partition(
-        self, f: Callable[[T_co], bool], container: type[set], /
+        self, f: Callable[[T_co], object], container: type[list], /
+    ) -> tuple[list[T_co], list[T_co]]:
+        ...
+
+    @overload
+    def partition(
+        self, f: Callable[[T_co], object], container: type[set], /
     ) -> tuple[set[T_co], set[T_co]]:
         ...
 
     @overload
     def partition(
-        self, f: Callable[[T_co], bool], container: type[tuple], /
+        self, f: Callable[[T_co], object], container: type[tuple], /
     ) -> tuple[tuple[T_co, ...], tuple[T_co, ...]]:
         ...
 
     @overload
     def partition(
-        self: Iterum[tuple[U, V]], f: Callable[[T_co], bool], container: type[dict], /
+        self: Iterum[tuple[U, V]], f: Callable[[T_co], object], container: type[dict], /
     ) -> tuple[dict[U, V], dict[U, V]]:
         ...
 
     @overload
     def partition(
-        self, f: Callable[[T_co], bool], container: Callable[[Iterable[T_co]], U], /
+        self, f: Callable[[T_co], object], container: Callable[[Iterable[T_co]], U], /
     ) -> tuple[U, U]:
         ...
 
     def partition(  # type: ignore
         self,
-        f: Callable[[T_co], bool],
+        f: Callable[[T_co], object],
         container: Callable[[Iterable[T_co]], U] = list,
         /,
     ) -> tuple[U, U]:
@@ -439,8 +441,7 @@ class Iterum(Iterator[T_co]):
     def peekable(self) -> Peekable[T_co]:
         return Peekable(self)
 
-    # TODO: should this simply map to an object and just rely on truthy/falsey behavior?
-    def position(self, predicate: Callable[[T_co], bool], /) -> Option[int]:
+    def position(self, predicate: Callable[[T_co], object], /) -> Option[int]:
         for i, x in enumerate(self):
             if predicate(x):
                 return Some(i)
@@ -471,7 +472,7 @@ class Iterum(Iterator[T_co]):
                 break
         return self
 
-    def skip_while(self, predicate: Callable[[T_co], bool], /) -> SkipWhile[T_co]:
+    def skip_while(self, predicate: Callable[[T_co], object], /) -> SkipWhile[T_co]:
         return SkipWhile(self, predicate)
 
     def step_by(self, step: int, /) -> StepBy[T_co]:
@@ -489,7 +490,7 @@ class Iterum(Iterator[T_co]):
     def take(self, n: int, /) -> Take[T_co]:
         return Take(self, n)
 
-    def take_while(self, predicate: Callable[[T_co], bool], /) -> TakeWhile[T_co]:
+    def take_while(self, predicate: Callable[[T_co], object], /) -> TakeWhile[T_co]:
         return TakeWhile(self, predicate)
 
     def try_fold(
@@ -596,7 +597,7 @@ class Filter(Iterum[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(
-        self, __iterable: Iterable[T_co], predicate: Callable[[T_co], bool], /
+        self, __iterable: Iterable[T_co], predicate: Callable[[T_co], object], /
     ) -> None:
         self._iter = builtins.filter(predicate, __iterable)
 
@@ -784,7 +785,7 @@ class SkipWhile(Iterum[T_co]):
     def __init__(
         self,
         __iterable: Iterable[T_co],
-        predicate: Callable[[T_co], bool],
+        predicate: Callable[[T_co], object],
         /,
     ) -> None:
         self._iter = iter(__iterable)
@@ -840,7 +841,7 @@ class TakeWhile(Iterum[T_co]):
     __slots__ = ("_iter", "_predicate")
 
     def __init__(
-        self, __iterable: Iterable[T_co], predicate: Callable[[T_co], bool], /
+        self, __iterable: Iterable[T_co], predicate: Callable[[T_co], object], /
     ) -> None:
         self._iter = iterum(__iterable)
         self._predicate = predicate
