@@ -31,14 +31,14 @@ some = Some(0)
 
 
 def some_also():
-    assert_type(some.also(Some("test")), Some[str])
-    assert_type(some.also(nil), Nil)
+    assert_type(some.and_(Some("test")), Some[str])
+    assert_type(some.and_(nil), Nil)
 
 
 def some_also_then():
-    assert_type(some.also_then(map_value_to_option), Option[str])
-    assert_type(some.also_then(map_value_to_some), Some[str])
-    assert_type(some.also_then(map_value_to_nil), Nil)
+    assert_type(some.and_then(map_value_to_option), Option[str])
+    assert_type(some.and_then(map_value_to_some), Some[str])
+    assert_type(some.and_then(map_value_to_nil), Nil)
 
 
 def some_expect():
@@ -67,8 +67,8 @@ def some_insert():
     assert_type(some.insert(2), Swap[Some[int], int])
 
 
-def some_is_none():
-    assert_type(some.is_none(), Literal[False])
+def some_is_nil():
+    assert_type(some.is_nil(), Literal[False])
 
 
 def some_is_some():
@@ -100,15 +100,15 @@ def some_ok_or_else():
 
 
 def some_either():
-    assert_type(some.either(create_option()), Some[int])
-    assert_type(some.either(Some(1)), Some[int])
-    assert_type(some.either(nil), Some[int])
+    assert_type(some.or_(create_option()), Some[int])
+    assert_type(some.or_(Some(1)), Some[int])
+    assert_type(some.or_(nil), Some[int])
 
 
 def some_either_else():
-    assert_type(some.either_else(create_option), Some[int])
-    assert_type(some.either_else(create_some), Some[int])
-    assert_type(some.either_else(create_nil), Some[int])
+    assert_type(some.or_else(create_option), Some[int])
+    assert_type(some.or_else(create_some), Some[int])
+    assert_type(some.or_else(create_nil), Some[int])
 
 
 def some_replace():

@@ -48,14 +48,14 @@ def isinstance_some_implies_some_else_nil():
 
 
 def option_also():
-    assert_type(option.also(Some("test")), Option[str])
-    assert_type(option.also(nil), Nil)
+    assert_type(option.and_(Some("test")), Option[str])
+    assert_type(option.and_(nil), Nil)
 
 
 def option_also_then():
-    assert_type(option.also_then(map_value_to_option), Option[str])
-    assert_type(option.also_then(map_value_to_some), Option[str])
-    assert_type(option.also_then(map_value_to_nil), Nil)
+    assert_type(option.and_then(map_value_to_option), Option[str])
+    assert_type(option.and_then(map_value_to_some), Option[str])
+    assert_type(option.and_then(map_value_to_nil), Nil)
 
 
 def option_expect():
@@ -84,8 +84,8 @@ def option_insert():
     assert_type(option.insert(2), Swap[Some[int], int])
 
 
-def option_is_none():
-    assert_type(option.is_none(), bool)
+def option_is_nil():
+    assert_type(option.is_nil(), bool)
 
 
 def option_is_some():
@@ -117,15 +117,15 @@ def option_ok_or_else():
 
 
 def option_either():
-    assert_type(option.either(create_option()), Option[int])
-    assert_type(option.either(Some(1)), Some[int])
-    assert_type(option.either(nil), Option[int])
+    assert_type(option.or_(create_option()), Option[int])
+    assert_type(option.or_(Some(1)), Some[int])
+    assert_type(option.or_(nil), Option[int])
 
 
 def option_either_else():
-    assert_type(option.either_else(create_option), Option[int])
-    assert_type(option.either_else(create_some), Some[int])
-    assert_type(option.either_else(create_nil), Option[int])
+    assert_type(option.or_else(create_option), Option[int])
+    assert_type(option.or_else(create_some), Some[int])
+    assert_type(option.or_else(create_nil), Option[int])
 
 
 def option_replace():

@@ -717,7 +717,7 @@ class Peekable(Iterum[T_co]):
 
     @peek.setter
     def peek(self, value: T_co) -> None:  # type: ignore | reason: still need to constrain input param type
-        if self.peek.is_none():
+        if self.peek.is_nil():
             raise IndexError("Cannot set peek value past end of the iterator")
 
         self._peek = Some(value)

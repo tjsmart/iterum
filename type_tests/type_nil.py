@@ -27,12 +27,12 @@ V = TypeVar("V")
 
 
 def nil_also():
-    assert_type(nil.also(Some(1)), Nil)
-    assert_type(nil.also(nil), Nil)
+    assert_type(nil.and_(Some(1)), Nil)
+    assert_type(nil.and_(nil), Nil)
 
 
 def nil_also_then():
-    assert_type(nil.also_then(map_value_to_option), Nil)
+    assert_type(nil.and_then(map_value_to_option), Nil)
 
 
 def nil_expect():
@@ -59,8 +59,8 @@ def nil_insert():
     assert_type(nil.insert(2), Swap[Some[int], int])
 
 
-def nil_is_none():
-    assert_type(nil.is_none(), Literal[True])
+def nil_is_nil():
+    assert_type(nil.is_nil(), Literal[True])
 
 
 def nil_is_some():
@@ -92,15 +92,15 @@ def nil_ok_or_else():
 
 
 def nil_either():
-    assert_type(nil.either(create_option()), Option[int])
-    assert_type(nil.either(Some(1)), Some[int])
-    assert_type(nil.either(nil), Nil)
+    assert_type(nil.or_(create_option()), Option[int])
+    assert_type(nil.or_(Some(1)), Some[int])
+    assert_type(nil.or_(nil), Nil)
 
 
 def nil_either_else():
-    assert_type(nil.either_else(create_option), Option[int])
-    assert_type(nil.either_else(create_some), Some[int])
-    assert_type(nil.either_else(create_nil), Nil)
+    assert_type(nil.or_else(create_option), Option[int])
+    assert_type(nil.or_else(create_some), Some[int])
+    assert_type(nil.or_else(create_nil), Nil)
 
 
 def nil_replace():

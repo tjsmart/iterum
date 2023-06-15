@@ -28,6 +28,7 @@ O = TypeVar("O", bound="Option")  # noqa: E741
 
 # TODO: add option tests
 # TODO: Everything needs to be documented, Ahh!!
+# TODO: Could use State for methods that return a reference. Perhaps State should be renamed to Ref
 
 
 class Swap(NamedTuple, Generic[T, U]):
@@ -51,17 +52,17 @@ class Nil(Singleton):
     def __repr__(self) -> str:
         return "nil"
 
-    def also(self, optb: Option[U], /) -> Nil:
-        # 'and' is a keyword, so instead we use 'also'
+    def and_(self, optb: Option[U], /) -> Nil:
+        # 'and' is a keyword, so instead we use 'and_'
         return self
 
-    def also_then(self, f: Callable[[Any], Option[U]], /) -> Nil:
+    def and_then(self, f: Callable[[Any], Option[U]], /) -> Nil:
         return self
 
     def expect(self, msg: str, /) -> NoReturn:
         raise ExpectNilError(msg)
 
-    def filter(self, predicate: Callable[[Any], bool], /) -> Nil:
+    def filter(self, predicate: Callable[[Any], object], /) -> Nil:
         return self
 
     def flatten(self) -> Nil:
@@ -76,10 +77,13 @@ class Nil(Singleton):
     def insert(self, value: T, /) -> Swap[Some[T], T]:
         return Swap(Some(value), value)
 
-    def is_none(self) -> Literal[True]:
+    def is_nil(self) -> Literal[True]:
         return True
 
     def is_some(self) -> Literal[False]:
+        return False
+
+    def is_some_and(self, f: Callable[[Any], object]) -> Literal[False]:
         return False
 
     def iter(self) -> iterum[Any]:
@@ -102,11 +106,11 @@ class Nil(Singleton):
     def ok_or_else(self, err: Callable[[], Exception], /) -> NoReturn:
         raise err()
 
-    def either(self, optb: O, /) -> O:
-        # 'or' is a keyword, so instead we use 'either'
+    def or_(self, optb: O, /) -> O:
+        # 'or' is a keyword, so instead we use 'or_'
         return optb
 
-    def either_else(self, f: Callable[[], O], /) -> O:
+    def or_else(self, f: Callable[[], O], /) -> O:
         return f()
 
     def replace(self, value: T, /) -> Swap[Some[T], Nil]:
@@ -123,6 +127,12 @@ class Nil(Singleton):
     def unwrap_or(self, default: T, /) -> T:
         return default
 
+    # TODO: unwrap_or_default could be implemented
+    # could come up with reasonable defaults, e.g. 0, {}, [], ...
+    # these may also be the result of constructing a type with no params
+    # If I wanted to get real fancy could provide user way to register defaults
+    # for their custom types.
+
     def unwrap_or_else(self, f: Callable[[], T], /) -> T:
         return f()
 
@@ -138,7 +148,6 @@ class Nil(Singleton):
         ...
 
     def xor(self, optb: O, /) -> O | Nil:
-        # TODO: some things, like this can be overloaded to give a smarter type hint
         return nil if isinstance(optb, Nil) else optb
 
     def zip(self, other: Option[U], /) -> Nil:
@@ -162,17 +171,17 @@ class Some(Generic[T]):
     def __repr__(self) -> str:
         return f"{Some.__name__}({self._value!r})"
 
-    def also(self, optb: O, /) -> O:
-        # 'and' is a keyword, so instead we use 'also'
+    def and_(self, optb: O, /) -> O:
+        # 'and' is a keyword, so instead we use 'and_'
         return optb
 
-    def also_then(self, f: Callable[[T], O], /) -> O:
+    def and_then(self, f: Callable[[T], O], /) -> O:
         return f(self._value)
 
     def expect(self, msg: str, /) -> T:
         return self._value
 
-    def filter(self, predicate: Callable[[T], bool], /) -> Option[T]:
+    def filter(self, predicate: Callable[[T], object], /) -> Option[T]:
         return self if predicate(self._value) else Nil()
 
     def flatten(self: Some[O]) -> O:
@@ -191,11 +200,14 @@ class Some(Generic[T]):
         self._value = value
         return Swap(Some(self._value), self._value)
 
-    def is_none(self) -> Literal[False]:
+    def is_nil(self) -> Literal[False]:
         return False
 
     def is_some(self) -> Literal[True]:
         return True
+
+    def is_some_and(self, f: Callable[[T], object]) -> bool:
+        return bool(f(self.unwrap()))
 
     def iter(self) -> iterum[T]:
         from ._iterum import iterum
@@ -217,11 +229,11 @@ class Some(Generic[T]):
     def ok_or_else(self, err: Callable[[], Exception], /) -> T:
         return self._value
 
-    def either(self, optb: Option[T], /) -> Some[T]:
-        # 'or' is a keyword, so instead we use 'either'
+    def or_(self, optb: Option[T], /) -> Some[T]:
+        # 'or' is a keyword, so instead we use 'or_'
         return self
 
-    def either_else(self, f: Callable[[], Option[T]], /) -> Some[T]:
+    def or_else(self, f: Callable[[], Option[T]], /) -> Some[T]:
         return self
 
     def replace(self, value: T, /) -> Swap[Some[T], Some[T]]:
@@ -256,7 +268,6 @@ class Some(Generic[T]):
         ...
 
     def xor(self, optb: Option[T], /) -> Option[T]:
-        # TODO: some things, like this can be overloaded to give a smarter type hint
         return self if isinstance(optb, Nil) else nil
 
     @overload

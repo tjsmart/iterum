@@ -20,11 +20,13 @@ from ._iterum import StepBy
 from ._iterum import Take
 from ._iterum import TakeWhile
 from ._iterum import Zip
+from ._option import ExpectNilError
 from ._option import Nil
 from ._option import nil
 from ._option import Option
 from ._option import Some
 from ._option import Swap
+from ._option import UnwrapNilError
 from ._ordering import Ordering
 
 
@@ -36,6 +38,8 @@ __all__ = [
     "nil",
     "Option",
     "Some",
+    "ExpectNilError",
+    "UnwrapNilError",
     # Ordering
     "Ordering",
     # special Iterum implementations
