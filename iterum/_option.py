@@ -26,9 +26,7 @@ S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")  # noqa: E741
 
 
-# TODO: add option tests
 # TODO: Everything needs to be documented, Ahh!!
-# TODO: Could use State for methods that return a reference. Perhaps State should be renamed to Ref
 
 
 class Swap(NamedTuple, Generic[T, U]):
@@ -127,9 +125,12 @@ class Nil(Singleton):
     def unwrap_or(self, default: T, /) -> T:
         return default
 
-    # TODO: unwrap_or_default could be implemented
-    # could come up with reasonable defaults, e.g. 0, {}, [], ...
-    # these may also be the result of constructing a type with no params
+    # In order for unwrap_or_default to be implemented we would
+    # need to know within nil what type we are supposed to have.
+    #
+    # If this was known we could come up with reasonable defaults, e.g. 0, {}, [], "", ...
+    # note: these also happen to be what constructing the type with no params gives.
+    #
     # If I wanted to get real fancy could provide user way to register defaults
     # for their custom types.
 
