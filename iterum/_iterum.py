@@ -31,12 +31,6 @@ T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 
-# TODO: Idea! for double-ended iteretor functionality
-# have Iter(...) return either an Iter or a DoubleEndedIter if input is a sequence
-# Something similar to pathlib.Path
-# then rev, rposition, etc can be implemented
-# also size hint
-
 # TODO: better to have __next__ be the abstractmethod or next?
 
 
@@ -448,13 +442,10 @@ class Iterum(Iterator[T_co]):
         else:
             return Some(self.fold(first.unwrap(), f))
 
-    # TODO: def reversed ... , how do we include type information for whether we are reversible?
-    # TODO: def rposition ... , how do we include type information for whether we are reversible?
-
     def scan(self, init: U, f: Callable[[State[U], T_co], Option[V]], /) -> Scan[V]:
         return Scan(self, init, f)
 
-    # TODO: def size_hint ...
+    # def size_hint ..., don't plan on implementing this one. Just use diterum if size is important
 
     def skip(self, n: int, /) -> Skip[T_co]:
         return Skip(self, n)

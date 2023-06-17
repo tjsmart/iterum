@@ -1,3 +1,6 @@
+from ._diterum import Diterum
+from ._diterum import diterum
+from ._diterum import Rev
 from ._iterum import Chain
 from ._iterum import Cycle
 from ._iterum import Enumerate
@@ -33,6 +36,8 @@ from ._ordering import Ordering
 __all__ = [
     "iterum",
     "Iterum",
+    "diterum",
+    "Diterum",
     # Option
     "Nil",
     "nil",
@@ -62,6 +67,8 @@ __all__ = [
     "Take",
     "TakeWhile",
     "Zip",
+    # Special Diterum implementations
+    "Rev",
     # used by Scan
     "State",
     # used by swap operations in Option
