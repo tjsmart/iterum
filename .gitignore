@@ -5,3 +5,5 @@ venv
 .tox
 *.pyc
 __pycache__
+*.xcf
+.coverage
