@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 import itertools
+from abc import abstractmethod
 from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Iterator
@@ -10,13 +11,13 @@ from typing import overload
 from typing import TYPE_CHECKING
 from typing import TypeVar
 
+from ._helpers import check_methods
 from ._notset import NotSet
 from ._notset import NotSetType
 from ._option import Nil
 from ._option import nil
 from ._option import Option
 from ._option import Some
-from ._option import UnwrapNilError
 from ._ordering import Ordering
 
 if TYPE_CHECKING:
@@ -31,15 +32,22 @@ T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 
-# TODO: better to have __next__ be the abstractmethod or next?
-
 
 class Iterum(Iterator[T_co]):
+    __slots__ = ()
+
+    @abstractmethod
     def next(self) -> Option[T_co]:
-        try:
-            return Some(next(self))
-        except StopIteration:
-            return nil
+        return nil
+
+    @classmethod
+    def __subclasshook__(cls, C):
+        if cls is Iterum:
+            return check_methods(C, "next")
+        return NotImplemented
+
+    def __next__(self) -> T_co:
+        return self.next().ok_or_else(StopIteration)
 
     def all(self, f: Callable[[T_co], object], /) -> bool:
         return all(map(f, self))
@@ -538,37 +546,45 @@ class Iterum(Iterator[T_co]):
         return Zip(self, other)
 
 
-class Chain(Iterum[T_co]):
+def _try_next(itr: Iterator[T], /) -> Option[T]:
+    try:
+        nxt = next(itr)
+    except StopIteration:
+        return nil
+    else:
+        return Some(nxt)
+
+
+class IterumAdapter(Iterum[T_co]):
+    __slots__ = ()
+    _iter: Iterator[T_co]
+
+    def next(self) -> Option[T_co]:
+        return _try_next(self._iter)
+
+
+class Chain(IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, *__iterables: Iterable[T_co]) -> None:
         self._iter = itertools.chain(*__iterables)
 
-    def __next__(self) -> T_co:
-        return next(self._iter)
 
-
-class Cycle(Iterum[T_co]):
+class Cycle(IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[T_co]) -> None:
         self._iter = itertools.cycle(__iterable)
 
-    def __next__(self) -> T_co:
-        return next(self._iter)
 
-
-class Enumerate(Iterum[tuple[int, T_co]]):
+class Enumerate(IterumAdapter[tuple[int, T_co]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
         self._iter = builtins.enumerate(__iterable)
 
-    def __next__(self) -> tuple[int, T_co]:
-        return next(self._iter)
 
-
-class Filter(Iterum[T_co]):
+class Filter(IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(
@@ -576,20 +592,17 @@ class Filter(Iterum[T_co]):
     ) -> None:
         self._iter = builtins.filter(predicate, __iterable)
 
-    def __next__(self) -> T_co:
-        return next(self._iter)
+    def next(self) -> Option[T_co]:
+        return _try_next(self._iter)
 
 
-class FlatMap(Iterum[T_co]):
-    __slots__ = ("_iter", "_f")
+class FlatMap(IterumAdapter[T_co]):
+    __slots__ = ("_iter",)
 
     def __init__(
         self, __iterable: Iterable[U], f: Callable[[U], Iterable[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable).map(f).flatten()
-
-    def __next__(self) -> T_co:
-        return next(self._iter)
 
 
 class FilterMap(Iterum[T_co]):
@@ -598,48 +611,48 @@ class FilterMap(Iterum[T_co]):
     def __init__(
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
-        self._iter = iter(__iterable)
+        self._iter = iterum(__iterable)
         self._predicate = predicate
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         while True:
-            x = next(self._iter)
-            r = self._predicate(x)
+            x = self._iter.next()
+            if x.is_nil():
+                return nil
+
+            r = self._predicate(x.unwrap())
             if r.is_some():
-                return r.unwrap()
+                return r
 
 
-class Flatten(Iterum[T_co]):
+class Flatten(IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[Iterable[T_co]], /) -> None:
         self._iter = iter(y for x in __iterable for y in x)
 
-    def __next__(self) -> T_co:
-        return next(self._iter)
-
 
 class Fuse(Iterum[T_co]):
-    __slots__ = ("_iter", "_blown")
+    __slots__ = ("_iter", "_fuse")
 
     def __init__(self, __iterable: Iterable[T_co]) -> None:
         self._iter = iterum(__iterable)
-        self._blown = False
+        self._fuse = True
 
-    def __next__(self) -> T_co:
-        if self._blown:
-            raise StopIteration()
+    def next(self) -> Option[T_co]:
+        if not self._fuse:
+            return nil
 
         nxt = self._iter.next()
-        if nxt is nil:
-            self._blown = True
-            raise StopIteration()
+        if nxt.is_nil():
+            self._fuse = False
+            return nil
 
-        return nxt.unwrap()
+        return nxt
 
 
 class Inspect(Iterum[T_co]):
-    __slots__ = ("_iter", "_blown")
+    __slots__ = ("_iter", "_f")
 
     def __init__(
         self, __iterable: Iterable[T_co], f: Callable[[T_co], object], /
@@ -647,9 +660,9 @@ class Inspect(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._f = f
 
-    def __next__(self) -> T_co:
-        nxt = next(self._iter)
-        self._f(nxt)
+    def next(self) -> Option[T_co]:
+        nxt = self._iter.next()
+        nxt.map(self._f)
         return nxt
 
 
@@ -660,43 +673,45 @@ class Map(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._f = f
 
-    def __next__(self) -> T_co:
-        nxt = next(self._iter)
-        return self._f(nxt)
+    def next(self) -> Option[T_co]:
+        return self._iter.next().map(self._f)
 
 
 class MapWhile(Iterum[T_co]):
-    __slots__ = ("_iter", "_predicate")
+    __slots__ = ("_iter", "_predicate", "_fuse")
 
     def __init__(
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable)
         self._predicate = predicate
+        self._fuse = True
 
-    def __next__(self) -> T_co:
-        nxt = next(self._iter)
-        r = self._predicate(nxt)
-        if r is nil:
-            raise StopIteration()
-        return r.unwrap()
+    def next(self) -> Option[T_co]:
+        if not self._fuse:
+            return nil
+
+        r = self._iter.next().map(self._predicate).flatten()
+        if r.is_nil():
+            self._fuse = False
+
+        return r
 
 
 class Peekable(Iterum[T_co]):
     __slots__ = ("_iter", "_peek")
 
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
-        self._iter = iter(__iterable)
+        self._iter = iterum(__iterable)
         self._peek: Option[T_co] | NotSetType = NotSet
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         if isinstance(self._peek, NotSetType):
-            return next(self._iter)
+            return self._iter.next()
         elif self._peek is nil:
-            raise StopIteration()
+            return nil
         else:
-            nxt = self._peek.unwrap()
-            self._peek = NotSet
+            nxt, self._peek = self._peek, NotSet
             return nxt
 
     @property
@@ -739,17 +754,12 @@ class Scan(Iterum[T_co]):
         f: Callable[[State[V], U], Option[T_co]],
         /,
     ):
-        self._iter = iter(__iterable)
+        self._iter = iterum(__iterable)
         self._state = State(init)
         self._f = f
 
-    def __next__(self) -> T_co:
-        nxt = next(self._iter)
-        r = self._f(self._state, nxt)
-        try:
-            return r.unwrap()
-        except UnwrapNilError:
-            raise StopIteration()
+    def next(self) -> Option[T_co]:
+        return self._iter.next().map(lambda val: self._f(self._state, val)).flatten()
 
 
 class Skip(Iterum[T_co]):
@@ -764,12 +774,12 @@ class Skip(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._n = n
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         if self._n:
             self._iter.nth(self._n - 1)
             self._n = 0
 
-        return next(self._iter)
+        return self._iter.next()
 
 
 class SkipWhile(Iterum[T_co]):
@@ -781,19 +791,20 @@ class SkipWhile(Iterum[T_co]):
         predicate: Callable[[T_co], object],
         /,
     ) -> None:
-        self._iter = iter(__iterable)
+        self._iter = iterum(__iterable)
         self._predicate = predicate
         self._fuse = True
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         if not self._fuse:
-            return next(self._iter)
+            return self._iter.next()
 
+        nxt = nil
         while self._fuse:
-            nxt = next(self._iter)
-            self._fuse = bool(self._predicate(nxt))
+            nxt = self._iter.next()
+            self._fuse = nxt.is_some_and(self._predicate)
 
-        return nxt  # type: ignore | reason: incorrectly reports unbound variable
+        return nxt
 
 
 class StepBy(Iterum[T_co]):
@@ -803,13 +814,13 @@ class StepBy(Iterum[T_co]):
         if step <= 0:
             raise ValueError(f"Step must be positive, provided: {step}")
 
-        self._iter = enumerate(__iterable)
+        self._iter = iterum(__iterable).enumerate()
         self._step = step
 
-    def __next__(self) -> T_co:
-        idx, nxt = next(self._iter)
-        while idx % self._step:
-            idx, nxt = next(self._iter)
+    def next(self) -> Option[T_co]:
+        idx, nxt = self._iter.next().unzip()
+        while nxt.is_some() and idx.is_some_and(lambda idx: idx % self._step):
+            idx, nxt = self._iter.next().unzip()
 
         return nxt
 
@@ -822,12 +833,12 @@ class Take(Iterum[T_co]):
         self._max = n
         self._idx = 0
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         if self._idx >= self._max:
-            raise StopIteration()
+            return nil
 
         self._idx += 1
-        return next(self._iter)
+        return self._iter.next()
 
 
 class TakeWhile(Iterum[T_co]):
@@ -839,26 +850,25 @@ class TakeWhile(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._predicate = predicate
 
-    def __next__(self) -> T_co:
-        nxt = next(self._iter)
-        if not self._predicate(nxt):
-            raise StopIteration()
-        return nxt
+    def next(self) -> Option[T_co]:
+        nxt = self._iter.next()
+        if nxt.is_some_and(self._predicate):
+            return nxt
+        return nil
 
 
-class Zip(Iterum[tuple[U, V]]):
+class Zip(IterumAdapter[tuple[U, V]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[U], other: Iterable[V], /) -> None:
         self._iter = zip(__iterable, other)
 
-    def __next__(self) -> tuple[U, V]:
-        return next(self._iter)
-
 
 class iterum(Iterum[T_co]):
+    __slots__ = ("_iter",)
+
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
         self._iter = iter(__iterable)
 
-    def __next__(self) -> T_co:
-        return next(self._iter)
+    def next(self) -> Option[T_co]:
+        return _try_next(self._iter)

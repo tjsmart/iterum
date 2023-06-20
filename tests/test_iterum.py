@@ -333,6 +333,7 @@ def test_map_while_stop_after_first_nil():
     vec = it.collect(list)
 
     assert vec == [0, 1, 2]
+    assert it.next() == nil
 
 
 def test_max_basic_usage():

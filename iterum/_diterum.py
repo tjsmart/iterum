@@ -14,6 +14,8 @@ from ._option import UnwrapNilError
 
 
 class Diterum(Iterum[T_co]):
+    __slots__ = ()
+
     @abstractmethod
     def next_back(self) -> Option[T_co]:
         ...
@@ -56,41 +58,36 @@ class Diterum(Iterum[T_co]):
 
 
 class Rev(Diterum[T_co]):
+    __slots__ = ("_x",)
+
     def __init__(self, __x: Diterum[T_co] | Sequence[T_co]) -> None:
         self._x = __x if isinstance(__x, Diterum) else diterum(__x)
 
-    def __next__(self) -> T_co:
-        nxt = self._x.next_back()
-        try:
-            return nxt.unwrap()
-        except UnwrapNilError:
-            raise StopIteration()
+    def next(self) -> Option[T_co]:
+        return self._x.next_back()
 
     def next_back(self) -> Option[T_co]:
-        try:
-            nxt = next(self)
-        except StopIteration:
-            return nil
-        else:
-            return Some(nxt)
+        return self._x.next()
 
     def len(self) -> int:
         return self._x.len()
 
 
 class diterum(Diterum[T_co]):
+    __slots__ = ("_seq", "_front", "_back")
+
     def __init__(self, __seq: Sequence[T_co], /) -> None:
         self._seq = __seq
         self._front = 0
         self._back = len(__seq) - 1
 
-    def __next__(self) -> T_co:
+    def next(self) -> Option[T_co]:
         if self._back < self._front:
-            raise StopIteration
+            return nil
 
         nxt = self._seq[self._front]
         self._front += 1
-        return nxt
+        return Some(nxt)
 
     def next_back(self) -> Option[T_co]:
         if self._back < self._front:

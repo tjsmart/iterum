@@ -50,6 +50,9 @@ class Nil(Singleton):
     def __repr__(self) -> str:
         return "nil"
 
+    def __bool__(self) -> Literal[False]:
+        return False
+
     def and_(self, optb: Option[U], /) -> Nil:
         # 'and' is a keyword, so instead we use 'and_'
         return self
@@ -171,6 +174,9 @@ class Some(Generic[T]):
 
     def __repr__(self) -> str:
         return f"{Some.__name__}({self._value!r})"
+
+    def __bool__(self) -> Literal[True]:
+        return True
 
     def and_(self, optb: O, /) -> O:
         # 'and' is a keyword, so instead we use 'and_'
