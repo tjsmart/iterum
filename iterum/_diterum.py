@@ -10,7 +10,6 @@ from ._iterum import U
 from ._option import nil
 from ._option import Option
 from ._option import Some
-from ._option import UnwrapNilError
 
 
 class Diterum(Iterum[T_co]):

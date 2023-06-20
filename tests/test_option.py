@@ -3,11 +3,9 @@ from __future__ import annotations
 import pytest
 
 from iterum import ExpectNilError
-from iterum import Nil
 from iterum import nil
 from iterum import Option
 from iterum import Some
-from iterum import Swap
 from iterum import UnwrapNilError
 
 
