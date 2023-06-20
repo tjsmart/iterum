@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing_extensions import TypeGuard
+from typing import TypeGuard
 
 from ._singleton import Singleton
 from ._type_helpers import T

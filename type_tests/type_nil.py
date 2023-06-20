@@ -1,10 +1,9 @@
 from __future__ import annotations
 
+from typing import assert_type
 from typing import Literal
 from typing import NoReturn
 from typing import TypeVar
-
-from typing_extensions import assert_type
 
 from .option_helpers import create_nil
 from .option_helpers import create_option

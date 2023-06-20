@@ -8,9 +8,8 @@ from typing import NamedTuple
 from typing import NoReturn
 from typing import overload
 from typing import TYPE_CHECKING
+from typing import TypeAlias
 from typing import TypeVar
-
-from typing_extensions import TypeAlias
 
 from ._singleton import Singleton
 
