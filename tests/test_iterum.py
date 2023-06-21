@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from functools import partial
-from typing import Iterable
 from typing import Iterator
 
 import pytest
@@ -187,10 +186,6 @@ def test_flat_map_basic_usage():
     assert merged == "alphabetagamma"
 
 
-def foo(_: iterum[Iterable[int]]) -> None:
-    ...
-
-
 def test_flatten_basic_usage():
     data = [[1, 2, 3, 4], [5, 6]]
     flattened = iterum(data).flatten().collect(list)
@@ -257,7 +252,7 @@ def test_ge_basic_usage():
     assert iterum([1, 2]).ge([1, 2])
 
 
-def test_gt_basic_usagt():
+def test_gt_basic_usage():
     assert not iterum([1]).gt([1])
     assert not iterum([1]).gt([1, 2])
     assert iterum([1, 2]).gt([1])

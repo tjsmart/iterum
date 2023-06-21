@@ -4,7 +4,7 @@ dependencies = [
   "pytest-cov",
 ]
 [envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=iterum {args}"
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=iterum --doctest-modules -vvvx {args}"
 no-cov = "cov --no-cov {args}"
 
 [[envs.test.matrix]]
@@ -50,4 +50,5 @@ dependencies = [
 ]
 
 [envs.docs.scripts]
-build = "mkdocs build --config-file {env:MKDOCS_CONFIG} --clean --strict {args}"
+build = "mkdocs build --clean --strict {args}"
+serve = "mkdocs serve {args}"
