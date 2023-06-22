@@ -68,6 +68,8 @@ plugins:
             show_if_no_docstring: false
             # Signatures/annotations
             show_signature_annotations: true
+            # Member options
+            members_order: source
             # Other
             show_bases: true
             show_source: true

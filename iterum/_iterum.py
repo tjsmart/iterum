@@ -51,10 +51,10 @@ class Iterum(Iterator[T_co]):
         """
         Required method.
 
-        Advances the iterator and returns the next value.
+        Advances the iterum and returns the next value.
 
         Returns [nil][iterum.nil] when iteration is finished.
-        Individual iterator implementations may choose to resume iteration,
+        Individual iterum implementations may choose to resume iteration,
         and so calling [next()][iterum.Iterum.next] again may or may not eventually start returning
         [Some(Item)][iterum.Some] again at some point.
 
@@ -87,10 +87,10 @@ class Iterum(Iterator[T_co]):
 
     def all(self, f: Callable[[T_co], object], /) -> bool:
         """
-        Tests if every element of the iterator matches a predicate.
+        Tests if every element of the iterum matches a predicate.
 
         [all()][iterum.Iterum.all] takes a closure that returns `True` or `False`.
-        It applies this closure to each element of the iterator,
+        It applies this closure to each element of the iterum,
         and if they all return `True`, then so does [all()][iterum.Iterum.all].
         If any of them return `False`, it returns `False`.
 
@@ -98,7 +98,7 @@ class Iterum(Iterator[T_co]):
         stop processing as soon as it finds a `False`, given that no matter
         what else happens, the result will also be `False`.
 
-        An empty iterator returns `True`.
+        An empty iterum returns `True`.
 
         Examples:
 
@@ -116,10 +116,10 @@ class Iterum(Iterator[T_co]):
 
     def any(self, f: Callable[[T_co], object], /) -> bool:
         """
-        Tests if any element of the iterator matches a predicate.
+        Tests if any element of the iterum matches a predicate.
 
         [any()][iterum.Iterum.any] takes a closure that returns `True` or
-        `False`. It applies this closure to each element of the iterator, and if
+        `False`. It applies this closure to each element of the iterum, and if
         any of them return `True`, then so does [any()][iterum.Iterum.any]. If
         they all return `False`, it returns `False`.
 
@@ -127,7 +127,7 @@ class Iterum(Iterator[T_co]):
         stop processing as soon as it finds a `True`, given that no matter what
         else happens, the result will also be `True`.
 
-        An empty iterator returns `False`.
+        An empty iterum returns `False`.
 
         Examples:
 
@@ -146,13 +146,13 @@ class Iterum(Iterator[T_co]):
 
     def chain(self: Iterum[T_co], other: Iterable[T_co], /) -> Chain[T_co]:
         """
-        Takes two iterators and creates a new iterator over both in sequence.
+        Takes two iterables and creates a new iterum over both in sequence.
 
-        [chain()][iterum.Iterum.chain] will return a new iterator which will
-        first iterate over values from the first iterator and then over values
-        from the second iterator.
+        [chain()][iterum.Iterum.chain] will return a new iterum which will
+        first iterate over values from the first iteerable and then over values
+        from the second iterable.
 
-        In other words, it links two iterators together, in a chain.
+        In other words, it links two iterables together, in a chain.
 
         Examples:
 
@@ -245,7 +245,7 @@ class Iterum(Iterator[T_co]):
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U] = list, /
     ) -> U:
         """
-        Transforms an iterator into a collection.
+        Transforms an iterum into a collection.
 
         [collect()][iterum.Iterum.collect] takes a container which is responsible
         for mapping an iterable into any type. Most commonly this is a collection
@@ -264,11 +264,11 @@ class Iterum(Iterator[T_co]):
 
     def count(self) -> int:
         """
-        Consumes the iterator, counting the number of iterations and returning it.
+        Consumes the iterum, counting the number of iterations and returning it.
 
         This method will call next repeatedly until [nil][iterum.nil] is
         encountered, returning the number of times it saw [Some][iterum.Some].
-        Note that next has to be called at least once even if the iterator does
+        Note that next has to be called at least once even if the iterum does
         not have any elements.
 
         Examples:
@@ -281,12 +281,12 @@ class Iterum(Iterator[T_co]):
 
     def cycle(self: Iterum[T_co], /) -> Cycle[T_co]:
         """
-        Repeats an iterator endlessly.
+        Repeats an iterum endlessly.
 
-        Instead of stopping at [nil][iterum.nil], the iterator will instead
+        Instead of stopping at [nil][iterum.nil], the iterum will instead
         start again, from the beginning. After iterating again, it will start at
         the beginning again. And again. And again. Forever. Note that in case
-        the original iterator is empty, the resulting iterator will also be empty.
+        the original iterum is empty, the resulting iterum will also be empty.
 
         Examples:
 
@@ -304,11 +304,11 @@ class Iterum(Iterator[T_co]):
 
     def enumerate(self: Iterum[T_co], /) -> Enumerate[T_co]:
         """
-        Creates an iterator which gives the current iteration count as well as
+        Creates an iterum which gives the current iteration count as well as
         the next value.
 
-        The iterator returned yields pairs (i, val), where i is the current
-        index of iteration and val is the value returned by the iterator.
+        The iterum returned yields pairs (i, val), where i is the current
+        index of iteration and val is the value returned by the iterum.
 
         Examples:
 
@@ -349,11 +349,11 @@ class Iterum(Iterator[T_co]):
         self: Iterum[T_co], predicate: Callable[[T_co], object], /
     ) -> Filter[T_co]:
         """
-        Creates an iterator which uses a closure to determine if an element
+        Creates an iterum which uses a closure to determine if an element
         should be yielded.
 
         Given an element the closure must return `True` or `False`. The returned
-        iterator will yield only the elements for which the closure returns `True`.
+        iterum will yield only the elements for which the closure returns `True`.
 
         Examples:
 
@@ -371,9 +371,9 @@ class Iterum(Iterator[T_co]):
         self: Iterum[T_co], predicate: Callable[[T_co], Option[U]], /
     ) -> FilterMap[U]:
         """
-        Creates an iterator that both filters and maps.
+        Creates an iterum that both filters and maps.
 
-        The returned iterator yields only the values for which the supplied
+        The returned iterum yields only the values for which the supplied
         closure returns [Some(value)][iterum.Some].
 
         [filter_map][iterum.Iterum.filter_map] can be used to make chains of
@@ -399,10 +399,10 @@ class Iterum(Iterator[T_co]):
 
     def find(self, predicate: Callable[[T_co], object], /) -> Option[T_co]:
         """
-        Searches for an element of an iterator that satisfies a predicate.
+        Searches for an element of an iterum that satisfies a predicate.
 
         [find()][iterum.Iterum.find] takes a closure that returns `True` or
-        `False`. It applies this closure to each element of the iterator, and if
+        `False`. It applies this closure to each element of the iterum, and if
         any of them return `True`, then [find()][iterum.Iterum.find] returns
         [Some(element)][iterum.Some]. If they all return `False`, it returns
         [nil][iterum.nil].
@@ -432,8 +432,8 @@ class Iterum(Iterator[T_co]):
 
     def find_map(self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
         """
-        Applies function to the elements of iterator and returns the first
-        non-none result.
+        Applies function to the elements of iterum and returns the first
+        non-nil result.
 
         Examples:
 
@@ -447,10 +447,10 @@ class Iterum(Iterator[T_co]):
 
     def flat_map(self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
         """
-        Creates an iterator that works like map, but flattens nested structure.
+        Creates an iterum that works like map, but flattens nested structure.
 
         The [map][iterum.Iterum.map] adapter is very useful, but only when the
-        closure argument produces values. If it produces an iterator instead,
+        closure argument produces values. If it produces an iterum instead,
         there’s an extra layer of indirection.
         [flat_map()][iterum.Iterum.flat_map] will remove this extra layer on its own.
 
@@ -467,11 +467,10 @@ class Iterum(Iterator[T_co]):
 
     def flatten(self: Iterum[Iterable[U]]) -> Flatten[U]:
         """
-        Creates an iterator that flattens nested structure.
+        Creates an iterum that flattens nested structure.
 
-        This is useful when you have an iterator of iterators or an iterator of
-        things that can be turned into iterators and you want to remove one
-        level of indirection.
+        This is useful when you have an iterum of iterables and you want to
+        remove one level of indirection.
 
         Examples:
             >>> data = [[1, 2, 3, 4], [5, 6]]
@@ -496,7 +495,7 @@ class Iterum(Iterator[T_co]):
 
         The initial value is the value the accumulator will have on the first call.
 
-        After applying this closure to every element of the iterator, fold()
+        After applying this closure to every element of the iterum, fold()
         returns the accumulator.
 
         Examples:
@@ -530,7 +529,7 @@ class Iterum(Iterator[T_co]):
 
     def for_each(self, f: Callable[[T_co], object], /) -> None:
         """
-        Calls a closure on each element of an iterator.
+        Calls a closure on each element of an iterum.
 
         For loops are more idiomatic... but who cares!
 
@@ -545,11 +544,11 @@ class Iterum(Iterator[T_co]):
 
     def fuse(self) -> Fuse[T_co]:
         """
-        Creates an iterator which ends after the first [nil][iterum.nil].
+        Creates an iterum which ends after the first [nil][iterum.nil].
 
-        After an iterator returns [nil][iterum.nil], future calls may or may not
+        After an iterum returns [nil][iterum.nil], future calls may or may not
         yield [Some(T)][iterum.Some] again. [fuse()][iterum.Iterum.fuse] adapts
-        an iterator, ensuring that after a [nil][iterum.nil] is given, it will
+        an iterum, ensuring that after a [nil][iterum.nil] is given, it will
         always return [nil][iterum.nil] forever.
 
         Examples:
@@ -632,9 +631,9 @@ class Iterum(Iterator[T_co]):
 
     def inspect(self, f: Callable[[T_co], object], /) -> Inspect[T_co]:
         """
-        Does something with each element of an iterator, passing the value on.
+        Does something with each element of an iterum, passing the value on.
 
-        When using iterators, you’ll often chain several of them together. While
+        When using iterums, you’ll often chain several of them together. While
         working on such code, you might want to check out what’s happening at
         various parts in the pipeline. To do that, insert a call to
         [inspect()][iterum.Iterum.inspect].
@@ -674,9 +673,9 @@ class Iterum(Iterator[T_co]):
 
     def last(self) -> Option[T_co]:
         """
-        Consumes the iterator, returning the last element.
+        Consumes the iterum, returning the last element.
 
-        This method will evaluate the iterator until it returns
+        This method will evaluate the iterum until it returns
         [nil][iterum.nil]. While doing so, it keeps track of the current
         element. After [nil][iterum.nil] is returned, last() will then return
         the last element it saw.
@@ -748,12 +747,12 @@ class Iterum(Iterator[T_co]):
 
     def map(self, f: Callable[[T_co], U], /) -> Map[U]:
         """
-        Takes a closure and creates an iterator which calls that closure on
+        Takes a closure and creates an iterum which calls that closure on
         each element.
 
-        [map()][iterum.Iterum.map] transforms one iterator into another, by
-        means of its argument. It produces a new iterator which calls this
-        closure on each element of the original iterator.
+        [map()][iterum.Iterum.map] transforms one iterum into another, by
+        means of its argument. It produces a new iterum which calls this
+        closure on each element of the original iterum.
 
         Examples:
 
@@ -768,10 +767,10 @@ class Iterum(Iterator[T_co]):
 
     def map_while(self, predicate: Callable[[T_co], Option[U]], /) -> MapWhile[U]:
         """
-        Creates an iterator that both yields elements based on a predicate and maps.
+        Creates an iterum that both yields elements based on a predicate and maps.
 
         [map_while()][iterum.Iterum.map_while] takes a closure as an argument.
-        It will call this closure on each element of the iterator, and yield
+        It will call this closure on each element of the iterum, and yield
         elements while it returns [Some(_)][iterum.Some].
 
         Examples:
@@ -802,10 +801,10 @@ class Iterum(Iterator[T_co]):
         self: Iterum[SupportsRichComparisonT],
     ) -> Option[SupportsRichComparisonT]:
         """
-        Returns the maximum element of an iterator.
+        Returns the maximum element of an iterum.
 
         If several elements are equally maximum, the last element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -823,7 +822,7 @@ class Iterum(Iterator[T_co]):
         specified comparison function.
 
         If several elements are equally maximum, the last element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
             >>> a = [-3, 0, 1, 5, -10]
@@ -848,7 +847,7 @@ class Iterum(Iterator[T_co]):
         Returns the element that gives the maximum value from the specified function.
 
         If several elements are equally maximum, the last element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -867,10 +866,10 @@ class Iterum(Iterator[T_co]):
         self: Iterum[SupportsRichComparisonT],
     ) -> Option[SupportsRichComparisonT]:
         """
-        Returns the minimum element of an iterator.
+        Returns the minimum element of an iterum.
 
         If several elements are equally minimum, the first element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -888,7 +887,7 @@ class Iterum(Iterator[T_co]):
         specified comparison function.
 
         If several elements are equally minimum, the first element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -914,7 +913,7 @@ class Iterum(Iterator[T_co]):
         Returns the element that gives the minimum value from the specified function.
 
         If several elements are equally minimum, the first element is returned.
-        If the iterator is empty, [nil][iterum.nil] is returned.
+        If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -955,25 +954,25 @@ class Iterum(Iterator[T_co]):
 
     def nth(self, n: int, /) -> Option[T_co]:
         """
-        Returns the nth element of the iterator.
+        Returns the nth element of the iterum.
 
         Like most indexing operations, the count starts from zero, so [nth(0)][iterum.Iterum.nth]
         returns the first value, [nth(1)][iterum.Iterum.nth] the second, and so on.
 
         Note that all preceding elements, as well as the returned element, will
-        be consumed from the iterator. That means that the preceding elements
+        be consumed from the iterum. That means that the preceding elements
         will be discarded, and also that calling [nth(0)][iterum.Iterum.nth] multiple times on the
-        same iterator will return different elements.
+        same iterum will return different elements.
 
         [nth()][iterum.Iterum.nth] will return [nil][iterum.nil] if n is greater
-        than or equal to the length of the iterator.
+        than or equal to the length of the iterum.
 
         Examples:
 
             >>> a = [1, 2, 3]
             >>> assert iterum(a).nth(1) == Some(2)
 
-            >>> # Calling `nth` multiple times doesn't rewind the iterator:
+            >>> # Calling `nth` multiple times doesn't rewind the iterum:
             >>> itr = iterum([1, 2, 3])
             >>> assert itr.nth(1) == Some(2)
             >>> assert itr.nth(1) == nil
@@ -1077,7 +1076,7 @@ class Iterum(Iterator[T_co]):
         /,
     ) -> tuple[U, U]:
         """
-        Consumes an iterator, creating two collections from it.
+        Consumes an iterum, creating two collections from it.
 
         The predicate passed to [partition()][iterum.Iterum.partition] can
         return `True`, or `False`. [partition()][iterum.Iterum.partition]
@@ -1099,8 +1098,8 @@ class Iterum(Iterator[T_co]):
 
     def peekable(self) -> Peekable[T_co]:
         """
-        Creates an iterator which provides a peek attribute for viewing
-        and setting the next element of the iterator without consuming it.
+        Creates an iterum which provides a peek attribute for viewing
+        and setting the next element of the iterum without consuming it.
 
         Examples:
 
@@ -1128,10 +1127,10 @@ class Iterum(Iterator[T_co]):
 
     def position(self, predicate: Callable[[T_co], object], /) -> Option[int]:
         """
-        Searches for an element in an iterator, returning its index.
+        Searches for an element in an iterum, returning its index.
 
         [position()][iterum.Iterum.position] takes a closure that returns `True`
-        or `False`. It applies this closure to each element of the iterator, and
+        or `False`. It applies this closure to each element of the iterum, and
         if one of them returns `True`, then [position()][iterum.Iterum.position]
         returns [Some(index)][iterum.Some]. If all of them return `False`, it
         returns [nil][iterum.nil].
@@ -1158,9 +1157,9 @@ class Iterum(Iterator[T_co]):
 
     def product(self: Iterum[SupportsMulT]) -> Option[SupportsMulT]:
         """
-        Iterates over the entire iterator, multiplying all the elements
+        Iterates over the entire iterum, multiplying all the elements
 
-        An empty iterator returns [nil][iterum.nil].
+        An empty iterum returns [nil][iterum.nil].
 
         Examples:
             >>> def factorial(n: int) -> int:
@@ -1176,13 +1175,13 @@ class Iterum(Iterator[T_co]):
         """
         Reduces the elements to a single one, by repeatedly applying a reducing operation.
 
-        If the iterator is empty, returns [nil][iterum.nil]; otherwise, returns
+        If the iterum is empty, returns [nil][iterum.nil]; otherwise, returns
         the result of the reduction.
 
         The reducing function is a closure with two arguments: an ‘accumulator’,
-        and an element. For iterators with at least one element, this is the
+        and an element. For iterums with at least one element, this is the
         same as [fold()][iterum.Iterum.fold] with the first element of the
-        iterator as the initial accumulator value, folding every subsequent
+        iterum as the initial accumulator value, folding every subsequent
         element into it.
 
         Examples:
@@ -1197,12 +1196,12 @@ class Iterum(Iterator[T_co]):
 
     def scan(self, init: U, f: Callable[[State[U], T_co], Option[V]], /) -> Scan[V]:
         """
-        An iterator adapter which, like fold, holds internal state, but unlike
-        fold, produces a new iterator.
+        An iterum adapter which, like fold, holds internal state, but unlike
+        fold, produces a new iterum.
 
         [scan()][iterum.Iterum.scan] takes two arguments: an initial value which
         seeds the internal state, and a closure with two arguments, the first
-        being the internal state and the second an iterator element.
+        being the internal state and the second an iterum element.
         The closure can assign to the internal state to share state between iterations.
 
         Examples:
@@ -1226,12 +1225,12 @@ class Iterum(Iterator[T_co]):
 
     def skip(self, n: int, /) -> Skip[T_co]:
         """
-        Creates an iterator that skips the first n elements.
+        Creates an iterum that skips the first n elements.
 
         [skip(n)][iterum.Iterum.skip] skips elements until n elements are
-        skipped or the end of the iterator is reached (whichever happens first).
+        skipped or the end of the iterum is reached (whichever happens first).
         After that, all the remaining elements are yielded. In particular, if
-        the original iterator is too short, then the returned iterator is empty.
+        the original iterum is too short, then the returned iterum is empty.
 
         Examples:
 
@@ -1248,10 +1247,10 @@ class Iterum(Iterator[T_co]):
 
     def skip_while(self, predicate: Callable[[T_co], object], /) -> SkipWhile[T_co]:
         """
-        Creates an iterator that skips elements based on a predicate.
+        Creates an iterum that skips elements based on a predicate.
 
         [skip_while()][iterum.Iterum.skip_while] takes a closure as an argument.
-        It will call this closure on each element of the iterator, and ignore
+        It will call this closure on each element of the iterum, and ignore
         elements until it returns `False`.
 
         After `False` is returned, [skip_while()][iterum.Iterum.skip_while]’s
@@ -1274,7 +1273,7 @@ class Iterum(Iterator[T_co]):
 
     def step_by(self, step: int, /) -> StepBy[T_co]:
         """
-        Creates an iterator starting at the same point, but stepping by the
+        Creates an iterum starting at the same point, but stepping by the
         given amount at each iteration. This always includes the first element.
 
         Examples:
@@ -1289,11 +1288,11 @@ class Iterum(Iterator[T_co]):
 
     def sum(self: Iterum[SupportsSumNoDefaultT]) -> Option[SupportsSumNoDefaultT]:
         """
-        Sums the elements of an iterator.
+        Sums the elements of an iterum.
 
         Takes each element, adds them together, and returns the result.
 
-        An empty iterator returns [nil][iterum.nil].
+        An empty iterum returns [nil][iterum.nil].
 
         Examples:
 
@@ -1314,14 +1313,14 @@ class Iterum(Iterator[T_co]):
 
     def take(self, n: int, /) -> Take[T_co]:
         """
-        Creates an iterator that yields the first n elements, or fewer if the
-        underlying iterator ends sooner.
+        Creates an iterum that yields the first n elements, or fewer if the
+        underlying iterum ends sooner.
 
         [take(n)][iterum.Iterum.take] yields elements until n elements are
-        yielded or the end of the iterator is reached (whichever happens first).
-        The returned iterator is a prefix of length n if the original iterator
+        yielded or the end of the iterum is reached (whichever happens first).
+        The returned iterum is a prefix of length n if the original iterum
         contains at least n elements, otherwise it contains all of the (fewer
-        than n) elements of the original iterator.
+        than n) elements of the original iterum.
 
         Examples:
 
@@ -1338,7 +1337,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == nil
 
 
-            >>> # Truncate an infinite iterator:
+            >>> # Truncate an infinite iterum:
             >>> def count_forever():
             ...     i = 0
             ...     while True:
@@ -1361,10 +1360,10 @@ class Iterum(Iterator[T_co]):
 
     def take_while(self, predicate: Callable[[T_co], object], /) -> TakeWhile[T_co]:
         """
-        Creates an iterator that yields elements based on a predicate.
+        Creates an iterum that yields elements based on a predicate.
 
         [take_while()][iterum.Iterum.take_while] takes a closure as an argument.
-        It will call this closure on each element of the iterator, and yield
+        It will call this closure on each element of the iterum, and yield
         elements while it returns `True`.
 
         After `False` is returned, [take_while()][iterum.Iterum.take_while]’s
@@ -1394,7 +1393,7 @@ class Iterum(Iterator[T_co]):
         exception: type[BaseException] | tuple[type[BaseException], ...] = Exception,
     ) -> Option[U]:
         """
-        An iterator method that applies a function as long as it returns
+        An iterum method that applies a function as long as it returns
         successfully, producing a single, final value.
 
         [try_fold()][iterum.Iterum.try_fold] takes two arguments: an initial
@@ -1475,9 +1474,9 @@ class Iterum(Iterator[T_co]):
         /,
     ) -> tuple[U, U]:
         """
-        Converts an iterator of pairs into a pair of containers.
+        Converts an iterum of pairs into a pair of containers.
 
-        [unzip()][iterum.Iterum.unzip] consumes an entire iterator of pairs,
+        [unzip()][iterum.Iterum.unzip] consumes an entire iterum of pairs,
         producing two collections: one from the left elements of the pairs, and
         one from the right elements.
 
@@ -1495,21 +1494,19 @@ class Iterum(Iterator[T_co]):
 
     def zip(self, other: Iterable[U], /) -> Zip[T_co, U]:
         """
-        ‘Zips up’ two iterators into a single iterator of pairs.
+        ‘Zips up’ two iterables into a single iterum of pairs.
 
-        [zip()][iterum.Iterum.zip] returns a new iterator that will iterate over
-        two other iterators, returning a tuple where the first element comes
-        from the first iterator, and the second element comes from the second iterator.
+        [zip()][iterum.Iterum.zip] returns a new iterum that will iterate over
+        two other iterables, returning a tuple where the first element comes
+        from the first iterable, and the second element comes from the second iterable.
 
-        In other words, it zips two iterators together, into a single one.
-
-        If either iterator returns [nil][iterum.nil], next from the zipped
-        iterator will return [nil][iterum.nil]. If the zipped iterator has no
+        If either iterable returns [nil][iterum.nil], next from the zipped
+        iterum will return [nil][iterum.nil]. If the zipped iterum has no
         more elements to return then each further attempt to advance it will
-        first try to advance the first iterator at most one time and if it still
-        yielded an item try to advance the second iterator at most one time.
+        first try to advance the first iterable at most one time and if it still
+        yielded an item try to advance the second iterable at most one time.
 
-        To ‘undo’ the result of zipping up two iterators, see [unzip][iterum.Iterum.unzip].
+        To ‘undo’ the result of zipping up two iterables, see [unzip][iterum.Iterum.unzip].
 
         Examples:
 
@@ -1561,7 +1558,7 @@ def _try_next(itr: Iterator[T], /) -> Option[T]:
         return Some(nxt)
 
 
-class IterumAdapter(Iterum[T_co]):
+class _IterumAdapter(Iterum[T_co]):
     __slots__ = ()
     _iter: Iterator[T_co]
 
@@ -1569,28 +1566,28 @@ class IterumAdapter(Iterum[T_co]):
         return _try_next(self._iter)
 
 
-class Chain(IterumAdapter[T_co]):
+class Chain(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, *__iterables: Iterable[T_co]) -> None:
         self._iter = itertools.chain(*__iterables)
 
 
-class Cycle(IterumAdapter[T_co]):
+class Cycle(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[T_co]) -> None:
         self._iter = itertools.cycle(__iterable)
 
 
-class Enumerate(IterumAdapter[tuple[int, T_co]]):
+class Enumerate(_IterumAdapter[tuple[int, T_co]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
         self._iter = builtins.enumerate(__iterable)
 
 
-class Filter(IterumAdapter[T_co]):
+class Filter(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(
@@ -1598,11 +1595,8 @@ class Filter(IterumAdapter[T_co]):
     ) -> None:
         self._iter = builtins.filter(predicate, __iterable)
 
-    def next(self) -> Option[T_co]:
-        return _try_next(self._iter)
 
-
-class FlatMap(IterumAdapter[T_co]):
+class FlatMap(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(
@@ -1631,7 +1625,7 @@ class FilterMap(Iterum[T_co]):
                 return r
 
 
-class Flatten(IterumAdapter[T_co]):
+class Flatten(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[Iterable[T_co]], /) -> None:
@@ -1730,7 +1724,7 @@ class Peekable(Iterum[T_co]):
     @peek.setter
     def peek(self, value: T_co) -> None:  # type: ignore | reason: still need to constrain input param type
         if self.peek.is_nil():
-            raise IndexError("Cannot set peek value past end of the iterator")
+            raise IndexError("Cannot set peek value past end of the iterum")
 
         self._peek = Some(value)
 
@@ -1863,7 +1857,7 @@ class TakeWhile(Iterum[T_co]):
         return nil
 
 
-class Zip(IterumAdapter[tuple[U, V]]):
+class Zip(_IterumAdapter[tuple[U, V]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[U], other: Iterable[V], /) -> None:

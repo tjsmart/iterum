@@ -96,7 +96,7 @@ def test_rposition_stop_after_first_true():
     assert di.next() == Some(-1)
 
 
-def test_rposition_len_basic_usage():
+def test_len_basic_usage():
     di = diterum([1, 2, 3, 4])
 
     assert di.len() == 4

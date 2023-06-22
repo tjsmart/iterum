@@ -1,21 +1,40 @@
 # API
 
 ::: iterum.iterum
-
 ::: iterum.Iterum
 
-::: iterum.Nil
+::: iterum.diterum
+::: iterum.Diterum
 
-::: iterum.nil
-
-::: iterum.Some
+::: iterum.Chain
+::: iterum.Cycle
+::: iterum.Enumerate
+::: iterum.Filter
+::: iterum.FlatMap
+::: iterum.FilterMap
+::: iterum.Flatten
+::: iterum.Fuse
+::: iterum.Inspect
+::: iterum.Map
+::: iterum.MapWhile
+::: iterum.Peekable
+::: iterum.Rev
+::: iterum.Scan
+::: iterum.Skip
+::: iterum.SkipWhile
+::: iterum.StepBy
+::: iterum.Take
+::: iterum.TakeWhile
+::: iterum.Zip
 
 ::: iterum.Option
+::: iterum.Some
+::: iterum.Nil
+::: iterum.nil
 
-<!-- handler: python -->
-<!-- options: -->
-<!--   members: -->
-<!--     - method_a -->
-<!--     - method_b -->
-<!--   show_root_heading: false -->
-<!--   show_source: false -->
+::: iterum.ExpectNilError
+::: iterum.UnwrapNilError
+
+::: iterum.State
+::: iterum.Swap
+::: iterum.Ordering
