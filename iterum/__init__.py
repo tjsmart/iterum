@@ -34,15 +34,16 @@ from ._ordering import Ordering
 
 
 __all__ = [
+    # Iterum
     "iterum",
     "Iterum",
     "diterum",
     "Diterum",
     # Option
-    "Nil",
-    "nil",
     "Option",
     "Some",
+    "Nil",
+    "nil",
     "ExpectNilError",
     "UnwrapNilError",
     # Ordering

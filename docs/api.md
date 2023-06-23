@@ -1,10 +1,21 @@
 # API
 
+
+*** Iterum ***
+
+---
+
 ::: iterum.iterum
 ::: iterum.Iterum
 
 ::: iterum.diterum
 ::: iterum.Diterum
+
+<br>
+
+*** Option ***
+
+---
 
 ::: iterum.Option
 ::: iterum.Some
@@ -13,6 +24,12 @@
 
 ::: iterum.ExpectNilError
 ::: iterum.UnwrapNilError
+
+<br>
+
+*** Other ***
+
+---
 
 ::: iterum.State
 ::: iterum.Swap

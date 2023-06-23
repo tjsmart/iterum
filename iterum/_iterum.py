@@ -6,6 +6,7 @@ from abc import abstractmethod
 from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Iterator
+from dataclasses import dataclass
 from typing import Generic
 from typing import overload
 from typing import TYPE_CHECKING
@@ -1731,19 +1732,16 @@ class Peekable(Iterum[T_co]):
         self._peek = Some(value)
 
 
+@dataclass
 class State(Generic[T]):
-    __slots__ = ("_value",)
+    """
+    Simple class which holds some mutable state.
+    """
 
-    def __init__(self, value: T, /) -> None:
-        self._value = value
-
-    @property
-    def value(self) -> T:
-        return self._value
-
-    @value.setter
-    def value(self, value: T) -> None:
-        self._value = value
+    value: T
+    """
+    current value of the state
+    """
 
 
 class Scan(Iterum[T_co]):

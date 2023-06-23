@@ -25,8 +25,7 @@ S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")  # noqa: E741
 
 
-# TODO: Everything needs to be documented, Ahh!!
-# Some issues in docs?
+# TODO: Some issues in docs? and validate with doctest
 
 
 class Swap(NamedTuple, Generic[T, U]):
