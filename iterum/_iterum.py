@@ -35,6 +35,8 @@ V = TypeVar("V")
 
 # TODO: allow for a range syntax to iterum, e.g. `iterum(10)` or `iterum(1, ...)`
 # If so, replace count_forever in test/docs
+# finite ranges can be reversible -> diterum
+# infinite ranges are not -> iterum
 
 
 class Iterum(Iterator[T_co]):

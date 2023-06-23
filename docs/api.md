@@ -6,6 +6,18 @@
 ::: iterum.diterum
 ::: iterum.Diterum
 
+::: iterum.Option
+::: iterum.Some
+::: iterum.Nil
+::: iterum.nil
+
+::: iterum.ExpectNilError
+::: iterum.UnwrapNilError
+
+::: iterum.State
+::: iterum.Swap
+::: iterum.Ordering
+
 ::: iterum.Chain
 ::: iterum.Cycle
 ::: iterum.Enumerate
@@ -26,15 +38,3 @@
 ::: iterum.Take
 ::: iterum.TakeWhile
 ::: iterum.Zip
-
-::: iterum.Option
-::: iterum.Some
-::: iterum.Nil
-::: iterum.nil
-
-::: iterum.ExpectNilError
-::: iterum.UnwrapNilError
-
-::: iterum.State
-::: iterum.Swap
-::: iterum.Ordering
