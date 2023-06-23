@@ -440,6 +440,14 @@ class Iterum(Iterator[T_co]):
 
         Examples:
 
+            >>> def parse2int(x: str) -> Option[int]:
+            ...     try:
+            ...         value = int(x)
+            ...     except ValueError:
+            ...         return nil
+            ...     else:
+            ...         return Some(value)
+            ...
             >>> a = ["lol", "NaN", "2", "5"]
             >>> first_number = iterum(a).find_map(parse2int)
             >>> assert first_number == Some(2)
@@ -644,11 +652,11 @@ class Iterum(Iterator[T_co]):
         Examples:
 
             >>> s = (
-            ...    iterum([1, 2, 3])
-            ...    .inspect(|x| println!("about to filter: {x}"))
-            ...    .filter(|x| x % 2 == 0)
-            ...    .inspect(|x| println!("made it through filter: {x}"))
-            ...    .fold(0, |sum, i| sum + i)
+            ...    iterum([1, 4, 2, 3])
+            ...    .inspect(lambda x: print(f"about to filter: {x}"))
+            ...    .filter(lambda x: x % 2 == 0)
+            ...    .inspect(lambda x: print(f"made it through filter: {x}"))
+            ...    .fold(0, lambda sum, i: sum + i)
             ... )
             ...
             about to filter: 1
@@ -778,6 +786,7 @@ class Iterum(Iterator[T_co]):
 
         Examples:
 
+            >>> from functools import partial
             >>> def checked_div(num: int, dem: int) -> Option[int]:
             ...    try:
             ...        return Some(num // dem)

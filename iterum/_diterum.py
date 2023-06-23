@@ -308,9 +308,9 @@ class diterum(Diterum[T_co]):
 
         Examples:
             >>> itr = diterum([1, 2])
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == nil
+            >>> assert itr.next_back() == Some(2)
+            >>> assert itr.next_back() == Some(1)
+            >>> assert itr.next_back() == nil
         """
 
         if self._back < self._front:
@@ -327,9 +327,9 @@ class diterum(Diterum[T_co]):
         Examples:
             >>> itr = diterum([1, 2])
             >>> assert itr.len() == 2
-            >>> assert itr.next() == Some(2)
+            >>> assert itr.next() == Some(1)
             >>> assert itr.len() == 1
-            >>> assert itr.next_back() == Some(1)
+            >>> assert itr.next_back() == Some(2)
             >>> assert itr.len() == 0
             >>> assert itr.next() == nil
             >>> assert itr.len() == 0

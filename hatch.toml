@@ -18,13 +18,13 @@ dependencies = [
 ]
 
 [envs.lint.scripts]
-typing = "pyright iterum"
+type = "pyright iterum type_tests"
 fmt = [
   "pre-commit run --all-files",
 ]
 all = [
   "fmt",
-  "typing",
+  "type",
 ]
 
 [envs.docs]

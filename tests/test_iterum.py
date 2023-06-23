@@ -470,7 +470,7 @@ def test_peekable_setting_peek_past_end_raises():
     with pytest.raises(IndexError) as ex:
         itr.peek = 1000
 
-    assert str(ex.value) == "Cannot set peek value past end of the iterator"
+    assert str(ex.value) == "Cannot set peek value past end of the iterum"
 
 
 def test_peekable_peek_then_iter():

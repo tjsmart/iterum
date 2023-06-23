@@ -68,8 +68,7 @@ class Nil(Singleton):
 
     Examples:
 
-        >>> x = Nil()
-        >>> reveal_type(x)  # Type of "x" is "Nil"
+        >>> x = Nil()  # Type of "x" is "Nil"
         >>> x
         nil
         >>> x.is_nil()
@@ -119,6 +118,7 @@ class Nil(Singleton):
 
         Examples:
 
+            >>> MAX_U32 = (1 << 32) - 1
             >>> def checked_sq_u32(x: int) -> Option[int]:
             ...     sq = x * x
             ...     if sq > MAX_U32:
@@ -631,8 +631,7 @@ class Some(Generic[T]):
     [Some][iterum.Some] value of type T.
 
     Examples:
-        >>> x = Some(1)
-        >>> reveal_type(x)  # Type of "x" is "Some[int]"
+        >>> x = Some(1)  # Type of "x" is "Some[int]"
         >>> x
         Some(1)
         >>> x.is_some()
@@ -682,6 +681,8 @@ class Some(Generic[T]):
 
         Examples:
 
+
+            >>> MAX_U32 = (1 << 32) - 1
             >>> def checked_sq_u32(x: int) -> Option[int]:
             ...     sq = x * x
             ...     if sq > MAX_U32:
