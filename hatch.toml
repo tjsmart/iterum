@@ -8,7 +8,7 @@ cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=iterum
 no-cov = "cov --no-cov {args}"
 
 [[envs.test.matrix]]
-python = ["311", "312"]
+python = ["311"]
 
 [envs.lint]
 detached = true

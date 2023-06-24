@@ -126,8 +126,14 @@ def some_unwrap_or_else():
     assert_type(some.unwrap_or_else(create_value), int)
 
 
+def create_other() -> str:
+    ...
+
+
 def some_unzip():
-    assert_type(Some((1, "test")).unzip(), tuple[Some[int], Some[str]])
+    assert_type(
+        Some((create_value(), create_other())).unzip(), tuple[Some[int], Some[str]]
+    )
 
 
 def some_xor():
