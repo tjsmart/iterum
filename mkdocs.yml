@@ -70,3 +70,4 @@ plugins:
             # Other
             show_bases: true
             show_source: true
+  - search

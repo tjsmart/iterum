@@ -135,10 +135,6 @@ class Nil(Singleton):
         """
         Returns the contained [Some][iterum.Some] value, consuming the self value.
 
-        Raises:
-            ExpectNilError - if the value is a [nil][iterum.nil] with a custom
-            panic message provided by msg.
-
         Examples:
 
             >>> x = Some("value")
@@ -150,6 +146,10 @@ class Nil(Singleton):
             ...     print(ex)
             ...
             fruits are healthy
+
+        Raises:
+            ExpectNilError: if the value is a [nil][iterum.nil] with a custom
+                panic message provided by msg.
         """
         raise ExpectNilError(msg)
 
@@ -514,9 +514,6 @@ class Nil(Singleton):
         """
         Returns the contained [Some][iterum.Some] value.
 
-        Raises:
-            UnwrapNilError - if the value is a [nil][iterum.nil].
-
         Examples:
 
             >>> assert Some("air").unwrap() == "air"
@@ -527,6 +524,9 @@ class Nil(Singleton):
             ...     print("Attempted to unwrap a nil!")
             ...
             Attempted to unwrap a nil!
+
+        Raises:
+            UnwrapNilError: if the value is a [nil][iterum.nil].
         """
         raise UnwrapNilError()
 
@@ -698,10 +698,6 @@ class Some(Generic[T]):
     def expect(self, msg: str, /) -> T:
         """Returns the contained [Some][iterum.Some] value, consuming the self value.
 
-        Raises:
-            ExpectNilError - if the value is a [nil][iterum.nil] with a custom
-            panic message provided by msg.
-
         Examples:
 
             >>> x = Some("value")
@@ -713,6 +709,10 @@ class Some(Generic[T]):
             ...     print(ex)
             ...
             fruits are healthy
+
+        Raises:
+            ExpectNilError: if the value is a [nil][iterum.nil] with a custom
+                message provided by msg.
         """
         return self._value
 
@@ -1066,9 +1066,6 @@ class Some(Generic[T]):
     def unwrap(self) -> T:
         """Returns the contained [Some][iterum.Some] value.
 
-        Raises:
-            UnwrapNilError - if the value is a [nil][iterum.nil].
-
         Examples:
 
             >>> assert Some("air").unwrap() == "air"
@@ -1079,6 +1076,9 @@ class Some(Generic[T]):
             ...     print("Attempted to unwrap a nil!")
             ...
             Attempted to unwrap a nil!
+
+        Raises:
+            UnwrapNilError: if the value is a [nil][iterum.nil].
         """
         return self._value
 
