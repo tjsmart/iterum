@@ -17,10 +17,7 @@
 
 -----
 
-**Table of Contents**
-
-- [Installation](#installation)
-- [License](#license)
+Rusty iterators in Python.
 
 ## Installation
 

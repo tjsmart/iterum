@@ -19,6 +19,7 @@
 
 -----
 
+Rusty iterators in Python.
 
 ## Installation
 
