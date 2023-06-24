@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iterum"
+description = ''
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Tyler Smart", email = "tjsmart@ucsc.edu" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/unknown/iterum#readme"
+Issues = "https://github.com/unknown/iterum/issues"
+Source = "https://github.com/unknown/iterum"
+
+[tool.setuptools.package-data]
+iterum = ["py.typed"]
+
+[tool.hatch]
+version.path = "iterum/__about__.py"
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "iterum/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+line-length = 120
