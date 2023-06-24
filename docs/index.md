@@ -1,7 +1,6 @@
 # Overview
 
 <div align="center">
-<!-- <img src="https://raw.githubusercontent.com/tjsmart/iterum/main/docs/assets/images/logo.png" alt="Iterum logo" width="500" role="img"> -->
 <img src="assets/logo.png" alt="Iterum logo" width="250" role="img">
 </div>
 
@@ -15,8 +14,6 @@
 [![types - Pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
 [![License - MIT](https://img.shields.io/badge/license-MIT-9400d3.svg)](https://spdx.org/licenses/)
 
-
-
 -----
 
 Rusty iterators in Python.
@@ -25,6 +22,29 @@ Rusty iterators in Python.
 
 ```console
 pip install iterum
+```
+
+## Example
+
+```pycon
+>>> from iterum import iterum
+
+>>> itr = iterum([1, 2])
+>>> assert itr.next() == Some(1)
+>>> assert itr.next() == Some(2)
+>>> assert itr.next() == nil
+
+>>> itr = iterum([1, 2, 3, 4])
+>>> assert itr.fold(0, lambda acc, x: acc + x) == 10
+
+>>> x = range(5)
+>>> y = (
+...     iterum(x)
+...     .map(lambda x: x**2 + 1)
+...     .filter(lambda x: x % 2)
+...     .collect()
+... )
+>>> assert y == [1, 5, 17]
 ```
 
 ## License

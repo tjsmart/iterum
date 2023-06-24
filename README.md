@@ -1,7 +1,7 @@
 # iterum
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/tjsmart/iterum/main/docs/assets/images/logo.png" alt="Iterum logo" width="500" role="img">
+<img src="https://raw.githubusercontent.com/tjsmart/iterum/main/docs/assets/logo.png" alt="Iterum logo" width="500" role="img">
 </div>
 
 
@@ -23,6 +23,34 @@ Rusty iterators in Python.
 
 ```console
 pip install iterum
+```
+
+## Documentation
+
+The [documentation](https://tjsmart.github.io/iterum) is made with [Material for MkDocs](https://github.com/squidfunk/mkdocs-material) and is hosted by [GitHub Pages](https://docs.github.com/en/pages).
+
+
+## Example
+
+```pycon
+>>> from iterum import iterum
+
+>>> itr = iterum([1, 2])
+>>> assert itr.next() == Some(1)
+>>> assert itr.next() == Some(2)
+>>> assert itr.next() == nil
+
+>>> itr = iterum([1, 2, 3, 4])
+>>> assert itr.fold(0, lambda acc, x: acc + x) == 10
+
+>>> x = range(5)
+>>> y = (
+...     iterum(x)
+...     .map(lambda x: x**2 + 1)
+...     .filter(lambda x: x % 2)
+...     .collect()
+... )
+>>> assert y == [1, 5, 17]
 ```
 
 ## License
