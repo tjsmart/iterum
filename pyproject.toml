@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iterum"
-description = ''
+description = 'Rusty iterators in Python.'
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -17,14 +17,12 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
 
 [project.urls]
-Documentation = "https://github.com/unknown/iterum#readme"
-Issues = "https://github.com/unknown/iterum/issues"
-Source = "https://github.com/unknown/iterum"
+Documentation = "https://tjsmart.github.io/iterum"
+Source = "https://github.com/tjsmart/iterum"
 
 [tool.setuptools.package-data]
 iterum = ["py.typed"]
