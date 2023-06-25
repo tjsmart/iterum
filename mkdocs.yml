@@ -15,7 +15,7 @@ theme:
     - search.highlight
     - content.tabs.link
     - content.code.annotation
-    - content.code.copy
+    # - content.code.copy
   language: en
   logo: assets/logo.png
   favicon: assets/logo.png
@@ -71,3 +71,6 @@ plugins:
             show_bases: true
             show_source: true
   - search
+
+extra_css:
+  - stylesheets/extra.css
