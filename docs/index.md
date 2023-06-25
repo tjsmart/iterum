@@ -47,6 +47,8 @@ y = (
 assert y == [1, 5, 17]
 ```
 
+For more examples checkout the [API documentation](api.md).
+
 ## License
 
 `iterum` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

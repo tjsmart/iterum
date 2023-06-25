@@ -25,9 +25,6 @@ S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")  # noqa: E741
 
 
-# TODO: Some issues in docs? and validate with doctest
-
-
 class Swap(NamedTuple, Generic[T, U]):
     """
     Used for various 'swapping' operations on [Option][iterum.Option].
