@@ -201,8 +201,8 @@ class Nil(Singleton):
             >>> assert value == 3
             >>> assert opt == Some(3)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> assert Some(10).get_or_insert(5).returned == 10
             >>> assert nil.get_or_insert(5).returned == 5
@@ -230,8 +230,8 @@ class Nil(Singleton):
             >>> assert value == 3
             >>> assert opt == Some(3)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).get_or_insert_with(lambda: 5)
             >>> assert swap.inserted == Some(10)
@@ -265,8 +265,8 @@ class Nil(Singleton):
             >>> assert value == 1
             >>> assert opt == Some(1)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).insert(5)
             >>> assert swap.inserted == Some(5)
@@ -465,8 +465,8 @@ class Nil(Singleton):
             >>> assert new == Some(5)
             >>> assert old == nil
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).replace(5)
             >>> assert swap.inserted == Some(5)
@@ -495,8 +495,8 @@ class Nil(Singleton):
             >>> assert new == nil
             >>> assert old == nil
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(2).take()
             >>> assert swap.inserted == nil
@@ -609,7 +609,7 @@ class Nil(Singleton):
 
         If `self` is `Some(s)` and `other` is `Some(o)`,
         this method returns `Some((s, o))`.
-        Otherwise, `nil` is returned.
+        Otherwise, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -764,8 +764,8 @@ class Some(Generic[T]):
             >>> assert value == 3
             >>> assert opt == Some(3)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> assert Some(10).get_or_insert(5).returned == 10
             >>> assert nil.get_or_insert(5).returned == 5
@@ -792,8 +792,8 @@ class Some(Generic[T]):
             >>> assert value == 3
             >>> assert opt == Some(3)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).get_or_insert_with(lambda: 5)
             >>> assert swap.inserted == Some(10)
@@ -826,8 +826,8 @@ class Some(Generic[T]):
             >>> assert value == 1
             >>> assert opt == Some(1)
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).insert(5)
             >>> assert swap.inserted == Some(5)
@@ -1017,8 +1017,8 @@ class Some(Generic[T]):
             >>> assert new == Some(5)
             >>> assert old == nil
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(10).replace(5)
             >>> assert swap.inserted == Some(5)
@@ -1048,8 +1048,8 @@ class Some(Generic[T]):
             >>> assert new == nil
             >>> assert old == nil
 
-        Alternatively, access the named attributes of [Swap][iterum.Swap],
-        [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
+            Alternatively, access the named attributes of [Swap][iterum.Swap],
+            [inserted][iterum.Swap.inserted] and [returned][iterum.Swap.returned]:
 
             >>> swap = Some(2).take()
             >>> assert swap.inserted == nil
@@ -1159,7 +1159,7 @@ class Some(Generic[T]):
 
         If `self` is `Some(s)` and `other` is `Some(o)`,
         this method returns `Some((s, o))`.
-        Otherwise, `nil` is returned.
+        Otherwise, [nil][iterum.nil] is returned.
 
         Examples:
 
@@ -1177,7 +1177,7 @@ Type alias representing something which is either of type
 
 Examples:
 
-    >>> # Type annotate a function which returns `Some[int]` or `nil`:
+    Type annotate a function which returns `Some[int]` or `nil`:
     >>> def checked_div(num: int, dem: int) -> Option[int]:
     ...     try:
     ...         return Some(num // dem)
@@ -1185,7 +1185,7 @@ Examples:
     ...         return nil
     ...
 
-    >>> # Use isinstance to narrow the type:
+    Use `isinstance` to narrow the type:
     >>> x = checked_div(10, 3)
     >>> reveal_type(x)  # Type of "x" is "Some[int] | Nil"
     >>> if isinstance(x, Some):
@@ -1194,7 +1194,7 @@ Examples:
     ...     reveal_type(x)  # Type of "x" is "Nil"
     ...
 
-    >>> # Alternatively use pattern matching:
+    Alternatively use pattern matching:
     >>> match x:
     ...     case Some(value):
     ...         print(f"Result: {value=}")

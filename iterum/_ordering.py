@@ -42,8 +42,7 @@ class Ordering(Enum):
             >>> Ordering.cmp(2, 1)
             Ordering.Greater
 
-        A `TypeError` will be raised if the two objects are not comparable:
-
+            A `TypeError` will be raised if the two objects are not comparable:
             >>> try:
             ...     Ordering.cmp(1, "two")
             ... except TypeError as ex:

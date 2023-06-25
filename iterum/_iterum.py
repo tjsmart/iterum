@@ -40,6 +40,7 @@ V = TypeVar("V")
 # infinite ranges are not -> iterum
 
 # TODO: fix next button on web page
+# TODO: better code blocks
 
 
 class Iterum(Iterator[T_co]):
@@ -67,15 +68,15 @@ class Iterum(Iterator[T_co]):
 
             >>> itr = iterum([1, 2, 3])
 
-            >>> # A call to next() returns the next value...
+            A call to next() returns the next value...
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == Some(2)
             >>> assert itr.next() == Some(3)
 
-            >>> # ... and then `nil` once it's over.
+            ... and then [nil][iterum.nil] once it's over.
             >>> assert itr.next() == nil
 
-            >>> # More calls may or may not return `nil`. Here, they always will.
+            More calls may or may not return [nil][iterum.nil]. Here, they always will.
             >>> assert itr.next() == nil
             >>> assert itr.next() == nil
         """
@@ -107,12 +108,11 @@ class Iterum(Iterator[T_co]):
 
         Examples:
 
-            >>> # Basic usage:
             >>> a = [1, 2, 3]
             >>> assert iterum(a).all(lambda x: x > 0)
             >>> assert not iterum(a).all(lambda x: x > 2)
 
-            >>> # Stopping at the first `False`:
+            Stopping at the first `False`:
             >>> itr = iterum([1, 2, 3])
             >>> assert not itr.all(lambda x: x != 2)
             >>> assert itr.next() == Some(3)
@@ -141,10 +141,11 @@ class Iterum(Iterator[T_co]):
             >>> assert not iterum(a).any(lambda x: x > 5)
 
 
-            >>> # Stopping at teh first `True`:
+            Stopping at the first `True`:
             >>> itr = iterum([1, 2, 3])
             >>> assert itr.any(lambda x: x != 2)
-            >>> # itr still has more elements.
+
+            itr still has more elements.
             >>> assert itr.next() == Some(2)
         """
         return any(map(f, self))
@@ -258,11 +259,10 @@ class Iterum(Iterator[T_co]):
 
         Examples:
 
-            >>> # basic usage
             >>> doubled = iterum([1, 2, 3]).map(lambda x: x * 2).collect(list)
             >>> assert doubled == [2, 4, 6]
 
-            >>> # using `join` to collect an iterable of `str`
+            using `join` to collect an iterable of `str`
             >>> assert iterum("test").map(str.upper).collect("".join) == "TEST"
         """
         return container(self)
@@ -423,7 +423,7 @@ class Iterum(Iterator[T_co]):
             >>> assert iterum(a).find(lambda x: x == 2) == Some(2)
             >>> assert iterum(a).find(lambda x: x == 5) == nil
 
-            >>> # Stopping at the first `True`:
+            Stopping at the first `True`:
             >>> it = iterum([1, 2, 3])
             >>> assert it.find(lambda x: x == 2) == Some(2)
             >>> assert it.next() == Some(3)
@@ -490,7 +490,7 @@ class Iterum(Iterator[T_co]):
             >>> flattened = iterum(data).flatten().collect(list)
             >>> assert flattened == [1, 2, 3, 4, 5, 6]
 
-            >>> # Mapping and then flattening:
+            Mapping and then flattening:
             >>> words = ["alpha", "beta", "gamma"]
             >>> merged = iterum(words).map(iterum).flatten().collect("".join)
             >>> assert merged == "alphabetagamma"
@@ -517,23 +517,26 @@ class Iterum(Iterator[T_co]):
             >>> sum = iterum(a).fold(0, lambda acc, x: acc + x)
             >>> assert sum == 6
 
-        Let's walk through each step of the iteration here:
+            Let's walk through each step of the iteration here:
 
-        | element | acc | x | result |
-        | ------- | --- | - | ------ |
-        |         |  0  |   |        |
-        |   1     |  0  | 1 |   1    |
-        |   2     |  1  | 2 |   3    |
-        |   3     |  3  | 3 |   6    |
+            | element | acc | x | result |
+            | ------- | --- | - | ------ |
+            |         |  0  |   |        |
+            |   1     |  0  | 1 |   1    |
+            |   2     |  1  | 2 |   3    |
+            |   3     |  3  | 3 |   6    |
 
-        And so, our final result, 6.
+            And so, our final result, 6.
 
 
-        Fold is left-associative:
+        fold is left-associative:
 
+            ```python
             >>> numbers = [1, 2, 3, 4, 5]
             >>> result = iterum(numbers).fold("0", lambda acc, x: f"({acc} + {x})")
             >>> assert result == "(((((0 + 1) + 2) + 3) + 4) + 5)"
+
+            ```
         """
         acc = init
         for x in self:
@@ -802,7 +805,7 @@ class Iterum(Iterator[T_co]):
             >>> assert it.next() == nil
 
 
-            >>> # Stops after first `nil`:
+            Stops after first [nil][iterum.nil]:
             >>> a = [0, 1, 2, -3, 4, 5, -6]
             >>> it = iterum(a).map_while(lambda x: Some(x) if x >= 0 else nil)
             >>> vec = it.collect(list)
@@ -986,12 +989,12 @@ class Iterum(Iterator[T_co]):
             >>> a = [1, 2, 3]
             >>> assert iterum(a).nth(1) == Some(2)
 
-            >>> # Calling `nth` multiple times doesn't rewind the iterum:
+            Calling [nth][iterum.Iterum.nth] multiple times doesn't rewind the iterum:
             >>> itr = iterum([1, 2, 3])
             >>> assert itr.nth(1) == Some(2)
             >>> assert itr.nth(1) == nil
 
-            >>> # Returns `nil` if there are less than `n + 1` elements:
+            Returns [nil][iterum.nil] if there are less than `n + 1` elements:
             >>> itr = iterum([1, 2, 3])
             >>> assert itr.nth(3) == nil
         """
@@ -1035,7 +1038,7 @@ class Iterum(Iterator[T_co]):
             >>> assert iterum([1, 2]).partial_cmp([1]) == Some(Ordering.Greater)
             >>> assert iterum([1]).partial_cmp([1, 2]) == Some(Ordering.Less)
 
-            >>> # Results are determined by the order of evaluation:
+            Results are determined by the order of evaluation:
             >>> assert iterum([1, None]).partial_cmp([2, nil]) == Some(Ordering.Less)
             >>> assert iterum([2, None]).partial_cmp([1, nil]) == Some(Ordering.Greater)
             >>> assert iterum([None, 1]).partial_cmp([2, None]) == nil
@@ -1252,7 +1255,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == Some(3)
             >>> assert itr.next() == nil
 
-            >>> # Skipping past end:
+            Skipping past end:
             >>> itr = iterum([1, 2, 3]).skip(10)
             >>> assert itr.next() == nil
             >>> assert itr.next() == nil
@@ -1277,7 +1280,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == nil
 
-            >>> # After first `False` condition is hit, no further elements are checked:
+            After first `False` condition is hit, no further elements are checked:
             >>> itr = iterum([-1, 0, 1, -3]).skip_while(lambda x: x < 0)
             >>> assert itr.next() == Some(0)
             >>> assert itr.next() == Some(1)
@@ -1351,7 +1354,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == nil
 
 
-            >>> # Truncate an infinite iterum:
+            Truncate an infinite iterum:
             >>> def count_forever():
             ...     i = 0
             ...     while True:
@@ -1364,7 +1367,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == Some(2)
             >>> assert itr.next() == nil
 
-            >>> # Taking more than you have:
+            Taking more than you have:
             >>> itr = iterum([1, 2]).take(5)
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == Some(2)
@@ -1390,7 +1393,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == Some(-1)
             >>> assert itr.next() == nil
 
-            >>> # Stop after first `False`:
+            Stop after first `False`:
             >>> a = [-1, 0, 1, -2]
             >>> itr = iterum(a).take_while(lambda x: x < 0)
             >>> assert itr.next() == Some(-1)
@@ -1429,7 +1432,7 @@ class Iterum(Iterator[T_co]):
             >>> sum = iterum(a).try_fold(0, checked_add_i8)
             >>> assert sum == Some(6)
 
-            >>> # short-circuit after a failure:
+            short-circuit after a failure:
             >>> it = iterum([10, 20, 30, 100, 40, 50])
             >>> sum = it.try_fold(0, checked_add_i8)
             >>> assert sum == nil
@@ -1532,7 +1535,7 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == Some((3, 6))
             >>> assert itr.next() == nil
 
-            >>> # zip smaller with larger:
+            zip smaller with larger:
             >>> def count_forever():
             ...     i = 0
             ...     while True:
@@ -1549,7 +1552,7 @@ class Iterum(Iterator[T_co]):
             >>> assert foo_itr.next() == nil
             >>> assert cf_itr.next() == Some(3)
 
-            >>> # zip larger with smaller:
+            zip larger with smaller:
             >>> cf_itr = iterum(count_forever())
             >>> foo_itr = iterum("foo")
             >>> zip_itr = cf_itr.zip(foo_itr)

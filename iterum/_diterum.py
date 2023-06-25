@@ -105,7 +105,7 @@ class Diterum(Iterum[T_co]):
             >>> assert di.rposition(lambda x: x == 3) == Some(2)
             >>> assert di.rposition(lambda x: x == 5) == nil
 
-            >>> # Short-circuiting after first `True`:
+            Short-circuiting after first `True`:
             >>> di = diterum([-1, 2, 3, 4])
             >>> assert di.rposition(lambda x: x >= 2) == Some(3)
             >>> assert di.next() == Some(-1)
@@ -136,12 +136,12 @@ class Diterum(Iterum[T_co]):
             >>> di = diterum([1, 2, 3])
             >>> assert di.nth_back(2) == Some(1)
 
-            >>> # Does not rewind:
+            Does not rewind:
             >>> di = diterum([1, 2, 3])
             >>> assert di.nth_back(1) == Some(2)
             >>> assert di.nth_back(1) == nil
 
-            >>> # Returns `nil` if there are less than `n + 1` elements:
+            Returns [nil][iterum.nil] if there are less than `n + 1` elements:
             >>> di = diterum([1, 2, 3])
             >>> assert di.nth_back(10) == nil
         """
@@ -166,7 +166,7 @@ class Diterum(Iterum[T_co]):
             >>> assert di.rfind(lambda x: x == 2) == Some(2)
             >>> assert di.rfind(lambda x: x == 5) == nil
 
-            >>> # Stops at first `True`:
+            Stops at first `True`:
             >>> di = diterum([1, 2, 3])
             >>> assert di.rfind(lambda x: x == 2) == Some(2)
             >>> assert di.next_back() == Some(1)
@@ -197,11 +197,15 @@ class Diterum(Iterum[T_co]):
             >>> sum = di.rfold(0, lambda acc, x: acc + x)
             >>> assert sum == 6
 
-            >>> # `rfold` is right-associative:
+        rfold is right-associtive:
+
+            ```python
             >>> numbers = [1, 2, 3, 4, 5]
             >>> zero = "0"
             >>> result = diterum(numbers).rfold(zero, lambda acc, x: f"({x} + {acc})")
             >>> assert result == "(1 + (2 + (3 + (4 + (5 + 0)))))"
+
+            ```
         """
         return self.rev().fold(init, f)
 
