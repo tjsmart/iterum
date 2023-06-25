@@ -26,25 +26,25 @@ pip install iterum
 
 ## Example
 
-```pycon
->>> from iterum import iterum
+```python
+from iterum import iterum, Some, nil
 
->>> itr = iterum([1, 2])
->>> assert itr.next() == Some(1)
->>> assert itr.next() == Some(2)
->>> assert itr.next() == nil
+itr = iterum([1, 2])
+assert itr.next() == Some(1)
+assert itr.next() == Some(2)
+assert itr.next() == nil
 
->>> itr = iterum([1, 2, 3, 4])
->>> assert itr.fold(0, lambda acc, x: acc + x) == 10
+itr = iterum([1, 2, 3, 4])
+assert itr.fold(0, lambda acc, x: acc + x) == 10
 
->>> x = range(5)
->>> y = (
-...     iterum(x)
-...     .map(lambda x: x**2 + 1)
-...     .filter(lambda x: x % 2)
-...     .collect()
-... )
->>> assert y == [1, 5, 17]
+x = range(5)
+y = (
+    iterum(x)
+    .map(lambda x: x**2 + 1)
+    .filter(lambda x: x % 2)
+    .collect()
+)
+assert y == [1, 5, 17]
 ```
 
 ## License

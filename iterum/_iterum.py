@@ -39,6 +39,8 @@ V = TypeVar("V")
 # finite ranges can be reversible -> diterum
 # infinite ranges are not -> iterum
 
+# TODO: fix next button on web page
+
 
 class Iterum(Iterator[T_co]):
     """
