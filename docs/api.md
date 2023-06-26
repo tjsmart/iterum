@@ -13,6 +13,15 @@
 
 <br>
 
+*** Ranges ***
+
+---
+
+::: iterum.seq
+
+
+<br>
+
 *** Option ***
 
 ---
@@ -55,3 +64,6 @@
 ::: iterum.Take
 ::: iterum.TakeWhile
 ::: iterum.Zip
+
+::: iterum.Seq
+::: iterum.InfSeq
