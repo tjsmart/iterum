@@ -31,6 +31,9 @@ from ._option import Some
 from ._option import Swap
 from ._option import UnwrapNilError
 from ._ordering import Ordering
+from ._seq import InfSeq
+from ._seq import Seq
+from ._seq import seq
 
 
 __all__ = [
@@ -39,6 +42,8 @@ __all__ = [
     "Iterum",
     "diterum",
     "Diterum",
+    # Sequential counter
+    "seq",
     # Option
     "Option",
     "Some",
@@ -68,8 +73,10 @@ __all__ = [
     "Take",
     "TakeWhile",
     "Zip",
+    "InfSeq",
     # Special Diterum implementations
     "Rev",
+    "Seq",
     # used by Scan
     "State",
     # used by swap operations in Option
