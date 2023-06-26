@@ -628,6 +628,7 @@ class Some(Generic[T]):
     [Some][iterum.Some] value of type T.
 
     Examples:
+
         >>> x = Some(1)  # Type of "x" is "Some[int]"
         >>> x
         Some(1)

@@ -258,6 +258,7 @@ class diterum(Diterum[T_co]):
     Implements a [Diterum][iterum.Diterum] interface from a sequence.
 
     Examples:
+
         >>> itr = diterum([1, 2, 3])
         >>> assert itr.next() == Some(1)
         >>> assert itr.next_back() == Some(3)
@@ -292,6 +293,7 @@ class diterum(Diterum[T_co]):
         otherwise [nil][iterum.nil].
 
         Examples:
+
             >>> itr = diterum([1, 2])
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == Some(2)
@@ -311,6 +313,7 @@ class diterum(Diterum[T_co]):
         otherwise [nil][iterum.nil].
 
         Examples:
+
             >>> itr = diterum([1, 2])
             >>> assert itr.next_back() == Some(2)
             >>> assert itr.next_back() == Some(1)
@@ -329,6 +332,7 @@ class diterum(Diterum[T_co]):
         Returns the remaining length of the sequence.
 
         Examples:
+
             >>> itr = diterum([1, 2])
             >>> assert itr.len() == 2
             >>> assert itr.next() == Some(1)

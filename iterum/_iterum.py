@@ -39,6 +39,7 @@ V = TypeVar("V")
 # finite ranges can be reversible -> diterum
 # infinite ranges are not -> iterum
 
+
 class Iterum(Iterator[T_co]):
     """
     Iterator-like abstract base class. To implement this, inherit from
@@ -482,6 +483,7 @@ class Iterum(Iterator[T_co]):
         remove one level of indirection.
 
         Examples:
+
             >>> data = [[1, 2, 3, 4], [5, 6]]
             >>> flattened = iterum(data).flatten().collect(list)
             >>> assert flattened == [1, 2, 3, 4, 5, 6]
@@ -838,6 +840,7 @@ class Iterum(Iterator[T_co]):
         If the iterum is empty, [nil][iterum.nil] is returned.
 
         Examples:
+
             >>> a = [-3, 0, 1, 5, -10]
             >>> assert iterum(a).max_by(Ordering.cmp).unwrap() == 5
         """
@@ -1175,6 +1178,7 @@ class Iterum(Iterator[T_co]):
         An empty iterum returns [nil][iterum.nil].
 
         Examples:
+
             >>> def factorial(n: int) -> int:
             ...     return iterum(range(1, n + 1)).product().unwrap_or(1)
             ...
@@ -1198,6 +1202,7 @@ class Iterum(Iterator[T_co]):
         element into it.
 
         Examples:
+
             >>> reduced = iterum(range(1, 10)).reduce(lambda acc, e: acc + e).unwrap()
             >>> assert reduced == 45
         """
@@ -1879,6 +1884,7 @@ class iterum(Iterum[T_co]):
     Implements an [Iterum][iterum.Iterum] interface from an iterable object.
 
     Examples:
+
         >>> itr = iterum([1, 2])
         >>> assert itr.next() == Some(1)
         >>> assert itr.next() == Some(2)
@@ -1907,6 +1913,7 @@ class iterum(Iterum[T_co]):
         Returns the next value in the iterable if present, otherwise [nil][iterum.nil].
 
         Examples:
+
             >>> itr = iterum([1, 2])
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == Some(2)
