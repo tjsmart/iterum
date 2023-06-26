@@ -34,12 +34,6 @@ U = TypeVar("U")
 V = TypeVar("V")
 
 
-# TODO: allow for a range syntax to iterum, e.g. `iterum(10)` or `iterum(1, ...)`
-# If so, replace count_forever in test/docs
-# finite ranges can be reversible -> diterum
-# infinite ranges are not -> iterum
-
-
 class Iterum(Iterator[T_co]):
     """
     Iterator-like abstract base class. To implement this, inherit from
@@ -550,7 +544,7 @@ class Iterum(Iterator[T_co]):
         Examples:
 
             >>> v = []
-            >>> iterum(range(0, 5)).map(lambda x: x * 2 + 1).for_each(v.append)
+            >>> seq(5).map(lambda x: x * 2 + 1).for_each(v.append)
             >>> assert v == [1, 3, 5, 7, 9]
         """
         for x in self:
@@ -1180,7 +1174,7 @@ class Iterum(Iterator[T_co]):
         Examples:
 
             >>> def factorial(n: int) -> int:
-            ...     return iterum(range(1, n + 1)).product().unwrap_or(1)
+            ...     return seq(1, n + 1).product().unwrap_or(1)
             ...
             >>> assert factorial(0) == 1
             >>> assert factorial(1) == 1
@@ -1203,7 +1197,7 @@ class Iterum(Iterator[T_co]):
 
         Examples:
 
-            >>> reduced = iterum(range(1, 10)).reduce(lambda acc, e: acc + e).unwrap()
+            >>> reduced = seq(1, 10).reduce(lambda acc, e: acc + e).unwrap()
             >>> assert reduced == 45
         """
         first = self.next()
@@ -1356,13 +1350,7 @@ class Iterum(Iterator[T_co]):
 
 
             Truncate an infinite iterum:
-            >>> def count_forever():
-            ...     i = 0
-            ...     while True:
-            ...         yield i
-            ...         i += 1
-            ...
-            >>> itr = iterum(count_forever()).take(3)
+            >>> itr = seq(...).take(3)
             >>> assert itr.next() == Some(0)
             >>> assert itr.next() == Some(1)
             >>> assert itr.next() == Some(2)
@@ -1537,32 +1525,26 @@ class Iterum(Iterator[T_co]):
             >>> assert itr.next() == nil
 
             zip smaller with larger:
-            >>> def count_forever():
-            ...     i = 0
-            ...     while True:
-            ...         yield i
-            ...         i += 1
-            ...
-            >>> cf_itr = iterum(count_forever())
+            >>> inf_itr = seq(...)
             >>> foo_itr = iterum("foo")
-            >>> zip_itr = foo_itr.zip(cf_itr)
+            >>> zip_itr = foo_itr.zip(inf_itr)
             >>> assert zip_itr.next() == Some(("f", 0))
             >>> assert zip_itr.next() == Some(("o", 1))
             >>> assert zip_itr.next() == Some(("o", 2))
             >>> assert zip_itr.next() == nil
             >>> assert foo_itr.next() == nil
-            >>> assert cf_itr.next() == Some(3)
+            >>> assert inf_itr.next() == Some(3)
 
             zip larger with smaller:
-            >>> cf_itr = iterum(count_forever())
+            >>> inf_itr = seq(...)
             >>> foo_itr = iterum("foo")
-            >>> zip_itr = cf_itr.zip(foo_itr)
+            >>> zip_itr = inf_itr.zip(foo_itr)
             >>> assert zip_itr.next() == Some((0, "f"))
             >>> assert zip_itr.next() == Some((1, "o"))
             >>> assert zip_itr.next() == Some((2, "o"))
             >>> assert zip_itr.next() == nil
             >>> assert foo_itr.next() == nil
-            >>> assert cf_itr.next() == Some(4)
+            >>> assert inf_itr.next() == Some(4)
         """
         return Zip(self, other)
 
@@ -1893,7 +1875,7 @@ class iterum(Iterum[T_co]):
         >>> itr = iterum([1, 2, 3, 4])
         >>> assert itr.fold(0, lambda acc, x: acc + x) == 10
 
-        >>> x = range(5)
+        >>> x = [0, 1, 2, 3, 4]
         >>> y = (
         ...     iterum(x)
         ...     .map(lambda x: x**2 + 1)
@@ -1920,3 +1902,14 @@ class iterum(Iterum[T_co]):
             >>> assert itr.next() == nil
         """
         return _try_next(self._iter)
+
+
+def seq(*args, **kwargs):
+    """
+    During doctests seq is required to be in the globals
+    This does so while avoiding importing seq during initial
+    module load which would result in a circular import.
+    """
+    from iterum import seq
+
+    return seq(*args, **kwargs)

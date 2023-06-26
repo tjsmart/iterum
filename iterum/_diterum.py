@@ -269,7 +269,7 @@ class diterum(Diterum[T_co]):
         >>> itr = diterum([1, 2, 3])
         >>> assert itr.rfold(0, lambda acc, x: acc*2 + x) == 17
 
-        >>> x = range(5)
+        >>> x = [0, 1, 2, 3, 4]
         >>> y = (
         ...     diterum(x)
         ...     .rev()

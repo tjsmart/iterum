@@ -9,15 +9,9 @@ from iterum import iterum
 from iterum import nil
 from iterum import Option
 from iterum import Ordering
+from iterum import seq
 from iterum import Some
 from iterum import State
-
-
-def count_forever():
-    i = 0
-    while True:
-        yield i
-        i += 1
 
 
 def test_all_basic_usage():
@@ -215,7 +209,7 @@ def test_fold_string_build():
 
 def test_for_each_basic_usage():
     v = []
-    iterum(range(0, 5)).map(lambda x: x * 2 + 1).for_each(v.append)
+    seq(5).map(lambda x: x * 2 + 1).for_each(v.append)
     assert v == [1, 3, 5, 7, 9]
 
 
@@ -499,7 +493,7 @@ def test_position_stop_after_the_first_true():
 
 def test_product_factorial():
     def factorial(n: int) -> int:
-        return iterum(range(1, n + 1)).product().unwrap_or(1)
+        return seq(1, n + 1).product().unwrap_or(1)
 
     assert factorial(0) == 1
     assert factorial(1) == 1
@@ -507,7 +501,7 @@ def test_product_factorial():
 
 
 def test_reduce_basic_usage():
-    reduced = iterum(range(1, 10)).reduce(lambda acc, e: acc + e).unwrap()
+    reduced = seq(1, 10).reduce(lambda acc, e: acc + e).unwrap()
     assert reduced == 45
 
 
@@ -592,7 +586,7 @@ def test_take_basic_usage2():
 
 
 def test_take_truncates_infinite():
-    itr = iterum(count_forever()).take(3)
+    itr = seq(...).take(3)
 
     assert itr.next() == Some(0)
     assert itr.next() == Some(1)
@@ -680,7 +674,7 @@ def test_zip_basic_usage():
 
 
 def test_zip_against_larger():
-    cf_itr = iterum(count_forever())
+    cf_itr = seq(...)
     foo_itr = iterum("foo")
     zip_itr = foo_itr.zip(cf_itr)
 
@@ -695,7 +689,7 @@ def test_zip_against_larger():
 
 
 def test_zip_against_smaller():
-    cf_itr = iterum(count_forever())
+    cf_itr = seq(...)
     foo_itr = iterum("foo")
     zip_itr = cf_itr.zip(foo_itr)
 

@@ -37,14 +37,13 @@ assert itr.next() == nil
 itr = iterum([1, 2, 3, 4])
 assert itr.fold(0, lambda acc, x: acc + x) == 10
 
-x = range(5)
-y = (
-    iterum(x)
+lst = (
+    seq(5)
     .map(lambda x: x**2 + 1)
     .filter(lambda x: x % 2)
     .collect()
 )
-assert y == [1, 5, 17]
+assert lst == [1, 5, 17]
 ```
 
 For more examples checkout the [API documentation](api.md).
