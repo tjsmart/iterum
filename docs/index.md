@@ -27,7 +27,7 @@ pip install iterum
 ## Example
 
 ```python
-from iterum import iterum, Some, nil
+from iterum import iterum, Some, nil, seq
 
 itr = iterum([1, 2])
 assert itr.next() == Some(1)

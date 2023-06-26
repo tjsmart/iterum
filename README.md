@@ -33,7 +33,7 @@ The [documentation](https://tjsmart.github.io/iterum) is made with [Material for
 ## Example
 
 ```python
-from iterum import iterum, Some, nil
+from iterum import iterum, Some, nil, seq
 
 itr = iterum([1, 2])
 assert itr.next() == Some(1)
