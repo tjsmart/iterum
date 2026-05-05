@@ -1,6 +1,4 @@
-from iterum import diterum
-from iterum import nil
-from iterum import Some
+from iterum import Some, diterum, nil
 
 
 def test_next_back_basic_usage():

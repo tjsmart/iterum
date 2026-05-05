@@ -1,16 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from functools import partial
-from typing import Iterator
 
 import pytest
-from iterum import iterum
-from iterum import nil
-from iterum import Option
-from iterum import Ordering
-from iterum import seq
-from iterum import Some
-from iterum import State
+
+from iterum import Option, Ordering, Some, State, iterum, nil, seq
 
 
 def test_all_basic_usage():

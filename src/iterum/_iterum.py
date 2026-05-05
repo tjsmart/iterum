@@ -3,29 +3,22 @@ from __future__ import annotations
 import builtins
 import itertools
 from abc import abstractmethod
-from collections.abc import Callable
-from collections.abc import Iterable
-from collections.abc import Iterator
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import Generic
-from typing import overload
-from typing import TYPE_CHECKING
-from typing import TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 from ._helpers import check_methods
-from ._notset import NotSet
-from ._notset import NotSetType
-from ._option import Nil
-from ._option import nil
-from ._option import Option
-from ._option import Some
+from ._notset import NotSet, NotSetType
+from ._option import Nil, Option, Some, nil
 from ._ordering import Ordering
 
 if TYPE_CHECKING:
-    from ._type_helpers import SupportsRichComparison
-    from ._type_helpers import SupportsMulT
-    from ._type_helpers import SupportsRichComparisonT
-    from ._type_helpers import SupportsSumNoDefaultT
+    from ._type_helpers import (
+        SupportsMulT,
+        SupportsRichComparison,
+        SupportsRichComparisonT,
+        SupportsSumNoDefaultT,
+    )
 
 
 T_co = TypeVar("T_co", covariant=True)
@@ -52,8 +45,9 @@ class Iterum(Iterator[T_co]):
 
         Returns [nil][iterum.nil] when iteration is finished.
         Individual iterum implementations may choose to resume iteration,
-        and so calling [next()][iterum.Iterum.next] again may or may not eventually start returning
-        [Some(Item)][iterum.Some] again at some point.
+        and so calling [next()][iterum.Iterum.next] again may or may not
+        eventually start returning [Some(Item)][iterum.Some] again at some
+        point.
 
         Examples:
 
@@ -169,14 +163,12 @@ class Iterum(Iterator[T_co]):
     @overload
     def cmp(
         self: Iterum[SupportsRichComparison], other: Iterable[object], /
-    ) -> Ordering:
-        ...
+    ) -> Ordering: ...
 
     @overload
     def cmp(
         self: Iterum[object], other: Iterable[SupportsRichComparison], /
-    ) -> Ordering:
-        ...
+    ) -> Ordering: ...
 
     def cmp(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -215,28 +207,24 @@ class Iterum(Iterator[T_co]):
                     raise AssertionError("Unreachable!")
 
     @overload
-    def collect(self: Iterum[T_co], /) -> list[T_co]:
-        ...
+    def collect(self: Iterum[T_co], /) -> list[T_co]: ...
 
     @overload
-    def collect(self: Iterum[T_co], container: type[list], /) -> list[T_co]:
-        ...
+    def collect(self: Iterum[T_co], container: type[list], /) -> list[T_co]: ...
 
     @overload
-    def collect(self: Iterum[T_co], container: type[set], /) -> set[T_co]:
-        ...
+    def collect(self: Iterum[T_co], container: type[set], /) -> set[T_co]: ...
 
     @overload
-    def collect(self: Iterum[T_co], container: type[tuple], /) -> tuple[T_co, ...]:
-        ...
+    def collect(self: Iterum[T_co], container: type[tuple], /) -> tuple[T_co, ...]: ...
 
     @overload
-    def collect(self: Iterum[tuple[U, V]], container: type[dict], /) -> dict[U, V]:
-        ...
+    def collect(self: Iterum[tuple[U, V]], container: type[dict], /) -> dict[U, V]: ...
 
     @overload
-    def collect(self: Iterum[T_co], container: Callable[[Iterable[T_co]], U], /) -> U:
-        ...
+    def collect(
+        self: Iterum[T_co], container: Callable[[Iterable[T_co]], U], /
+    ) -> U: ...
 
     def collect(  # type: ignore
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U] = list, /
@@ -318,12 +306,14 @@ class Iterum(Iterator[T_co]):
         return Enumerate(self)
 
     @overload
-    def eq(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def eq(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def eq(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def eq(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def eq(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -455,7 +445,7 @@ class Iterum(Iterator[T_co]):
 
         The [map][iterum.Iterum.map] adapter is very useful, but only when the
         closure argument produces values. If it produces an iterum instead,
-        there’s an extra layer of indirection.
+        there's an extra layer of indirection.
         [flat_map()][iterum.Iterum.flat_map] will remove this extra layer on its own.
 
         You can think of `flat_map(f)` as the semantic equivalent of mapping, and
@@ -495,8 +485,9 @@ class Iterum(Iterator[T_co]):
         returning the final result.
 
         [fold()][iterum.Iterum.fold] takes two arguments: an initial value, and
-        a closure with two arguments: an ‘accumulator’, and an element. The
-        closure returns the value that the accumulator should have for the next iteration.
+        a closure with two arguments: an 'accumulator', and an element. The
+        closure returns the value that the accumulator should have for the
+        next iteration.
 
         The initial value is the value the accumulator will have on the first call.
 
@@ -584,12 +575,14 @@ class Iterum(Iterator[T_co]):
         return Fuse(self)
 
     @overload
-    def ge(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def ge(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def ge(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def ge(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def ge(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -611,12 +604,14 @@ class Iterum(Iterator[T_co]):
         return cmp in (Ordering.Greater, Ordering.Equal)
 
     @overload
-    def gt(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def gt(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def gt(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def gt(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def gt(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -641,8 +636,8 @@ class Iterum(Iterator[T_co]):
         """
         Does something with each element of an iterum, passing the value on.
 
-        When using iterums, you’ll often chain several of them together. While
-        working on such code, you might want to check out what’s happening at
+        When using iterums, you'll often chain several of them together. While
+        working on such code, you might want to check out what's happening at
         various parts in the pipeline. To do that, insert a call to
         [inspect()][iterum.Iterum.inspect].
 
@@ -700,12 +695,14 @@ class Iterum(Iterator[T_co]):
         return last
 
     @overload
-    def le(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def le(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def le(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def le(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def le(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -727,12 +724,14 @@ class Iterum(Iterator[T_co]):
         return cmp in (Ordering.Less, Ordering.Equal)
 
     @overload
-    def lt(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def lt(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def lt(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def lt(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def lt(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -939,12 +938,14 @@ class Iterum(Iterator[T_co]):
         return self.min_by(compare)
 
     @overload
-    def ne(self: Iterum[SupportsRichComparison], other: Iterable[object], /) -> bool:
-        ...
+    def ne(
+        self: Iterum[SupportsRichComparison], other: Iterable[object], /
+    ) -> bool: ...
 
     @overload
-    def ne(self: Iterum[object], other: Iterable[SupportsRichComparison], /) -> bool:
-        ...
+    def ne(
+        self: Iterum[object], other: Iterable[SupportsRichComparison], /
+    ) -> bool: ...
 
     def ne(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -966,13 +967,14 @@ class Iterum(Iterator[T_co]):
         """
         Returns the nth element of the iterum.
 
-        Like most indexing operations, the count starts from zero, so [nth(0)][iterum.Iterum.nth]
-        returns the first value, [nth(1)][iterum.Iterum.nth] the second, and so on.
+        Like most indexing operations, the count starts from zero, so
+        [nth(0)][iterum.Iterum.nth] returns the first value,
+        [nth(1)][iterum.Iterum.nth] the second, and so on.
 
         Note that all preceding elements, as well as the returned element, will
         be consumed from the iterum. That means that the preceding elements
-        will be discarded, and also that calling [nth(0)][iterum.Iterum.nth] multiple times on the
-        same iterum will return different elements.
+        will be discarded, and also that calling [nth(0)][iterum.Iterum.nth]
+        multiple times on the same iterum will return different elements.
 
         [nth()][iterum.Iterum.nth] will return [nil][iterum.nil] if n is greater
         than or equal to the length of the iterum.
@@ -1001,18 +1003,15 @@ class Iterum(Iterator[T_co]):
     @overload
     def partial_cmp(
         self: Iterum[SupportsRichComparison], other: Iterable[object], /
-    ) -> Some[Ordering]:
-        ...
+    ) -> Some[Ordering]: ...
 
     @overload
     def partial_cmp(
         self: Iterum[object], other: Iterable[SupportsRichComparison], /
-    ) -> Some[Ordering]:
-        ...
+    ) -> Some[Ordering]: ...
 
     @overload
-    def partial_cmp(self: Iterum[object], other: Iterable[object], /) -> Nil:
-        ...
+    def partial_cmp(self: Iterum[object], other: Iterable[object], /) -> Nil: ...
 
     def partial_cmp(
         self: Iterum[SupportsRichComparison] | Iterum[object],
@@ -1046,38 +1045,32 @@ class Iterum(Iterator[T_co]):
     @overload
     def partition(
         self, f: Callable[[T_co], object], /
-    ) -> tuple[list[T_co], list[T_co]]:
-        ...
+    ) -> tuple[list[T_co], list[T_co]]: ...
 
     @overload
     def partition(
         self, f: Callable[[T_co], object], container: type[list], /
-    ) -> tuple[list[T_co], list[T_co]]:
-        ...
+    ) -> tuple[list[T_co], list[T_co]]: ...
 
     @overload
     def partition(
         self, f: Callable[[T_co], object], container: type[set], /
-    ) -> tuple[set[T_co], set[T_co]]:
-        ...
+    ) -> tuple[set[T_co], set[T_co]]: ...
 
     @overload
     def partition(
         self, f: Callable[[T_co], object], container: type[tuple], /
-    ) -> tuple[tuple[T_co, ...], tuple[T_co, ...]]:
-        ...
+    ) -> tuple[tuple[T_co, ...], tuple[T_co, ...]]: ...
 
     @overload
     def partition(
         self: Iterum[tuple[U, V]], f: Callable[[T_co], object], container: type[dict], /
-    ) -> tuple[dict[U, V], dict[U, V]]:
-        ...
+    ) -> tuple[dict[U, V], dict[U, V]]: ...
 
     @overload
     def partition(
         self, f: Callable[[T_co], object], container: Callable[[Iterable[T_co]], U], /
-    ) -> tuple[U, U]:
-        ...
+    ) -> tuple[U, U]: ...
 
     def partition(  # type: ignore
         self,
@@ -1184,12 +1177,13 @@ class Iterum(Iterator[T_co]):
 
     def reduce(self, f: Callable[[T_co, T_co], T_co], /) -> Option[T_co]:
         """
-        Reduces the elements to a single one, by repeatedly applying a reducing operation.
+        Reduces the elements to a single one, by repeatedly applying a
+        reducing operation.
 
         If the iterum is empty, returns [nil][iterum.nil]; otherwise, returns
         the result of the reduction.
 
-        The reducing function is a closure with two arguments: an ‘accumulator’,
+        The reducing function is a closure with two arguments: an 'accumulator',
         and an element. For iterums with at least one element, this is the
         same as [fold()][iterum.Iterum.fold] with the first element of the
         iterum as the initial accumulator value, folding every subsequent
@@ -1233,7 +1227,8 @@ class Iterum(Iterator[T_co]):
         """
         return Scan(self, init, f)
 
-    # def size_hint ..., don't plan on implementing this one. Just use diterum if size is important
+    # def size_hint ..., don't plan on implementing this one. Just use diterum
+    #                    if size is important
 
     def skip(self, n: int, /) -> Skip[T_co]:
         """
@@ -1265,7 +1260,7 @@ class Iterum(Iterator[T_co]):
         It will call this closure on each element of the iterum, and ignore
         elements until it returns `False`.
 
-        After `False` is returned, [skip_while()][iterum.Iterum.skip_while]’s
+        After `False` is returned, [skip_while()][iterum.Iterum.skip_while]'s
         job is over, and the rest of the elements are yielded.
 
         Examples:
@@ -1315,8 +1310,9 @@ class Iterum(Iterator[T_co]):
             >>> sum_ = iterum([]).sum().unwrap_or(0)
             >>> assert sum_ == 0
         """
-        # NOTE: This forces users to pick a default or suffer the unwrapping consequences
-        # a more reasonable interface since an implicit default isn't a thing
+        # NOTE: This forces users to pick a default or suffer the unwrapping
+        #       consequences a more reasonable interface since an implicit
+        #       default isn't a thing.
         first = self.next()
         if first is nil:
             return nil
@@ -1372,7 +1368,7 @@ class Iterum(Iterator[T_co]):
         It will call this closure on each element of the iterum, and yield
         elements while it returns `True`.
 
-        After `False` is returned, [take_while()][iterum.Iterum.take_while]’s
+        After `False` is returned, [take_while()][iterum.Iterum.take_while]'s
         job is over, and the rest of the elements are ignored.
 
         Examples:
@@ -1403,7 +1399,7 @@ class Iterum(Iterator[T_co]):
         successfully, producing a single, final value.
 
         [try_fold()][iterum.Iterum.try_fold] takes two arguments: an initial
-        value, and a closure with two arguments: an ‘accumulator’, and an
+        value, and a closure with two arguments: an 'accumulator', and an
         element. The closure either returns successfully, with the value that
         the accumulator should have for the next iteration, or it raises an
         exception which short-circuits the iteration.
@@ -1445,34 +1441,29 @@ class Iterum(Iterator[T_co]):
     #             return
 
     @overload
-    def unzip(self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]:
-        ...
+    def unzip(self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]: ...
 
     @overload
     def unzip(
         self: Iterum[tuple[U, V]], container: type[list], /
-    ) -> tuple[list[U], list[V]]:
-        ...
+    ) -> tuple[list[U], list[V]]: ...
 
     @overload
     def unzip(
         self: Iterum[tuple[U, V]], container: type[set], /
-    ) -> tuple[set[U], set[V]]:
-        ...
+    ) -> tuple[set[U], set[V]]: ...
 
     @overload
     def unzip(
         self: Iterum[tuple[U, V]], container: type[tuple], /
-    ) -> tuple[tuple[U, ...], tuple[V, ...]]:
-        ...
+    ) -> tuple[tuple[U, ...], tuple[V, ...]]: ...
 
     @overload
     def unzip(
         self: Iterum[tuple[object, object]],
         container: Callable[[Iterable[object]], U],
         /,
-    ) -> tuple[U, U]:
-        ...
+    ) -> tuple[U, U]: ...
 
     def unzip(
         self: Iterum[tuple[object, object]],
@@ -1495,12 +1486,12 @@ class Iterum(Iterator[T_co]):
             >>> assert left == [1, 3, 5]
             >>> assert right == [2, 4, 6]
         """
-        left, right = map(container, zip(*self))
+        left, right = map(container, zip(*self, strict=False))
         return left, right
 
     def zip(self, other: Iterable[U], /) -> Zip[T_co, U]:
         """
-        ‘Zips up’ two iterables into a single iterum of pairs.
+        'Zips up' two iterables into a single iterum of pairs.
 
         [zip()][iterum.Iterum.zip] returns a new iterum that will iterate over
         two other iterables, returning a tuple where the first element comes
@@ -1512,7 +1503,8 @@ class Iterum(Iterator[T_co]):
         first try to advance the first iterable at most one time and if it still
         yielded an item try to advance the second iterable at most one time.
 
-        To ‘undo’ the result of zipping up two iterables, see [unzip][iterum.Iterum.unzip].
+        To 'undo' the result of zipping up two iterables, see
+        [unzip][iterum.Iterum.unzip].
 
         Examples:
 
@@ -1633,7 +1625,7 @@ class Flatten(_IterumAdapter[T_co]):
 
 
 class Fuse(Iterum[T_co]):
-    __slots__ = ("_iter", "_fuse")
+    __slots__ = ("_fuse", "_iter")
 
     def __init__(self, __iterable: Iterable[T_co]) -> None:
         self._iter = iterum(__iterable)
@@ -1652,7 +1644,7 @@ class Fuse(Iterum[T_co]):
 
 
 class Inspect(Iterum[T_co]):
-    __slots__ = ("_iter", "_f")
+    __slots__ = ("_f", "_iter")
 
     def __init__(
         self, __iterable: Iterable[T_co], f: Callable[[T_co], object], /
@@ -1667,7 +1659,7 @@ class Inspect(Iterum[T_co]):
 
 
 class Map(Iterum[T_co]):
-    __slots__ = ("_iter", "_f")
+    __slots__ = ("_f", "_iter")
 
     def __init__(self, __iterable: Iterable[U], f: Callable[[U], T_co], /) -> None:
         self._iter = iterum(__iterable)
@@ -1678,7 +1670,7 @@ class Map(Iterum[T_co]):
 
 
 class MapWhile(Iterum[T_co]):
-    __slots__ = ("_iter", "_predicate", "_fuse")
+    __slots__ = ("_fuse", "_iter", "_predicate")
 
     def __init__(
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
@@ -1742,7 +1734,7 @@ class State(Generic[T]):
 
 
 class Scan(Iterum[T_co]):
-    __slots__ = ("_iter", "_state", "_f")
+    __slots__ = ("_f", "_iter", "_state")
 
     def __init__(
         self,
@@ -1780,7 +1772,7 @@ class Skip(Iterum[T_co]):
 
 
 class SkipWhile(Iterum[T_co]):
-    __slots__ = ("_iter", "_predicate", "_fuse")
+    __slots__ = ("_fuse", "_iter", "_predicate")
 
     def __init__(
         self,
@@ -1823,7 +1815,7 @@ class StepBy(Iterum[T_co]):
 
 
 class Take(Iterum[T_co]):
-    __slots__ = ("_iter", "_max", "_idx")
+    __slots__ = ("_idx", "_iter", "_max")
 
     def __init__(self, __iterable: Iterable[T_co], n: int, /) -> None:
         self._iter = iterum(__iterable)
@@ -1858,7 +1850,7 @@ class Zip(_IterumAdapter[tuple[U, V]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[U], other: Iterable[V], /) -> None:
-        self._iter = zip(__iterable, other)
+        self._iter = zip(__iterable, other, strict=False)
 
 
 class iterum(Iterum[T_co]):

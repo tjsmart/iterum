@@ -30,7 +30,7 @@ jobs:
       run: uv python install ${{ matrix.python-version }}
 
     - name: Install the project
-      run: uv sync --locked --group test
+      run: uv sync --locked --group dev
 
     - name: Run tests
-      run: uv run pytest --cov=iterum --cov-config=pyproject.toml --cov-report=term-missing --doctest-modules -vvvx
+      run: uv run pytest --cov=src/iterum --cov-config=pyproject.toml --cov-report=term-missing --doctest-modules -vvvx

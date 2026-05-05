@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from typing import assert_type
 
-from iterum import InfSeq
-from iterum import Seq
-from iterum import seq
+from iterum import InfSeq, Seq, seq
 
 
 def seq_with_explicit_start_end_returns_seq():

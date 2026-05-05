@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
-from typing import Generic
-from typing import Literal
-from typing import NamedTuple
-from typing import NoReturn
-from typing import overload
-from typing import TYPE_CHECKING
-from typing import TypeAlias
-from typing import TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generic,
+    Literal,
+    NamedTuple,
+    NoReturn,
+    TypeAlias,
+    TypeVar,
+    overload,
+)
 
 from ._singleton import Singleton
 
@@ -71,12 +73,14 @@ class Nil(Singleton):
         >>> x.is_nil()
         True
 
-    [Nil][iterum.Nil] always returns the same object so just use [nil][iterum.nil] instead.
+    [Nil][iterum.Nil] always returns the same object so just use [nil][iterum.nil]
+    instead.
 
         >>> nil is Nil()
         True
 
-    Likely, the only practical use of the [Nil][iterum.Nil] class is for type annotations and calls to `isinstance`.
+    Likely, the only practical use of the [Nil][iterum.Nil] class is for type
+    annotations and calls to `isinstance`.
     """
 
     __slots__ = ()
@@ -247,7 +251,7 @@ class Nil(Singleton):
 
         If the option already contains a value, the old value is dropped.
 
-        See also [get_or_insert][iterum.Nil.get_or_insert], which doesn’t
+        See also [get_or_insert][iterum.Nil.get_or_insert], which doesn't
         update the value if the option already contains a value.
 
         Examples:
@@ -546,7 +550,8 @@ class Nil(Singleton):
     # In order for unwrap_or_default to be implemented we would
     # need to know within nil what type we are supposed to have.
     #
-    # If this was known we could come up with reasonable defaults, e.g. 0, {}, [], "", ...
+    # If this was known we could come up with reasonable defaults,
+    # e.g. 0, {}, [], "", ...
     # note: these also happen to be what constructing the type with no params gives.
     #
     # If I wanted to get real fancy could provide user way to register defaults
@@ -579,12 +584,10 @@ class Nil(Singleton):
         return (nil, nil)
 
     @overload
-    def xor(self, optb: S, /) -> S:
-        ...
+    def xor(self, optb: S, /) -> S: ...
 
     @overload
-    def xor(self, optb: Nil, /) -> Nil:
-        ...
+    def xor(self, optb: Nil, /) -> Nil: ...
 
     def xor(self, optb: O, /) -> O | Nil:
         """
@@ -809,7 +812,7 @@ class Some(Generic[T]):
 
         If the option already contains a value, the old value is dropped.
 
-        See also [get_or_insert][iterum.Some.get_or_insert], which doesn’t
+        See also [get_or_insert][iterum.Some.get_or_insert], which doesn't
         update the value if the option already contains a value.
 
         Examples:
@@ -1097,7 +1100,9 @@ class Some(Generic[T]):
         return self._value
 
     def unwrap_or_else(self, f: Callable[[], T], /) -> T:
-        """Returns the contained [Some][iterum.Some] value or computes it from a closure.
+        """
+        Returns the contained [Some][iterum.Some] value or computes it from a
+        closure.
 
         Examples:
 
@@ -1122,12 +1127,10 @@ class Some(Generic[T]):
         return Some(left), Some(right)
 
     @overload
-    def xor(self, optb: Some[T], /) -> Nil:
-        ...
+    def xor(self, optb: Some[T], /) -> Nil: ...
 
     @overload
-    def xor(self, optb: Nil, /) -> Some[T]:
-        ...
+    def xor(self, optb: Nil, /) -> Some[T]: ...
 
     def xor(self, optb: Option[T], /) -> Option[T]:
         """
@@ -1144,12 +1147,10 @@ class Some(Generic[T]):
         return self if isinstance(optb, Nil) else nil
 
     @overload
-    def zip(self, other: Some[U], /) -> Some[tuple[T, U]]:
-        ...
+    def zip(self, other: Some[U], /) -> Some[tuple[T, U]]: ...
 
     @overload
-    def zip(self, other: Nil, /) -> Nil:
-        ...
+    def zip(self, other: Nil, /) -> Nil: ...
 
     def zip(self, other: Option[U], /) -> Option[tuple[T, U]]:
         """

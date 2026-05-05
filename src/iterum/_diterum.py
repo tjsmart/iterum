@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Callable
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 
-from ._iterum import Iterum
-from ._iterum import T_co
-from ._iterum import U
-from ._option import nil
-from ._option import Option
-from ._option import Some
+from ._iterum import Iterum, T_co, U
+from ._option import Option, Some, nil
 
 
 class Diterum(Iterum[T_co]):
@@ -70,7 +65,7 @@ class Diterum(Iterum[T_co]):
     # Defined by Iterator
     def rev(self) -> Rev[T_co]:
         """
-        Reverses an diterum’s direction.
+        Reverses an diterum's direction.
 
         Usually, iterums iterate from left to right. After using
         [rev()][iterum.Diterum.rev], an iterum will instead iterate from
@@ -175,14 +170,14 @@ class Diterum(Iterum[T_co]):
 
     def rfold(self, init: U, f: Callable[[U, T_co], U], /) -> U:
         """
-        A diterum method that reduces the diterum’s elements to a single,
+        A diterum method that reduces the diterum's elements to a single,
         final value, starting from the back.
 
         This is the reverse version of [Iterum.fold()][iterum.Iterum.fold]:
         it takes elements starting from the back of the diterum.
 
         [rfold()][iterum.Diterum.rfold] takes two arguments: an initial value,
-        and a closure with two arguments: an ‘accumulator’, and an element. The
+        and a closure with two arguments: an 'accumulator', and an element. The
         closure returns the value that the accumulator should have for the next
         iteration.
 
@@ -280,7 +275,7 @@ class diterum(Diterum[T_co]):
         >>> assert y == [17, 5, 1]
     """
 
-    __slots__ = ("_seq", "_front", "_back")
+    __slots__ = ("_back", "_front", "_seq")
 
     def __init__(self, __seq: Sequence[T_co], /) -> None:
         self._seq = __seq

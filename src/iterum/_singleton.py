@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-
 Self = TypeVar("Self", bound="Singleton")
 
 

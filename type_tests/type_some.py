@@ -1,26 +1,21 @@
 from __future__ import annotations
 
-from typing import assert_type
-from typing import Literal
-from typing import TypeVar
+from typing import Literal, TypeVar, assert_type
 
-from iterum import iterum
-from iterum import Nil
-from iterum import nil
-from iterum import Option
-from iterum import Some
-from iterum import Swap
+from iterum import Nil, Option, Some, Swap, iterum, nil
 
-from .option_helpers import create_nil
-from .option_helpers import create_option
-from .option_helpers import create_some
-from .option_helpers import create_value
-from .option_helpers import map_to_value
-from .option_helpers import map_value_to_nil
-from .option_helpers import map_value_to_option
-from .option_helpers import map_value_to_some
-from .option_helpers import map_value_to_value
-from .option_helpers import predicate
+from .option_helpers import (
+    create_nil,
+    create_option,
+    create_some,
+    create_value,
+    map_to_value,
+    map_value_to_nil,
+    map_value_to_option,
+    map_value_to_some,
+    map_value_to_value,
+    predicate,
+)
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -127,8 +122,7 @@ def some_unwrap_or_else():
     assert_type(some.unwrap_or_else(create_value), int)
 
 
-def create_other() -> str:
-    ...
+def create_other() -> str: ...
 
 
 def some_unzip():

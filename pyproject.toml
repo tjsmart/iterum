@@ -21,14 +21,11 @@ classifiers = [
 version = "0.2.0"
 
 [dependency-groups]
-test = [
+dev = [
     "pytest",
-    "pytest-cov"
-]
-
-lint = [
-    "pre-commit>=3.3.0",
-    "pyright>=1.1.0"
+    "pytest-cov",
+    "ruff>=0.8.0",
+    "ty>=0.0.34",
 ]
 
 docs = [
@@ -46,29 +43,6 @@ docs = [
     "linkchecker @ git+https://github.com/linkchecker/linkchecker.git@d9265bb71c2054bf57b8c5734a4825d62505c779"
 ]
 
-dev = [
-    "pytest",
-    "pytest-cov",
-    "pre-commit>=3.3.0",
-    "pyright>=1.1.0",
-]
-
-[project.urls]
-Documentation = "https://tjsmart.github.io/iterum"
-Source = "https://github.com/tjsmart/iterum"
-
-
-
-[tool.coverage.run]
-branch = true
-parallel = true
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
-
-[tool.ruff]
-line-length = 120
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["RUF022"]

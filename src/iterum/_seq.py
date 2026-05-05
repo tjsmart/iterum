@@ -2,17 +2,12 @@ from __future__ import annotations
 
 import operator
 from types import EllipsisType
-from typing import Literal
-from typing import overload
-from typing import SupportsIndex
+from typing import Literal, SupportsIndex, overload
 
 from ._diterum import Diterum
 from ._iterum import Iterum
-from ._notset import NotSet
-from ._notset import NotSetType
-from ._option import nil
-from ._option import Option
-from ._option import Some
+from ._notset import NotSet, NotSetType
+from ._option import Option, Some, nil
 
 
 @overload
@@ -21,8 +16,7 @@ def seq(
     end: SupportsIndex,
     /,
     step: SupportsIndex = 1,
-) -> Seq:
-    ...
+) -> Seq: ...
 
 
 @overload
@@ -31,8 +25,7 @@ def seq(
     end: EllipsisType,
     /,
     step: SupportsIndex = 1,
-) -> InfSeq:
-    ...
+) -> InfSeq: ...
 
 
 @overload
@@ -41,8 +34,7 @@ def seq(
     /,
     *,
     step: SupportsIndex = 1,
-) -> Seq:
-    ...
+) -> Seq: ...
 
 
 @overload
@@ -51,8 +43,7 @@ def seq(
     /,
     *,
     step: SupportsIndex = 1,
-) -> InfSeq:
-    ...
+) -> InfSeq: ...
 
 
 def seq(
@@ -132,7 +123,7 @@ def _sign(step: int) -> Literal[1, 0, -1]:
 
 
 class Seq(Diterum[int]):
-    __slots__ = ("_front", "_back", "_step", "_dir")
+    __slots__ = ("_back", "_dir", "_front", "_step")
 
     def __init__(self, *, start: int, end: int, step: int) -> None:
         self._front = start
