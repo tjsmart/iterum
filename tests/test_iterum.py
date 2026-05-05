@@ -4,7 +4,6 @@ from functools import partial
 from typing import Iterator
 
 import pytest
-
 from iterum import iterum
 from iterum import nil
 from iterum import Option

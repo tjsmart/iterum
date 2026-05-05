@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build"]
+build-backend = "uv_build"
 
 [project]
 name = "iterum"
@@ -18,24 +18,43 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-dynamic = ["version"]
+version = "0.2.0"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov"
+]
+
+lint = [
+    "pre-commit>=3.3.0",
+    "pyright>=1.1.0"
+]
+
+docs = [
+    "mkdocs~=1.4.3",
+    "mkdocs-material~=9.1.17",
+    "mkdocs-minify-plugin~=0.5.0",
+    "mkdocs-git-revision-date-localized-plugin~=1.1.0",
+    "mkdocstrings-python~=1.1.2",
+    "mkdocs-redirects~=1.1.0",
+    "mkdocs-glightbox~=0.3.0",
+    "mike @ https://github.com/jimporter/mike/archive/392d57b8bb9d14bcedf2451a0dc302709f8055eb.zip",
+    "mkdocs-click~=0.8.0",
+    "pymdown-extensions~=10.0.1",
+    "pygments~=2.15.1",
+    "linkchecker @ git+https://github.com/linkchecker/linkchecker.git@d9265bb71c2054bf57b8c5734a4825d62505c779"
+]
 
 [project.urls]
 Documentation = "https://tjsmart.github.io/iterum"
 Source = "https://github.com/tjsmart/iterum"
 
-[tool.setuptools.package-data]
-iterum = ["py.typed"]
 
-[tool.hatch]
-version.path = "iterum/__about__.py"
 
 [tool.coverage.run]
 branch = true
 parallel = true
-omit = [
-  "iterum/__about__.py",
-]
 
 [tool.coverage.report]
 exclude_lines = [

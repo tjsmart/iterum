@@ -4,6 +4,13 @@ from typing import assert_type
 from typing import Literal
 from typing import TypeVar
 
+from iterum import iterum
+from iterum import Nil
+from iterum import nil
+from iterum import Option
+from iterum import Some
+from iterum import Swap
+
 from .option_helpers import create_nil
 from .option_helpers import create_option
 from .option_helpers import create_some
@@ -14,12 +21,6 @@ from .option_helpers import map_value_to_option
 from .option_helpers import map_value_to_some
 from .option_helpers import map_value_to_value
 from .option_helpers import predicate
-from iterum import iterum
-from iterum import Nil
-from iterum import nil
-from iterum import Option
-from iterum import Some
-from iterum import Swap
 
 T = TypeVar("T")
 U = TypeVar("U")

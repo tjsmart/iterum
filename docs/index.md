@@ -6,7 +6,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/iterum.svg)](https://pypi.org/project/iterum)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/iterum.svg)](https://pypi.org/project/iterum)
-[![Hatch project](https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg)](https://github.com/pypa/hatch)
+[![project - uv](https://img.shields.io/badge/%F0%9F%A5%9A-uv-4051b5.svg)](https://github.com/astral-sh/uv)
 
 
 [![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)

@@ -1,5 +1,4 @@
 import pytest
-
 from iterum import nil
 from iterum import seq
 from iterum import Some

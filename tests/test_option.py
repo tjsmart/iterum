@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from iterum import ExpectNilError
 from iterum import nil
 from iterum import Option
