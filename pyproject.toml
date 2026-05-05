@@ -20,7 +20,7 @@ classifiers = [
 ]
 version = "0.2.0"
 
-[project.optional-dependencies]
+[dependency-groups]
 test = [
     "pytest",
     "pytest-cov"
@@ -44,6 +44,13 @@ docs = [
     "pymdown-extensions~=10.0.1",
     "pygments~=2.15.1",
     "linkchecker @ git+https://github.com/linkchecker/linkchecker.git@d9265bb71c2054bf57b8c5734a4825d62505c779"
+]
+
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pre-commit>=3.3.0",
+    "pyright>=1.1.0",
 ]
 
 [project.urls]
