@@ -1001,7 +1001,7 @@ class Iterum(Iterator[T_co]):
         return nil
 
     @overload
-    def partial_cmp(
+    def partial_cmp(  # type: ignore
         self: Iterum[SupportsRichComparison], other: Iterable[object], /
     ) -> Some[Ordering]: ...
 
@@ -1748,7 +1748,10 @@ class Scan(Iterum[T_co]):
         self._f = f
 
     def next(self) -> Option[T_co]:
-        return self._iter.next().map(lambda val: self._f(self._state, val)).flatten()
+        def scan(val) -> Option[T_co]:
+            return self._f(self._state, val)
+
+        return self._iter.next().map(scan).flatten()
 
 
 class Skip(Iterum[T_co]):
