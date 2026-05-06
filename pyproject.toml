@@ -6,7 +6,7 @@ build-backend = "uv_build"
 name = "iterum"
 description = 'Rusty iterators in Python.'
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = "MIT"
 keywords = []
 authors = [
@@ -15,7 +15,7 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 version = "0.2.0"
