@@ -5,7 +5,7 @@ import itertools
 from abc import abstractmethod
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload
 
 from ._helpers import check_methods
 from ._notset import NotSet, NotSetType
@@ -1796,7 +1796,7 @@ class Iterum(Iterator[T_co]):
         return Zip(self, other)
 
 
-def _try_next(itr: Iterator[T], /) -> Option[T]:
+def _try_next[T](itr: Iterator[T], /) -> Option[T]:
     try:
         nxt = next(itr)
     except StopIteration:
@@ -1977,7 +1977,7 @@ class Peekable(Iterum[T_co]):
 
 
 @dataclass
-class State(Generic[T]):
+class State[T]:
     """
     Simple class which holds some mutable state.
     """

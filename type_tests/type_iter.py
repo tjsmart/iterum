@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Generic, TypeVar, assert_type
+from typing import TypeVar, assert_type
 
 from iterum import (
     Chain,
@@ -35,7 +35,7 @@ from iterum import (
 T = TypeVar("T")
 
 
-class MyCollection(Generic[T]):
+class MyCollection[T]:
     def __init__(self, _: Iterable[T]) -> None: ...
 
 

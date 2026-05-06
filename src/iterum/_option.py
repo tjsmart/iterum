@@ -4,11 +4,9 @@ from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
     Any,
-    Generic,
     Literal,
     NamedTuple,
     NoReturn,
-    TypeAlias,
     TypeVar,
     overload,
 )
@@ -27,7 +25,7 @@ S = TypeVar("S", bound="Some")
 O = TypeVar("O", bound="Option")  # noqa: E741
 
 
-class Swap(NamedTuple, Generic[T, U]):
+class Swap[T, U](NamedTuple):
     """
     Used for various 'swapping' operations on [Option][iterum.Option].
     """
@@ -770,7 +768,7 @@ Instance of type [Nil][iterum.Nil]. See [Nil][iterum.Nil] for more details.
 """
 
 
-class Some(Generic[T]):
+class Some[T]:
     """
     [Some][iterum.Some] value of type T.
 
@@ -1453,7 +1451,7 @@ class Some(Generic[T]):
         return nil if isinstance(other, Nil) else Some((self._value, other._value))
 
 
-Option: TypeAlias = "Some[T] | Nil"
+type Option[T] = "Some[T] | Nil"
 """
 Type alias representing something which is either of type
 [Some][iterum.Some] or [Nil][iterum.Nil].
