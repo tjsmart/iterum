@@ -7,11 +7,10 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/iterum.svg)](https://pypi.org/project/iterum)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/iterum.svg)](https://pypi.org/project/iterum)
-[![Hatch project](https://img.shields.io/badge/%F0%9F%A5%9A-Hatch-4051b5.svg)](https://github.com/pypa/hatch)
+[![project - uv](https://img.shields.io/badge/%F0%9F%A5%9A-uv-4051b5.svg)](https://github.com/astral-sh/uv)
 
 
-[![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![code style - Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![types - Pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
 [![License - MIT](https://img.shields.io/badge/license-MIT-9400d3.svg)](https://spdx.org/licenses/)
 
@@ -27,7 +26,7 @@ pip install iterum
 
 ## Documentation
 
-The [documentation](https://tjsmart.github.io/iterum) is made with [Material for MkDocs](https://github.com/squidfunk/mkdocs-material) and is hosted by [GitHub Pages](https://docs.github.com/en/pages).
+The [documentation](https://tjsmart.github.io/iterum) is made with [Zensical](https://zensical.org) and is hosted by [GitHub Pages](https://docs.github.com/en/pages).
 
 
 ## Example

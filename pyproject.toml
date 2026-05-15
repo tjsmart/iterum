@@ -1,12 +1,12 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build"]
+build-backend = "uv_build"
 
 [project]
 name = "iterum"
 description = 'Rusty iterators in Python.'
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = "MIT"
 keywords = []
 authors = [
@@ -15,34 +15,24 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-dynamic = ["version"]
+version = "0.2.0"
 
-[project.urls]
-Documentation = "https://tjsmart.github.io/iterum"
-Source = "https://github.com/tjsmart/iterum"
-
-[tool.setuptools.package-data]
-iterum = ["py.typed"]
-
-[tool.hatch]
-version.path = "iterum/__about__.py"
-
-[tool.coverage.run]
-branch = true
-parallel = true
-omit = [
-  "iterum/__about__.py",
+[dependency-groups]
+dev = [
+    "pyright>=1.1.409",
+    "pytest",
+    "pytest-cov",
+    "ruff>=0.8.0",
 ]
 
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
+docs = [
+    "zensical",
+    "mkdocstrings-python",
 ]
 
-[tool.ruff]
-line-length = 120
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["RUF022"]

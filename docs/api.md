@@ -1,7 +1,7 @@
 # API
 
 
-*** Iterum ***
+**Iterum**
 
 ---
 
@@ -13,7 +13,7 @@
 
 <br>
 
-*** Ranges ***
+**Ranges**
 
 ---
 
@@ -22,7 +22,7 @@
 
 <br>
 
-*** Option ***
+**Option**
 
 ---
 
@@ -36,7 +36,7 @@
 
 <br>
 
-*** Other ***
+**Other**
 
 ---
 

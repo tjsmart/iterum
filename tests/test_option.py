@@ -2,11 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from iterum import ExpectNilError
-from iterum import nil
-from iterum import Option
-from iterum import Some
-from iterum import UnwrapNilError
+from iterum import ExpectNilError, Option, Some, UnwrapNilError, nil
 
 
 def test_eq():
@@ -15,7 +11,7 @@ def test_eq():
 
 
 def test_repr():
-    assert repr(Some("test")) == f"{Some.__name__}({repr('test')})"
+    assert repr(Some("test")) == f"{Some.__name__}({'test'!r})"
 
 
 def test_and_basic_usage():

@@ -2,17 +2,12 @@ from __future__ import annotations
 
 import operator
 from types import EllipsisType
-from typing import Literal
-from typing import overload
-from typing import SupportsIndex
+from typing import Literal, SupportsIndex, overload
 
 from ._diterum import Diterum
 from ._iterum import Iterum
-from ._notset import NotSet
-from ._notset import NotSetType
-from ._option import nil
-from ._option import Option
-from ._option import Some
+from ._notset import NotSet, NotSetType
+from ._option import Option, Some, nil
 
 
 @overload
@@ -21,8 +16,7 @@ def seq(
     end: SupportsIndex,
     /,
     step: SupportsIndex = 1,
-) -> Seq:
-    ...
+) -> Seq: ...
 
 
 @overload
@@ -31,8 +25,7 @@ def seq(
     end: EllipsisType,
     /,
     step: SupportsIndex = 1,
-) -> InfSeq:
-    ...
+) -> InfSeq: ...
 
 
 @overload
@@ -41,8 +34,7 @@ def seq(
     /,
     *,
     step: SupportsIndex = 1,
-) -> Seq:
-    ...
+) -> Seq: ...
 
 
 @overload
@@ -51,8 +43,7 @@ def seq(
     /,
     *,
     step: SupportsIndex = 1,
-) -> InfSeq:
-    ...
+) -> InfSeq: ...
 
 
 def seq(
@@ -69,39 +60,60 @@ def seq(
     If an infinite end is provided (using ellipsis `...`), an instance of
     [InfSeq][iterum.InfSeq] is returned.
 
-    Examples:
+    **Examples:**
 
-        >>> itr = seq(3)
-        >>> assert itr.next() == Some(0)
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next() == Some(2)
-        >>> assert itr.next() == nil
+    ```python
+    >>> itr = seq(3)
+    >>> assert itr.next() == Some(0)
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next() == Some(2)
+    >>> assert itr.next() == nil
 
-        Can also specify a start and step:
-        >>> itr = seq(3, 9, 3)
-        >>> assert itr.next() == Some(3)
-        >>> assert itr.next() == Some(6)
-        >>> assert itr.next() == nil
 
-        Finite ranges implement [Diterum][iterum.Diterum]:
-        >>> itr = seq(3)
-        >>> assert itr.len() == 3
-        >>> assert itr.next_back() == Some(2)
-        >>> assert itr.next() == Some(0)
+    ```
 
-        Specify an infinite range using `...`:
-        >>> itr = seq(...)
-        >>> assert itr.next() == Some(0)
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next() == Some(2)
-        >>> # will continue forever!
+    Can also specify a start and step:
 
-        Similarly a start and step can be specified:
-        >>> itr = seq(-10, ..., -1)
-        >>> assert itr.next() == Some(-10)
-        >>> assert itr.next() == Some(-11)
-        >>> assert itr.next() == Some(-12)
-        >>> # will continue forever!
+    ```python
+    >>> itr = seq(3, 9, 3)
+    >>> assert itr.next() == Some(3)
+    >>> assert itr.next() == Some(6)
+    >>> assert itr.next() == nil
+
+    ```
+
+    Finite ranges implement [Diterum][iterum.Diterum]:
+
+    ```python
+    >>> itr = seq(3)
+    >>> assert itr.len() == 3
+    >>> assert itr.next_back() == Some(2)
+    >>> assert itr.next() == Some(0)
+
+
+    ```
+
+    Specify an infinite range using `...`:
+
+    ```python
+    >>> itr = seq(...)
+    >>> assert itr.next() == Some(0)
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next() == Some(2)
+    >>> # will continue forever!
+
+    ```
+
+    Similarly a start and step can be specified:
+
+    ```python
+    >>> itr = seq(-10, ..., -1)
+    >>> assert itr.next() == Some(-10)
+    >>> assert itr.next() == Some(-11)
+    >>> assert itr.next() == Some(-12)
+    >>> # will continue forever!
+
+    ```
     """
 
     if isinstance(end, NotSetType):
@@ -132,7 +144,7 @@ def _sign(step: int) -> Literal[1, 0, -1]:
 
 
 class Seq(Diterum[int]):
-    __slots__ = ("_front", "_back", "_step", "_dir")
+    __slots__ = ("_back", "_dir", "_front", "_step")
 
     def __init__(self, *, start: int, end: int, step: int) -> None:
         self._front = start

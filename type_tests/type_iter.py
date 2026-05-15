@@ -1,55 +1,51 @@
 from __future__ import annotations
 
-from typing import assert_type
-from typing import Generic
-from typing import Iterable
-from typing import TypeVar
+from collections.abc import Iterable
+from typing import TypeVar, assert_type
 
-from iterum import Chain
-from iterum import Cycle
-from iterum import Enumerate
-from iterum import Filter
-from iterum import FilterMap
-from iterum import FlatMap
-from iterum import Flatten
-from iterum import Fuse
-from iterum import Inspect
-from iterum import iterum
-from iterum import Map
-from iterum import MapWhile
-from iterum import Nil
-from iterum import nil
-from iterum import Option
-from iterum import Ordering
-from iterum import Peekable
-from iterum import Scan
-from iterum import Skip
-from iterum import SkipWhile
-from iterum import Some
-from iterum import State
-from iterum import StepBy
-from iterum import Take
-from iterum import TakeWhile
-from iterum import Zip
+from iterum import (
+    Chain,
+    Cycle,
+    Enumerate,
+    Filter,
+    FilterMap,
+    FlatMap,
+    Flatten,
+    Fuse,
+    Inspect,
+    Map,
+    MapWhile,
+    Nil,
+    Option,
+    Ordering,
+    Peekable,
+    Scan,
+    Skip,
+    SkipWhile,
+    Some,
+    State,
+    StepBy,
+    Take,
+    TakeWhile,
+    Zip,
+    iterum,
+    nil,
+)
 
 T = TypeVar("T")
 
 
-class MyCollection(Generic[T]):
-    def __init__(self, _: Iterable[T]) -> None:
-        ...
+class MyCollection[T]:
+    def __init__(self, _: Iterable[T]) -> None: ...
 
 
-def create_int() -> int:
-    ...
+def create_int() -> int: ...
 
 
-def create_tuple_int() -> tuple[int, ...]:
-    ...
+def create_tuple_int() -> tuple[int, ...]: ...
 
 
-def create_tuple_str_int() -> tuple[str, int]:
-    ...
+def create_tuple_str_int() -> tuple[str, int]: ...
 
 
 itr = iterum([1, 2, 3])
@@ -245,7 +241,8 @@ def iter_partition():
     )
     # Coulde be MyCollection[int] or MyCollection[Unkown]
     # assert_type(
-    #     itr.partition(lambda _: False, MyCollection), tuple[MyCollection, MyCollection]
+    #     itr.partition(lambda _: False, MyCollection),
+    #     tuple[MyCollection, MyCollection],
     # )
 
 
