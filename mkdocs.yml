@@ -6,20 +6,26 @@ repo_name: tjsmart/iterum
 
 theme:
   name: material
+
   features:
     - navigation.tabs
     - navigation.top
     - navigation.footer
     - navigation.sections
     - toc.integrate
+
     - search.suggest
     - search.highlight
+
     - content.tabs.link
-    - content.code.annotation
-    # - content.code.copy
+    - content.code.annotate
+    - content.code.copy
+
   language: en
+
   logo: assets/logo.png
   favicon: assets/logo.png
+
   palette:
     scheme: slate
     primary: red
@@ -31,47 +37,85 @@ extra:
       link: https://github.com/tjsmart
 
 markdown_extensions:
+  #
+  # Core
+  #
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - tables
+
+  #
+  # PyMdown
+  #
+  - pymdownx.details
+
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - admonition
+  - pymdownx.mark
+  - pymdownx.tabbed:
+      alternate_style: true
+
   - pymdownx.arithmatex:
       generic: true
-  - footnotes
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.mark
-  - attr_list
-
-copyright: |
-  &copy; 2023 <a href="https://github.com/tjsmart"  target="_blank" rel="noopener">Tyler Smart</a>
-
-nav:
-  - Overview: 'index.md'
-  - API: 'api.md'
 
 plugins:
+  - search
+
   - mkdocstrings:
       default_handler: python
+
       handlers:
         python:
           paths:
             - src
+
           options:
-            # Headings
+            #
+            # Rendering
+            #
+            docstring_style: google
             show_root_heading: true
             show_root_full_path: true
-            # Docstrings
-            show_if_no_docstring: false
-            # Signatures/annotations
-            show_signature_annotations: true
-            # Member options
-            members_order: source
-            # Other
-            show_bases: true
             show_source: true
-  - search
+            show_bases: true
+
+            #
+            # Members
+            #
+            members_order: source
+            show_if_no_docstring: true
+
+            #
+            # Signatures
+            #
+            show_signature_annotations: true
+            separate_signature: true
+
+            #
+            # Modern rendering improvements
+            #
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
 
 extra_css:
   - stylesheets/extra.css
+
+copyright: |
+  &copy; 2023 <a href="https://github.com/tjsmart" target="_blank" rel="noopener">Tyler Smart</a>
+
+nav:
+  - Overview: index.md
+  - API: api.md
