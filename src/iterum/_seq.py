@@ -60,39 +60,53 @@ def seq(
     If an infinite end is provided (using ellipsis `...`), an instance of
     [InfSeq][iterum.InfSeq] is returned.
 
-    Examples:
+    **Examples:**
 
-        >>> itr = seq(3)
-        >>> assert itr.next() == Some(0)
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next() == Some(2)
-        >>> assert itr.next() == nil
+    ```python
+    >>> itr = seq(3)
+    >>> assert itr.next() == Some(0)
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next() == Some(2)
+    >>> assert itr.next() == nil
+    ```
 
-        Can also specify a start and step:
-        >>> itr = seq(3, 9, 3)
-        >>> assert itr.next() == Some(3)
-        >>> assert itr.next() == Some(6)
-        >>> assert itr.next() == nil
+    Can also specify a start and step:
 
-        Finite ranges implement [Diterum][iterum.Diterum]:
-        >>> itr = seq(3)
-        >>> assert itr.len() == 3
-        >>> assert itr.next_back() == Some(2)
-        >>> assert itr.next() == Some(0)
+    ```python
+    >>> itr = seq(3, 9, 3)
+    >>> assert itr.next() == Some(3)
+    >>> assert itr.next() == Some(6)
+    >>> assert itr.next() == nil
+    ```
 
-        Specify an infinite range using `...`:
-        >>> itr = seq(...)
-        >>> assert itr.next() == Some(0)
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next() == Some(2)
-        >>> # will continue forever!
+    Finite ranges implement [Diterum][iterum.Diterum]:
 
-        Similarly a start and step can be specified:
-        >>> itr = seq(-10, ..., -1)
-        >>> assert itr.next() == Some(-10)
-        >>> assert itr.next() == Some(-11)
-        >>> assert itr.next() == Some(-12)
-        >>> # will continue forever!
+    ```python
+    >>> itr = seq(3)
+    >>> assert itr.len() == 3
+    >>> assert itr.next_back() == Some(2)
+    >>> assert itr.next() == Some(0)
+    ```
+
+    Specify an infinite range using `...`:
+
+    ```python
+    >>> itr = seq(...)
+    >>> assert itr.next() == Some(0)
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next() == Some(2)
+    >>> # will continue forever!
+    ```
+
+    Similarly a start and step can be specified:
+
+    ```python
+    >>> itr = seq(-10, ..., -1)
+    >>> assert itr.next() == Some(-10)
+    >>> assert itr.next() == Some(-11)
+    >>> assert itr.next() == Some(-12)
+    >>> # will continue forever!
+    ```
     """
 
     if isinstance(end, NotSetType):
