@@ -73,6 +73,7 @@ class Nil(Singleton):
     nil
     >>> x.is_nil()
     True
+
     ```
 
     [Nil][iterum.Nil] always returns the same object so just use [nil][iterum.nil]
@@ -81,6 +82,7 @@ class Nil(Singleton):
     ```python
     >>> nil is Nil()
     True
+
     ```
 
     Likely, the only practical use of the [Nil][iterum.Nil] class is for type
@@ -111,6 +113,7 @@ class Nil(Singleton):
         >>> assert nil.and_(Some("foo")) == nil
         >>> assert Some(2).and_(Some("foo")) == Some("foo")
         >>> assert nil.and_(nil) == nil
+
         ```
 
         Note: because `and` is a keyword, this method is called `and_` instead.
@@ -136,6 +139,7 @@ class Nil(Singleton):
         >>> assert Some(2).and_then(checked_sq_u32) == Some(4)
         >>> assert Some(1_000_000).and_then(checked_sq_u32) == nil
         >>> assert nil.and_then(checked_sq_u32) == nil
+
         ```
         """
         return self
@@ -149,6 +153,7 @@ class Nil(Singleton):
         ```python
         >>> x = Some("value")
         >>> assert x.expect("fruits are healthy") == "value"
+
         ```
 
         ```python
@@ -158,6 +163,7 @@ class Nil(Singleton):
         ...     print(ex)
         ...
         fruits are healthy
+
         ```
 
         Raises:
@@ -180,6 +186,7 @@ class Nil(Singleton):
         >>> assert nil.filter(lambda x: x % 2 == 0) == nil
         >>> assert Some(3).filter(lambda x: x % 2 == 0) == nil
         >>> assert Some(4).filter(lambda x: x % 2 == 0) == Some(4)
+
         ```
         """
         return self
@@ -194,6 +201,7 @@ class Nil(Singleton):
         >>> assert Some(Some(6)).flatten() == Some(6)
         >>> assert Some(nil).flatten() == nil
         >>> assert nil.flatten() == nil
+
         ```
         """
         return self
@@ -213,6 +221,7 @@ class Nil(Singleton):
         >>> opt, value = opt.get_or_insert(5)
         >>> assert value == 5
         >>> assert opt == Some(5)
+
         ```
 
         ```python
@@ -220,6 +229,7 @@ class Nil(Singleton):
         >>> opt, value = opt.get_or_insert(5)
         >>> assert value == 3
         >>> assert opt == Some(3)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -228,11 +238,13 @@ class Nil(Singleton):
         ```python
         >>> assert Some(10).get_or_insert(5).returned == 10
         >>> assert nil.get_or_insert(5).returned == 5
+
         ```
 
         ```python
         >>> assert Some(10).get_or_insert(5).inserted == Some(10)
         >>> assert nil.get_or_insert(5).inserted == Some(5)
+
         ```
         """
         return Swap(Some(value), value)
@@ -250,6 +262,7 @@ class Nil(Singleton):
         >>> opt, value = opt.get_or_insert_with(lambda: 5)
         >>> assert value == 5
         >>> assert opt == Some(5)
+
         ```
 
         ```python
@@ -257,6 +270,7 @@ class Nil(Singleton):
         >>> opt, value = opt.get_or_insert_with(lambda: 5)
         >>> assert value == 3
         >>> assert opt == Some(3)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -266,12 +280,14 @@ class Nil(Singleton):
         >>> swap = Some(10).get_or_insert_with(lambda: 5)
         >>> assert swap.inserted == Some(10)
         >>> assert swap.returned == 10
+
         ```
 
         ```python
         >>> swap = nil.get_or_insert_with(lambda: 5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
         """
         return Swap(Some(value := f()), value)
@@ -293,6 +309,7 @@ class Nil(Singleton):
         >>> opt, value = opt.insert(1)
         >>> assert value == 1
         >>> assert opt == Some(1)
+
         ```
 
         ```python
@@ -300,6 +317,7 @@ class Nil(Singleton):
         >>> opt, value = opt.insert(1)
         >>> assert value == 1
         >>> assert opt == Some(1)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -309,12 +327,14 @@ class Nil(Singleton):
         >>> swap = Some(10).insert(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
 
         ```python
         >>> swap = nil.insert(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
         """
         return Swap(Some(value), value)
@@ -328,6 +348,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some(2).is_nil() is False
         >>> assert nil.is_nil() is True
+
         ```
         """
         return True
@@ -341,6 +362,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some(2).is_some() is True
         >>> assert nil.is_some() is False
+
         ```
         """
         return False
@@ -356,6 +378,7 @@ class Nil(Singleton):
         >>> assert Some(2).is_some_and(lambda x: x > 1) is True
         >>> assert Some(0).is_some_and(lambda x: x > 1) is False
         >>> assert nil.is_some_and(lambda x: x > 1) is False
+
         ```
         """
         return False
@@ -369,6 +392,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some(4).iter().next() == Some(4)
         >>> assert nil.iter().next() == nil
+
         ```
         """
         from ._iterum import iterum
@@ -386,6 +410,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some("Hello, World!").map(len) == Some(13)
         >>> assert nil.map(len) == nil
+
         ```
         """
         return self
@@ -404,6 +429,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some("foo").map_or(42, len) == 3
         >>> assert nil.map_or(42, len) == 42
+
         ```
         """
         return default
@@ -419,6 +445,7 @@ class Nil(Singleton):
         >>> k = 21
         >>> assert Some("foo").map_or_else(lambda: 2 * k, len) == 3
         >>> assert nil.map_or_else(lambda: 2 * k, len) == 42
+
         ```
         """
         return default()
@@ -436,6 +463,7 @@ class Nil(Singleton):
 
         ```python
         >>> assert Some("foo").ok_or(RuntimeError("oh no!")) == "foo"
+
         ```
 
         ```python
@@ -445,6 +473,7 @@ class Nil(Singleton):
         ...     print(ex)
         ...
         oh no!
+
         ```
         """
         raise err
@@ -458,6 +487,7 @@ class Nil(Singleton):
 
         ```python
         >>> assert Some("foo").ok_or_else(AssertionError) == "foo"
+
         ```
 
         ```python
@@ -467,6 +497,7 @@ class Nil(Singleton):
         ...     print(ex)
         ...
         oopsy!
+
         ```
         """
         raise err()
@@ -486,6 +517,7 @@ class Nil(Singleton):
         >>> assert nil.or_(Some(100)) == Some(100)
         >>> assert Some(2).or_(Some(100)) == Some(2)
         >>> assert nil.or_(nil) == nil
+
         ```
 
         Note: because `or` is a keyword, this method is called `or_` instead.
@@ -510,6 +542,7 @@ class Nil(Singleton):
         >>> assert Some("barbarians").or_else(vikings) == Some("barbarians")
         >>> assert nil.or_else(vikings) == Some("vikings")
         >>> assert nil.or_else(nobody) == nil
+
         ```
         """
         return f()
@@ -527,6 +560,7 @@ class Nil(Singleton):
         >>> new, old = x.replace(5)
         >>> assert new == Some(5)
         >>> assert old == Some(2)
+
         ```
 
         ```python
@@ -534,6 +568,7 @@ class Nil(Singleton):
         >>> new, old = x.replace(5)
         >>> assert new == Some(5)
         >>> assert old == nil
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -543,12 +578,14 @@ class Nil(Singleton):
         >>> swap = Some(10).replace(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == Some(10)
+
         ```
 
         ```python
         >>> swap = nil.replace(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == nil
+
         ```
         """
         return Swap(Some(value), nil)
@@ -565,6 +602,7 @@ class Nil(Singleton):
         >>> new, old = x.take()
         >>> assert new == nil
         >>> assert old == Some(2)
+
         ```
 
         ```python
@@ -572,6 +610,7 @@ class Nil(Singleton):
         >>> new, old = x.take()
         >>> assert new == nil
         >>> assert old == nil
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -581,12 +620,14 @@ class Nil(Singleton):
         >>> swap = Some(2).take()
         >>> assert swap.inserted == nil
         >>> assert swap.returned == Some(2)
+
         ```
 
         ```python
         >>> swap = nil.take()
         >>> assert swap.inserted == nil
         >>> assert swap.returned == nil
+
         ```
         """
         return Swap(nil, self)
@@ -601,6 +642,7 @@ class Nil(Singleton):
 
         ```python
         >>> assert Some("air").unwrap() == "air"
+
         ```
 
         ```python
@@ -610,6 +652,7 @@ class Nil(Singleton):
         ...     print("Attempted to unwrap a nil!")
         ...
         Attempted to unwrap a nil!
+
         ```
 
         Raises:
@@ -631,6 +674,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some("car").unwrap_or("bike") == "car"
         >>> assert nil.unwrap_or("bike") == "bike"
+
         ```
         """
         return default
@@ -655,6 +699,7 @@ class Nil(Singleton):
         >>> k = 10
         >>> assert Some(4).unwrap_or_else(lambda: 2 * k) == 4
         >>> assert nil.unwrap_or_else(lambda: 2 * k) == 20
+
         ```
         """
         return f()
@@ -671,6 +716,7 @@ class Nil(Singleton):
         ```python
         >>> assert Some((1, "hi")).unzip() == (Some(1), Some("hi"))
         >>> assert nil.unzip() == (nil, nil)
+
         ```
         """
         return (nil, nil)
@@ -693,6 +739,7 @@ class Nil(Singleton):
         >>> assert nil.xor(Some(100)) == Some(100)
         >>> assert Some(2).xor(Some(100)) == nil
         >>> assert nil.xor(nil) == nil
+
         ```
         """
         return nil if isinstance(optb, Nil) else optb
@@ -711,6 +758,7 @@ class Nil(Singleton):
         >>> assert Some(1).zip(Some("hi")) == Some((1, "hi"))
         >>> assert Some(1).zip(nil) == nil
         >>> assert nil.zip(nil) == nil
+
         ```
         """
         return self
@@ -736,6 +784,7 @@ class Some(Generic[T]):
     True
     >>> x.unwrap()
     1
+
     ```
     """
 
@@ -770,6 +819,7 @@ class Some(Generic[T]):
         >>> assert nil.and_(Some("foo")) == nil
         >>> assert Some(2).and_(Some("foo")) == Some("foo")
         >>> assert nil.and_(nil) == nil
+
         ```
 
         Note: because `and` is a keyword, this method is called `and_` instead.
@@ -793,6 +843,7 @@ class Some(Generic[T]):
         >>> assert Some(2).and_then(checked_sq_u32) == Some(4)
         >>> assert Some(1_000_000).and_then(checked_sq_u32) == nil
         >>> assert nil.and_then(checked_sq_u32) == nil
+
         ```
         """
         return f(self._value)
@@ -805,6 +856,7 @@ class Some(Generic[T]):
         ```python
         >>> x = Some("value")
         >>> assert x.expect("fruits are healthy") == "value"
+
         ```
 
         ```python
@@ -814,6 +866,7 @@ class Some(Generic[T]):
         ...     print(ex)
         ...
         fruits are healthy
+
         ```
 
         Raises:
@@ -835,6 +888,7 @@ class Some(Generic[T]):
         >>> assert nil.filter(lambda x: x % 2 == 0) == nil
         >>> assert Some(3).filter(lambda x: x % 2 == 0) == nil
         >>> assert Some(4).filter(lambda x: x % 2 == 0) == Some(4)
+
         ```
         """
         return self if predicate(self._value) else Nil()
@@ -848,6 +902,7 @@ class Some(Generic[T]):
         >>> assert Some(Some(6)).flatten() == Some(6)
         >>> assert Some(nil).flatten() == nil
         >>> assert nil.flatten() == nil
+
         ```
         """
         if isinstance(self._value, (Some, Nil)):
@@ -869,6 +924,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.get_or_insert(5)
         >>> assert value == 5
         >>> assert opt == Some(5)
+
         ```
 
         ```python
@@ -876,6 +932,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.get_or_insert(5)
         >>> assert value == 3
         >>> assert opt == Some(3)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -884,11 +941,13 @@ class Some(Generic[T]):
         ```python
         >>> assert Some(10).get_or_insert(5).returned == 10
         >>> assert nil.get_or_insert(5).returned == 5
+
         ```
 
         ```python
         >>> assert Some(10).get_or_insert(5).inserted == Some(10)
         >>> assert nil.get_or_insert(5).inserted == Some(5)
+
         ```
         """
         return Swap(Some(self._value), self._value)
@@ -905,6 +964,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.get_or_insert_with(lambda: 5)
         >>> assert value == 5
         >>> assert opt == Some(5)
+
         ```
 
         ```python
@@ -912,6 +972,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.get_or_insert_with(lambda: 5)
         >>> assert value == 3
         >>> assert opt == Some(3)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -921,12 +982,14 @@ class Some(Generic[T]):
         >>> swap = Some(10).get_or_insert_with(lambda: 5)
         >>> assert swap.inserted == Some(10)
         >>> assert swap.returned == 10
+
         ```
 
         ```python
         >>> swap = nil.get_or_insert_with(lambda: 5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
         """
         return Swap(Some(self._value), self._value)
@@ -947,6 +1010,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.insert(1)
         >>> assert value == 1
         >>> assert opt == Some(1)
+
         ```
 
         ```python
@@ -954,6 +1018,7 @@ class Some(Generic[T]):
         >>> opt, value = opt.insert(1)
         >>> assert value == 1
         >>> assert opt == Some(1)
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -963,12 +1028,14 @@ class Some(Generic[T]):
         >>> swap = Some(10).insert(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
 
         ```python
         >>> swap = nil.insert(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == 5
+
         ```
         """
         self._value = value
@@ -982,6 +1049,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some(2).is_nil() is False
         >>> assert nil.is_nil() is True
+
         ```
         """
         return False
@@ -994,6 +1062,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some(2).is_some() is True
         >>> assert nil.is_some() is False
+
         ```
         """
         return True
@@ -1008,6 +1077,7 @@ class Some(Generic[T]):
         >>> assert Some(2).is_some_and(lambda x: x > 1) is True
         >>> assert Some(0).is_some_and(lambda x: x > 1) is False
         >>> assert nil.is_some_and(lambda x: x > 1) is False
+
         ```
         """
         return bool(f(self.unwrap()))
@@ -1020,6 +1090,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some(4).iter().next() == Some(4)
         >>> assert nil.iter().next() == nil
+
         ```
         """
         from ._iterum import iterum
@@ -1036,6 +1107,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some("Hello, World!").map(len) == Some(13)
         >>> assert nil.map(len) == nil
+
         ```
         """
         return Some(f(self._value))
@@ -1054,6 +1126,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some("foo").map_or(42, len) == 3
         >>> assert nil.map_or(42, len) == 42
+
         ```
         """
         return f(self._value)
@@ -1069,6 +1142,7 @@ class Some(Generic[T]):
         >>> k = 21
         >>> assert Some("foo").map_or_else(lambda: 2 * k, len) == 3
         >>> assert nil.map_or_else(lambda: 2 * k, len) == 42
+
         ```
         """
         return f(self._value)
@@ -1085,6 +1159,7 @@ class Some(Generic[T]):
 
         ```python
         >>> assert Some("foo").ok_or(RuntimeError("oh no!")) == "foo"
+
         ```
 
         ```python
@@ -1094,6 +1169,7 @@ class Some(Generic[T]):
         ...     print(ex)
         ...
         oh no!
+
         ```
         """
         return self._value
@@ -1106,6 +1182,7 @@ class Some(Generic[T]):
 
         ```python
         >>> assert Some("foo").ok_or_else(AssertionError) == "foo"
+
         ```
 
         ```python
@@ -1115,6 +1192,7 @@ class Some(Generic[T]):
         ...     print(ex)
         ...
         oopsy!
+
         ```
         """
         return self._value
@@ -1133,6 +1211,7 @@ class Some(Generic[T]):
         >>> assert nil.or_(Some(100)) == Some(100)
         >>> assert Some(2).or_(Some(100)) == Some(2)
         >>> assert nil.or_(nil) == nil
+
         ```
 
         Note: because `or` is a keyword, this method is called `or_` instead.
@@ -1156,6 +1235,7 @@ class Some(Generic[T]):
         >>> assert Some("barbarians").or_else(vikings) == Some("barbarians")
         >>> assert nil.or_else(vikings) == Some("vikings")
         >>> assert nil.or_else(nobody) == nil
+
         ```
         """
         return self
@@ -1172,6 +1252,7 @@ class Some(Generic[T]):
         >>> new, old = x.replace(5)
         >>> assert new == Some(5)
         >>> assert old == Some(2)
+
         ```
 
         ```python
@@ -1179,6 +1260,7 @@ class Some(Generic[T]):
         >>> new, old = x.replace(5)
         >>> assert new == Some(5)
         >>> assert old == nil
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -1188,12 +1270,14 @@ class Some(Generic[T]):
         >>> swap = Some(10).replace(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == Some(10)
+
         ```
 
         ```python
         >>> swap = nil.replace(5)
         >>> assert swap.inserted == Some(5)
         >>> assert swap.returned == nil
+
         ```
         """
         old = self._value
@@ -1211,6 +1295,7 @@ class Some(Generic[T]):
         >>> new, old = x.take()
         >>> assert new == nil
         >>> assert old == Some(2)
+
         ```
 
         ```python
@@ -1218,6 +1303,7 @@ class Some(Generic[T]):
         >>> new, old = x.take()
         >>> assert new == nil
         >>> assert old == nil
+
         ```
 
         Alternatively, access the named attributes of [Swap][iterum.Swap],
@@ -1227,12 +1313,14 @@ class Some(Generic[T]):
         >>> swap = Some(2).take()
         >>> assert swap.inserted == nil
         >>> assert swap.returned == Some(2)
+
         ```
 
         ```python
         >>> swap = nil.take()
         >>> assert swap.inserted == nil
         >>> assert swap.returned == nil
+
         ```
         """
         return Swap(nil, self)
@@ -1246,6 +1334,7 @@ class Some(Generic[T]):
 
         ```python
         >>> assert Some("air").unwrap() == "air"
+
         ```
 
         ```python
@@ -1255,6 +1344,7 @@ class Some(Generic[T]):
         ...     print("Attempted to unwrap a nil!")
         ...
         Attempted to unwrap a nil!
+
         ```
 
         Raises:
@@ -1276,6 +1366,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some("car").unwrap_or("bike") == "car"
         >>> assert nil.unwrap_or("bike") == "bike"
+
         ```
         """
         return self._value
@@ -1291,6 +1382,7 @@ class Some(Generic[T]):
         >>> k = 10
         >>> assert Some(4).unwrap_or_else(lambda: 2 * k) == 4
         >>> assert nil.unwrap_or_else(lambda: 2 * k) == 20
+
         ```
         """
         return self._value
@@ -1306,6 +1398,7 @@ class Some(Generic[T]):
         ```python
         >>> assert Some((1, "hi")).unzip() == (Some(1), Some("hi"))
         >>> assert nil.unzip() == (nil, nil)
+
         ```
         """
         left, right = self._value
@@ -1329,6 +1422,7 @@ class Some(Generic[T]):
         >>> assert nil.xor(Some(100)) == Some(100)
         >>> assert Some(2).xor(Some(100)) == nil
         >>> assert nil.xor(nil) == nil
+
         ```
         """
         return self if isinstance(optb, Nil) else nil
@@ -1353,6 +1447,7 @@ class Some(Generic[T]):
         >>> assert Some(1).zip(Some("hi")) == Some((1, "hi"))
         >>> assert Some(1).zip(nil) == nil
         >>> assert nil.zip(nil) == nil
+
         ```
         """
         return nil if isinstance(other, Nil) else Some((self._value, other._value))
@@ -1374,6 +1469,7 @@ Type annotate a function which returns `Some[int]` or `nil`:
 ...     except ZeroDivisionError:
 ...         return nil
 ...
+
 ```
 
 Use `isinstance` to narrow the type:
@@ -1386,6 +1482,7 @@ Use `isinstance` to narrow the type:
 ... else:
 ...     reveal_type(x)  # Type of "x" is "Nil"
 ...
+
 ```
 
 Alternatively use pattern matching:
@@ -1397,5 +1494,6 @@ Alternatively use pattern matching:
 ...     case Nil:
 ...         print("Cannot divide by 0")
 ...
+
 ```
 """

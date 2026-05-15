@@ -68,6 +68,8 @@ def seq(
     >>> assert itr.next() == Some(1)
     >>> assert itr.next() == Some(2)
     >>> assert itr.next() == nil
+
+
     ```
 
     Can also specify a start and step:
@@ -77,6 +79,7 @@ def seq(
     >>> assert itr.next() == Some(3)
     >>> assert itr.next() == Some(6)
     >>> assert itr.next() == nil
+
     ```
 
     Finite ranges implement [Diterum][iterum.Diterum]:
@@ -86,6 +89,8 @@ def seq(
     >>> assert itr.len() == 3
     >>> assert itr.next_back() == Some(2)
     >>> assert itr.next() == Some(0)
+
+
     ```
 
     Specify an infinite range using `...`:
@@ -96,6 +101,7 @@ def seq(
     >>> assert itr.next() == Some(1)
     >>> assert itr.next() == Some(2)
     >>> # will continue forever!
+
     ```
 
     Similarly a start and step can be specified:
@@ -106,6 +112,7 @@ def seq(
     >>> assert itr.next() == Some(-11)
     >>> assert itr.next() == Some(-12)
     >>> # will continue forever!
+
     ```
     """
 

@@ -39,6 +39,7 @@ class Diterum(Iterum[T_co]):
         >>> assert di.next() == Some(4)
         >>> assert di.next() == nil
         >>> assert di.next_back() == nil
+
         ```
         """
         ...
@@ -62,6 +63,7 @@ class Diterum(Iterum[T_co]):
         >>> assert di.collect() == [2, 3]
         >>> assert di.next() == nil
         >>> assert di.len() == 0
+
         ```
         """
         ...
@@ -83,6 +85,7 @@ class Diterum(Iterum[T_co]):
         >>> assert di.next() == Some(2)
         >>> assert di.next() == Some(1)
         >>> assert di.next() == nil
+
         ```
         """
         return Rev(self)
@@ -106,6 +109,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([1, 2, 3])
         >>> assert di.rposition(lambda x: x == 3) == Some(2)
         >>> assert di.rposition(lambda x: x == 5) == nil
+
         ```
 
         Short-circuiting after first `True`:
@@ -114,6 +118,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([-1, 2, 3, 4])
         >>> assert di.rposition(lambda x: x >= 2) == Some(3)
         >>> assert di.next() == Some(-1)
+
         ```
         """
         len = self.len()
@@ -142,6 +147,7 @@ class Diterum(Iterum[T_co]):
         ```python
         >>> di = diterum([1, 2, 3])
         >>> assert di.nth_back(2) == Some(1)
+
         ```
 
         Does not rewind:
@@ -150,6 +156,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([1, 2, 3])
         >>> assert di.nth_back(1) == Some(2)
         >>> assert di.nth_back(1) == nil
+
         ```
 
         Returns [nil][iterum.nil] if there are less than `n + 1` elements:
@@ -157,6 +164,7 @@ class Diterum(Iterum[T_co]):
         ```python
         >>> di = diterum([1, 2, 3])
         >>> assert di.nth_back(10) == nil
+
         ```
         """
         return self.rev().nth(n)
@@ -180,6 +188,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([1, 2, 3])
         >>> assert di.rfind(lambda x: x == 2) == Some(2)
         >>> assert di.rfind(lambda x: x == 5) == nil
+
         ```
 
         Stops at first `True`:
@@ -188,6 +197,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([1, 2, 3])
         >>> assert di.rfind(lambda x: x == 2) == Some(2)
         >>> assert di.next_back() == Some(1)
+
         ```
         """
         return self.rev().find(predicate)
@@ -216,6 +226,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum([1, 2, 3])
         >>> sum = di.rfold(0, lambda acc, x: acc + x)
         >>> assert sum == 6
+
         ```
 
         ??? note "rfold is right-associtive"
@@ -225,6 +236,7 @@ class Diterum(Iterum[T_co]):
             >>> zero = "0"
             >>> result = diterum(numbers).rfold(zero, lambda acc, x: f"({x} + {acc})")
             >>> assert result == "(1 + (2 + (3 + (4 + (5 + 0)))))"
+
             ```
         """
         return self.rev().fold(init, f)
@@ -247,6 +259,7 @@ class Diterum(Iterum[T_co]):
         >>> di = diterum(["1", "2", "3"])
         >>> sum = di.try_rfold(0, lambda acc, x: acc + int(x), exception=TypeError)
         >>> assert sum == Some(6)
+
         ```
         """
         return self.rev().try_fold(init, f, exception=exception)
@@ -288,11 +301,13 @@ class diterum(Diterum[T_co]):
     >>> assert itr.next() == Some(2)
     >>> assert itr.next_back() == nil
     >>> assert itr.next() == nil
+
     ```
 
     ```python
     >>> itr = diterum([1, 2, 3])
     >>> assert itr.rfold(0, lambda acc, x: acc*2 + x) == 17
+
     ```
 
     ```python
@@ -305,6 +320,7 @@ class diterum(Diterum[T_co]):
     ...     .collect()
     ... )
     >>> assert y == [17, 5, 1]
+
     ```
     """
 
@@ -327,6 +343,7 @@ class diterum(Diterum[T_co]):
         >>> assert itr.next() == Some(1)
         >>> assert itr.next() == Some(2)
         >>> assert itr.next() == nil
+
         ```
         """
 
@@ -349,6 +366,7 @@ class diterum(Diterum[T_co]):
         >>> assert itr.next_back() == Some(2)
         >>> assert itr.next_back() == Some(1)
         >>> assert itr.next_back() == nil
+
         ```
         """
 
@@ -374,6 +392,7 @@ class diterum(Diterum[T_co]):
         >>> assert itr.len() == 0
         >>> assert itr.next() == nil
         >>> assert itr.len() == 0
+
         ```
         """
 

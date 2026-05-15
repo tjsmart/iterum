@@ -41,6 +41,7 @@ class Ordering(Enum):
         Ordering.Equal
         >>> Ordering.cmp(2, 1)
         Ordering.Greater
+
         ```
 
         A `TypeError` will be raised if the two objects are not comparable:
@@ -52,6 +53,7 @@ class Ordering(Enum):
         ...     print(f"exception received: {ex}")
         ...
         exception received: '>' not supported between instances of 'int' and 'str'
+
         ```
         """
 
