@@ -27,17 +27,20 @@ class Diterum(Iterum[T_co]):
 
         Returns [nil][iterum.nil] when there are no more elements.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3, 4, 5, 6])
-            >>> assert di.next() == Some(1)
-            >>> assert di.next_back() == Some(6)
-            >>> assert di.next_back() == Some(5)
-            >>> assert di.next() == Some(2)
-            >>> assert di.next() == Some(3)
-            >>> assert di.next() == Some(4)
-            >>> assert di.next() == nil
-            >>> assert di.next_back() == nil
+        ```python
+        >>> di = diterum([1, 2, 3, 4, 5, 6])
+        >>> assert di.next() == Some(1)
+        >>> assert di.next_back() == Some(6)
+        >>> assert di.next_back() == Some(5)
+        >>> assert di.next() == Some(2)
+        >>> assert di.next() == Some(3)
+        >>> assert di.next() == Some(4)
+        >>> assert di.next() == nil
+        >>> assert di.next_back() == nil
+
+        ```
         """
         ...
 
@@ -48,17 +51,20 @@ class Diterum(Iterum[T_co]):
 
         Returns the exact remaining length of the diterum.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3, 4])
-            >>> assert di.len() == 4
-            >>> assert di.next() == Some(1)
-            >>> assert di.len() == 3
-            >>> assert di.next_back() == Some(4)
-            >>> assert di.len() == 2
-            >>> assert di.collect() == [2, 3]
-            >>> assert di.next() == nil
-            >>> assert di.len() == 0
+        ```python
+        >>> di = diterum([1, 2, 3, 4])
+        >>> assert di.len() == 4
+        >>> assert di.next() == Some(1)
+        >>> assert di.len() == 3
+        >>> assert di.next_back() == Some(4)
+        >>> assert di.len() == 2
+        >>> assert di.collect() == [2, 3]
+        >>> assert di.next() == nil
+        >>> assert di.len() == 0
+
+        ```
         """
         ...
 
@@ -71,13 +77,16 @@ class Diterum(Iterum[T_co]):
         [rev()][iterum.Diterum.rev], an iterum will instead iterate from
         right to left.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3]).rev()
-            >>> assert di.next() == Some(3)
-            >>> assert di.next() == Some(2)
-            >>> assert di.next() == Some(1)
-            >>> assert di.next() == nil
+        ```python
+        >>> di = diterum([1, 2, 3]).rev()
+        >>> assert di.next() == Some(3)
+        >>> assert di.next() == Some(2)
+        >>> assert di.next() == Some(1)
+        >>> assert di.next() == nil
+
+        ```
         """
         return Rev(self)
 
@@ -94,16 +103,23 @@ class Diterum(Iterum[T_co]):
         [rposition()][iterum.Diterum.rposition] is short-circuiting; in other
         words, it will stop processing as soon as it finds a `True`.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.rposition(lambda x: x == 3) == Some(2)
-            >>> assert di.rposition(lambda x: x == 5) == nil
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.rposition(lambda x: x == 3) == Some(2)
+        >>> assert di.rposition(lambda x: x == 5) == nil
 
-            Short-circuiting after first `True`:
-            >>> di = diterum([-1, 2, 3, 4])
-            >>> assert di.rposition(lambda x: x >= 2) == Some(3)
-            >>> assert di.next() == Some(-1)
+        ```
+
+        Short-circuiting after first `True`:
+
+        ```python
+        >>> di = diterum([-1, 2, 3, 4])
+        >>> assert di.rposition(lambda x: x >= 2) == Some(3)
+        >>> assert di.next() == Some(-1)
+
+        ```
         """
         len = self.len()
         return self.rev().position(predicate).map(lambda x: len - x - 1)
@@ -126,19 +142,30 @@ class Diterum(Iterum[T_co]):
         [nth_back()][iterum.Diterum.nth_back] will return [nil][iterum.nil] if n
         is greater than or equal to the length of the diterum.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.nth_back(2) == Some(1)
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.nth_back(2) == Some(1)
 
-            Does not rewind:
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.nth_back(1) == Some(2)
-            >>> assert di.nth_back(1) == nil
+        ```
 
-            Returns [nil][iterum.nil] if there are less than `n + 1` elements:
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.nth_back(10) == nil
+        Does not rewind:
+
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.nth_back(1) == Some(2)
+        >>> assert di.nth_back(1) == nil
+
+        ```
+
+        Returns [nil][iterum.nil] if there are less than `n + 1` elements:
+
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.nth_back(10) == nil
+
+        ```
         """
         return self.rev().nth(n)
 
@@ -155,16 +182,23 @@ class Diterum(Iterum[T_co]):
         [rfind()][iterum.Diterum.rfind] is short-circuiting; in other words, it
         will stop processing as soon as the closure returns `True`.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.rfind(lambda x: x == 2) == Some(2)
-            >>> assert di.rfind(lambda x: x == 5) == nil
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.rfind(lambda x: x == 2) == Some(2)
+        >>> assert di.rfind(lambda x: x == 5) == nil
 
-            Stops at first `True`:
-            >>> di = diterum([1, 2, 3])
-            >>> assert di.rfind(lambda x: x == 2) == Some(2)
-            >>> assert di.next_back() == Some(1)
+        ```
+
+        Stops at first `True`:
+
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> assert di.rfind(lambda x: x == 2) == Some(2)
+        >>> assert di.next_back() == Some(1)
+
+        ```
         """
         return self.rev().find(predicate)
 
@@ -186,13 +220,16 @@ class Diterum(Iterum[T_co]):
         After applying this closure to every element of the diterum,
         [rfold()][iterum.Diterum.rfold] returns the accumulator.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum([1, 2, 3])
-            >>> sum = di.rfold(0, lambda acc, x: acc + x)
-            >>> assert sum == 6
+        ```python
+        >>> di = diterum([1, 2, 3])
+        >>> sum = di.rfold(0, lambda acc, x: acc + x)
+        >>> assert sum == 6
 
-        rfold is right-associtive:
+        ```
+
+        ??? note "rfold is right-associtive"
 
             ```python
             >>> numbers = [1, 2, 3, 4, 5]
@@ -216,11 +253,14 @@ class Diterum(Iterum[T_co]):
         This is the reverse version of [Iterum.try_fold()][iterum.Iterum.try_fold]:
         it takes elements starting from the back of the diterum.
 
-        Examples:
+        **Examples:**
 
-            >>> di = diterum(["1", "2", "3"])
-            >>> sum = di.try_rfold(0, lambda acc, x: acc + int(x), exception=TypeError)
-            >>> assert sum == Some(6)
+        ```python
+        >>> di = diterum(["1", "2", "3"])
+        >>> sum = di.try_rfold(0, lambda acc, x: acc + int(x), exception=TypeError)
+        >>> assert sum == Some(6)
+
+        ```
         """
         return self.rev().try_fold(init, f, exception=exception)
 
@@ -252,27 +292,36 @@ class diterum(Diterum[T_co]):
     """
     Implements a [Diterum][iterum.Diterum] interface from a sequence.
 
-    Examples:
+    **Examples:**
 
-        >>> itr = diterum([1, 2, 3])
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next_back() == Some(3)
-        >>> assert itr.next() == Some(2)
-        >>> assert itr.next_back() == nil
-        >>> assert itr.next() == nil
+    ```python
+    >>> itr = diterum([1, 2, 3])
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next_back() == Some(3)
+    >>> assert itr.next() == Some(2)
+    >>> assert itr.next_back() == nil
+    >>> assert itr.next() == nil
 
-        >>> itr = diterum([1, 2, 3])
-        >>> assert itr.rfold(0, lambda acc, x: acc*2 + x) == 17
+    ```
 
-        >>> x = [0, 1, 2, 3, 4]
-        >>> y = (
-        ...     diterum(x)
-        ...     .rev()
-        ...     .map(lambda x: x**2 + 1)
-        ...     .filter(lambda x: x % 2)
-        ...     .collect()
-        ... )
-        >>> assert y == [17, 5, 1]
+    ```python
+    >>> itr = diterum([1, 2, 3])
+    >>> assert itr.rfold(0, lambda acc, x: acc*2 + x) == 17
+
+    ```
+
+    ```python
+    >>> x = [0, 1, 2, 3, 4]
+    >>> y = (
+    ...     diterum(x)
+    ...     .rev()
+    ...     .map(lambda x: x**2 + 1)
+    ...     .filter(lambda x: x % 2)
+    ...     .collect()
+    ... )
+    >>> assert y == [17, 5, 1]
+
+    ```
     """
 
     __slots__ = ("_back", "_front", "_seq")
@@ -287,12 +336,15 @@ class diterum(Diterum[T_co]):
         Returns the next value in the sequence from the front if present,
         otherwise [nil][iterum.nil].
 
-        Examples:
+        **Examples:**
 
-            >>> itr = diterum([1, 2])
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = diterum([1, 2])
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == nil
+
+        ```
         """
 
         if self._back < self._front:
@@ -307,12 +359,15 @@ class diterum(Diterum[T_co]):
         Returns the next value in the sequence from the back if present,
         otherwise [nil][iterum.nil].
 
-        Examples:
+        **Examples:**
 
-            >>> itr = diterum([1, 2])
-            >>> assert itr.next_back() == Some(2)
-            >>> assert itr.next_back() == Some(1)
-            >>> assert itr.next_back() == nil
+        ```python
+        >>> itr = diterum([1, 2])
+        >>> assert itr.next_back() == Some(2)
+        >>> assert itr.next_back() == Some(1)
+        >>> assert itr.next_back() == nil
+
+        ```
         """
 
         if self._back < self._front:
@@ -326,16 +381,19 @@ class diterum(Diterum[T_co]):
         """
         Returns the remaining length of the sequence.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = diterum([1, 2])
-            >>> assert itr.len() == 2
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.len() == 1
-            >>> assert itr.next_back() == Some(2)
-            >>> assert itr.len() == 0
-            >>> assert itr.next() == nil
-            >>> assert itr.len() == 0
+        ```python
+        >>> itr = diterum([1, 2])
+        >>> assert itr.len() == 2
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.len() == 1
+        >>> assert itr.next_back() == Some(2)
+        >>> assert itr.len() == 0
+        >>> assert itr.next() == nil
+        >>> assert itr.len() == 0
+
+        ```
         """
 
         if self._back < self._front:

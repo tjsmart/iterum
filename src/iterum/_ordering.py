@@ -34,20 +34,27 @@ class Ordering(Enum):
 
         Examples:
 
-            >>> Ordering.cmp(1, 2)
-            Ordering.Less
-            >>> Ordering.cmp(1, 1)
-            Ordering.Equal
-            >>> Ordering.cmp(2, 1)
-            Ordering.Greater
+        ```python
+        >>> Ordering.cmp(1, 2)
+        Ordering.Less
+        >>> Ordering.cmp(1, 1)
+        Ordering.Equal
+        >>> Ordering.cmp(2, 1)
+        Ordering.Greater
 
-            A `TypeError` will be raised if the two objects are not comparable:
-            >>> try:
-            ...     Ordering.cmp(1, "two")
-            ... except TypeError as ex:
-            ...     print(f"exception received: {ex}")
-            ...
-            exception received: '>' not supported between instances of 'int' and 'str'
+        ```
+
+        A `TypeError` will be raised if the two objects are not comparable:
+
+        ```python
+        >>> try:
+        ...     Ordering.cmp(1, "two")
+        ... except TypeError as ex:
+        ...     print(f"exception received: {ex}")
+        ...
+        exception received: '>' not supported between instances of 'int' and 'str'
+
+        ```
         """
 
         if lhs == rhs:

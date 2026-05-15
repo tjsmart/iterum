@@ -5,7 +5,7 @@ import itertools
 from abc import abstractmethod
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload
 
 from ._helpers import check_methods
 from ._notset import NotSet, NotSetType
@@ -49,21 +49,36 @@ class Iterum(Iterator[T_co]):
         eventually start returning [Some(Item)][iterum.Some] again at some
         point.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([1, 2, 3])
+        ```python
+        >>> itr = iterum([1, 2, 3])
 
-            A call to next() returns the next value...
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == Some(3)
+        ```
 
-            ... and then [nil][iterum.nil] once it's over.
-            >>> assert itr.next() == nil
+        A call to next() returns the next value...
 
-            More calls may or may not return [nil][iterum.nil]. Here, they always will.
-            >>> assert itr.next() == nil
-            >>> assert itr.next() == nil
+        ```python
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == Some(3)
+
+        ```
+
+        ... and then [nil][iterum.nil] once it's over.
+
+        ```python
+        >>> assert itr.next() == nil
+
+        ```
+
+        More calls may or may not return [nil][iterum.nil]. Here, they always will.
+
+        ```python
+        >>> assert itr.next() == nil
+        >>> assert itr.next() == nil
+
+        ```
         """
         return nil
 
@@ -91,16 +106,23 @@ class Iterum(Iterator[T_co]):
 
         An empty iterum returns `True`.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> assert iterum(a).all(lambda x: x > 0)
-            >>> assert not iterum(a).all(lambda x: x > 2)
+        ```python
+        >>> a = [1, 2, 3]
+        >>> assert iterum(a).all(lambda x: x > 0)
+        >>> assert not iterum(a).all(lambda x: x > 2)
 
-            Stopping at the first `False`:
-            >>> itr = iterum([1, 2, 3])
-            >>> assert not itr.all(lambda x: x != 2)
-            >>> assert itr.next() == Some(3)
+        ```
+
+        Stopping at the first `False`:
+
+        ```python
+        >>> itr = iterum([1, 2, 3])
+        >>> assert not itr.all(lambda x: x != 2)
+        >>> assert itr.next() == Some(3)
+
+        ```
         """
         return all(map(f, self))
 
@@ -119,19 +141,29 @@ class Iterum(Iterator[T_co]):
 
         An empty iterum returns `False`.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> assert iterum(a).any(lambda x: x > 0)
-            >>> assert not iterum(a).any(lambda x: x > 5)
+        ```python
+        >>> a = [1, 2, 3]
+        >>> assert iterum(a).any(lambda x: x > 0)
+        >>> assert not iterum(a).any(lambda x: x > 5)
 
+        ```
 
-            Stopping at the first `True`:
-            >>> itr = iterum([1, 2, 3])
-            >>> assert itr.any(lambda x: x != 2)
+        Stopping at the first `True`:
 
-            itr still has more elements.
-            >>> assert itr.next() == Some(2)
+        ```python
+        >>> itr = iterum([1, 2, 3])
+        >>> assert itr.any(lambda x: x != 2)
+
+        ```
+
+        itr still has more elements.
+
+        ```python
+        >>> assert itr.next() == Some(2)
+
+        ```
         """
         return any(map(f, self))
 
@@ -145,18 +177,21 @@ class Iterum(Iterator[T_co]):
 
         In other words, it links two iterables together, in a chain.
 
-        Examples:
+        **Examples:**
 
-            >>> a1 = [1, 2, 3]
-            >>> a2 = [4, 5, 6]
-            >>> itr = iterum(a1).chain(a2)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == Some(3)
-            >>> assert itr.next() == Some(4)
-            >>> assert itr.next() == Some(5)
-            >>> assert itr.next() == Some(6)
-            >>> assert itr.next() == nil
+        ```python
+        >>> a1 = [1, 2, 3]
+        >>> a2 = [4, 5, 6]
+        >>> itr = iterum(a1).chain(a2)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == Some(3)
+        >>> assert itr.next() == Some(4)
+        >>> assert itr.next() == Some(5)
+        >>> assert itr.next() == Some(6)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return Chain(self, other)
 
@@ -179,11 +214,14 @@ class Iterum(Iterator[T_co]):
         Lexicographically compares the elements of this Iterator with those of
         another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1]).cmp([1]) == Ordering.Equal
-            >>> assert iterum([1, 2]).cmp([1]) == Ordering.Greater
-            >>> assert iterum([1]).cmp([1, 2]) == Ordering.Less
+        ```python
+        >>> assert iterum([1]).cmp([1]) == Ordering.Equal
+        >>> assert iterum([1, 2]).cmp([1]) == Ordering.Greater
+        >>> assert iterum([1]).cmp([1, 2]) == Ordering.Less
+
+        ```
         """
         other = iterum(other)
         while True:
@@ -236,13 +274,20 @@ class Iterum(Iterator[T_co]):
         for mapping an iterable into any type. Most commonly this is a collection
         type such as `list` or `set` but could also be a function such as `''.join`.
 
-        Examples:
+        **Examples:**
 
-            >>> doubled = iterum([1, 2, 3]).map(lambda x: x * 2).collect(list)
-            >>> assert doubled == [2, 4, 6]
+        ```python
+        >>> doubled = iterum([1, 2, 3]).map(lambda x: x * 2).collect(list)
+        >>> assert doubled == [2, 4, 6]
 
-            using `join` to collect an iterable of `str`
-            >>> assert iterum("test").map(str.upper).collect("".join) == "TEST"
+        ```
+
+        using `join` to collect an iterable of `str`
+
+        ```python
+        >>> assert iterum("test").map(str.upper).collect("".join) == "TEST"
+
+        ```
         """
         return container(self)
 
@@ -255,10 +300,13 @@ class Iterum(Iterator[T_co]):
         Note that next has to be called at least once even if the iterum does
         not have any elements.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1, 2, 3]).count() == 3
-            >>> assert iterum([1, 2, 3, 4, 5]).count() == 5
+        ```python
+        >>> assert iterum([1, 2, 3]).count() == 3
+        >>> assert iterum([1, 2, 3, 4, 5]).count() == 5
+
+        ```
         """
         last = self.enumerate().last()
         return last.map_or(0, lambda last: last[0] + 1)
@@ -272,17 +320,20 @@ class Iterum(Iterator[T_co]):
         the beginning again. And again. And again. Forever. Note that in case
         the original iterum is empty, the resulting iterum will also be empty.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> it = iterum(a).cycle()
-            >>> assert it.next() == Some(1)
-            >>> assert it.next() == Some(2)
-            >>> assert it.next() == Some(3)
-            >>> assert it.next() == Some(1)
-            >>> assert it.next() == Some(2)
-            >>> assert it.next() == Some(3)
-            >>> assert it.next() == Some(1)
+        ```python
+        >>> a = [1, 2, 3]
+        >>> it = iterum(a).cycle()
+        >>> assert it.next() == Some(1)
+        >>> assert it.next() == Some(2)
+        >>> assert it.next() == Some(3)
+        >>> assert it.next() == Some(1)
+        >>> assert it.next() == Some(2)
+        >>> assert it.next() == Some(3)
+        >>> assert it.next() == Some(1)
+
+        ```
         """
         return Cycle(self)
 
@@ -294,14 +345,17 @@ class Iterum(Iterator[T_co]):
         The iterum returned yields pairs (i, val), where i is the current
         index of iteration and val is the value returned by the iterum.
 
-        Examples:
+        **Examples:**
 
-            >>> a = ["a", "b", "c"]
-            >>> it = iterum(a).enumerate()
-            >>> assert it.next() == Some((0, "a"))
-            >>> assert it.next() == Some((1, "b"))
-            >>> assert it.next() == Some((2, "c"))
-            >>> assert it.next() == nil
+        ```python
+        >>> a = ["a", "b", "c"]
+        >>> it = iterum(a).enumerate()
+        >>> assert it.next() == Some((0, "a"))
+        >>> assert it.next() == Some((1, "b"))
+        >>> assert it.next() == Some((2, "c"))
+        >>> assert it.next() == nil
+
+        ```
         """
         return Enumerate(self)
 
@@ -323,10 +377,13 @@ class Iterum(Iterator[T_co]):
         """
         Determines if the elements of this Iterator are equal to those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1]).eq([1])
-            >>> assert not iterum([1]).eq([1, 2])
+        ```python
+        >>> assert iterum([1]).eq([1])
+        >>> assert not iterum([1]).eq([1, 2])
+
+        ```
         """
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Equal
@@ -341,13 +398,16 @@ class Iterum(Iterator[T_co]):
         Given an element the closure must return `True` or `False`. The returned
         iterum will yield only the elements for which the closure returns `True`.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [0, 1, 2]
-            >>> it = iterum(a).filter(lambda x: x > 0)
-            >>> assert it.next() == Some(1)
-            >>> assert it.next() == Some(2)
-            >>> assert it.next() == nil
+        ```python
+        >>> a = [0, 1, 2]
+        >>> it = iterum(a).filter(lambda x: x > 0)
+        >>> assert it.next() == Some(1)
+        >>> assert it.next() == Some(2)
+        >>> assert it.next() == nil
+
+        ```
 
         Note that `it.filter(f).next()` is equivalent to `it.find(f)`.
         """
@@ -365,21 +425,24 @@ class Iterum(Iterator[T_co]):
         [filter_map][iterum.Iterum.filter_map] can be used to make chains of
         [filter][iterum.Iterum.filter] and [map][iterum.Iterum.map] more concise.
 
-        Examples:
+        **Examples:**
 
-            >>> def parse2int(x: str) -> Option[int]:
-            ...     try:
-            ...         value = int(x)
-            ...     except ValueError:
-            ...         return nil
-            ...     else:
-            ...         return Some(value)
-            ...
-            >>> a = ["1", "two", "NaN", "four", "5"]
-            >>> it = iterum(a).filter_map(parse2int)
-            >>> assert it.next() == Some(1)
-            >>> assert it.next() == Some(5)
-            >>> assert it.next() == nil
+        ```python
+        >>> def parse2int(x: str) -> Option[int]:
+        ...     try:
+        ...         value = int(x)
+        ...     except ValueError:
+        ...         return nil
+        ...     else:
+        ...         return Some(value)
+        ...
+        >>> a = ["1", "two", "NaN", "four", "5"]
+        >>> it = iterum(a).filter_map(parse2int)
+        >>> assert it.next() == Some(1)
+        >>> assert it.next() == Some(5)
+        >>> assert it.next() == nil
+
+        ```
         """
         return FilterMap(self, predicate)
 
@@ -398,16 +461,23 @@ class Iterum(Iterator[T_co]):
 
         If you need the index of the element, see [position()][iterum.Iterum.position].
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> assert iterum(a).find(lambda x: x == 2) == Some(2)
-            >>> assert iterum(a).find(lambda x: x == 5) == nil
+        ```python
+        >>> a = [1, 2, 3]
+        >>> assert iterum(a).find(lambda x: x == 2) == Some(2)
+        >>> assert iterum(a).find(lambda x: x == 5) == nil
 
-            Stopping at the first `True`:
-            >>> it = iterum([1, 2, 3])
-            >>> assert it.find(lambda x: x == 2) == Some(2)
-            >>> assert it.next() == Some(3)
+        ```
+
+        Stopping at the first `True`:
+
+        ```python
+        >>> it = iterum([1, 2, 3])
+        >>> assert it.find(lambda x: x == 2) == Some(2)
+        >>> assert it.next() == Some(3)
+
+        ```
 
         Note that `it.find(f)` is equivalent to `it.filter(f).next()`.
         """
@@ -421,19 +491,22 @@ class Iterum(Iterator[T_co]):
         Applies function to the elements of iterum and returns the first
         non-nil result.
 
-        Examples:
+        **Examples:**
 
-            >>> def parse2int(x: str) -> Option[int]:
-            ...     try:
-            ...         value = int(x)
-            ...     except ValueError:
-            ...         return nil
-            ...     else:
-            ...         return Some(value)
-            ...
-            >>> a = ["lol", "NaN", "2", "5"]
-            >>> first_number = iterum(a).find_map(parse2int)
-            >>> assert first_number == Some(2)
+        ```python
+        >>> def parse2int(x: str) -> Option[int]:
+        ...     try:
+        ...         value = int(x)
+        ...     except ValueError:
+        ...         return nil
+        ...     else:
+        ...         return Some(value)
+        ...
+        >>> a = ["lol", "NaN", "2", "5"]
+        >>> first_number = iterum(a).find_map(parse2int)
+        >>> assert first_number == Some(2)
+
+        ```
 
         Note that `iter.find_map(f)` is equivalent to `iter.filter_map(f).next()`.
         """
@@ -451,11 +524,14 @@ class Iterum(Iterator[T_co]):
         You can think of `flat_map(f)` as the semantic equivalent of mapping, and
         then flattening as in `map(f).flatten()`.
 
-        Examples:
+        **Examples:**
 
-            >>> words = ["alpha", "beta", "gamma"]
-            >>> merged = iterum(words).flat_map(iterum).collect("".join)
-            >>> assert merged == "alphabetagamma"
+        ```python
+        >>> words = ["alpha", "beta", "gamma"]
+        >>> merged = iterum(words).flat_map(iterum).collect("".join)
+        >>> assert merged == "alphabetagamma"
+
+        ```
         """
         return FlatMap(self, f)
 
@@ -466,16 +542,23 @@ class Iterum(Iterator[T_co]):
         This is useful when you have an iterum of iterables and you want to
         remove one level of indirection.
 
-        Examples:
+        **Examples:**
 
-            >>> data = [[1, 2, 3, 4], [5, 6]]
-            >>> flattened = iterum(data).flatten().collect(list)
-            >>> assert flattened == [1, 2, 3, 4, 5, 6]
+        ```python
+        >>> data = [[1, 2, 3, 4], [5, 6]]
+        >>> flattened = iterum(data).flatten().collect(list)
+        >>> assert flattened == [1, 2, 3, 4, 5, 6]
 
-            Mapping and then flattening:
-            >>> words = ["alpha", "beta", "gamma"]
-            >>> merged = iterum(words).map(iterum).flatten().collect("".join)
-            >>> assert merged == "alphabetagamma"
+        ```
+
+        Mapping and then flattening:
+
+        ```python
+        >>> words = ["alpha", "beta", "gamma"]
+        >>> merged = iterum(words).map(iterum).flatten().collect("".join)
+        >>> assert merged == "alphabetagamma"
+
+        ```
         """
         return Flatten(self)
 
@@ -494,25 +577,28 @@ class Iterum(Iterator[T_co]):
         After applying this closure to every element of the iterum, fold()
         returns the accumulator.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> sum = iterum(a).fold(0, lambda acc, x: acc + x)
-            >>> assert sum == 6
+        ```python
+        >>> a = [1, 2, 3]
+        >>> sum = iterum(a).fold(0, lambda acc, x: acc + x)
+        >>> assert sum == 6
 
-            Let's walk through each step of the iteration here:
+        ```
 
-            | element | acc | x | result |
-            | ------- | --- | - | ------ |
-            |         |  0  |   |        |
-            |   1     |  0  | 1 |   1    |
-            |   2     |  1  | 2 |   3    |
-            |   3     |  3  | 3 |   6    |
+        Let's walk through each step of the iteration here:
 
-            And so, our final result, 6.
+        | element | acc | x | result |
+        | ------- | --- | - | ------ |
+        |         |  0  |   |        |
+        |   1     |  0  | 1 |   1    |
+        |   2     |  1  | 2 |   3    |
+        |   3     |  3  | 3 |   6    |
+
+        And so, our final result, 6.
 
 
-        fold is left-associative:
+        ??? note "fold is left-associative"
 
             ```python
             >>> numbers = [1, 2, 3, 4, 5]
@@ -532,11 +618,14 @@ class Iterum(Iterator[T_co]):
 
         For loops are more idiomatic... but who cares!
 
-        Examples:
+        **Examples:**
 
-            >>> v = []
-            >>> seq(5).map(lambda x: x * 2 + 1).for_each(v.append)
-            >>> assert v == [1, 3, 5, 7, 9]
+        ```python
+        >>> v = []
+        >>> seq(5).map(lambda x: x * 2 + 1).for_each(v.append)
+        >>> assert v == [1, 3, 5, 7, 9]
+
+        ```
         """
         for x in self:
             f(x)
@@ -550,27 +639,37 @@ class Iterum(Iterator[T_co]):
         an iterum, ensuring that after a [nil][iterum.nil] is given, it will
         always return [nil][iterum.nil] forever.
 
-        Examples:
+        **Examples:**
 
-            >>> class Alternator(Iterator[int]):
-            ...     def __init__(self) -> None:
-            ...         self.i = 0
-            ...     def __next__(self) -> int:
-            ...         self.i += 1
-            ...         if self.i % 5:
-            ...             return self.i
-            ...         else:
-            ...             raise StopIteration()
+        ```python
+        >>> class Alternator(Iterator[int]):
+        ...     def __init__(self) -> None:
+        ...         self.i = 0
+        ...     def __next__(self) -> int:
+        ...         self.i += 1
+        ...         if self.i % 5:
+        ...             return self.i
+        ...         else:
+        ...             raise StopIteration()
+        ...
 
-            >>> it = iterum(Alternator())
-            >>> assert list(it) == [1, 2, 3, 4]
-            >>> assert list(it) == [6, 7, 8, 9]
-            >>> assert list(it) == [11, 12, 13, 14]
+        ```
 
-            >>> it = it.fuse()
-            >>> assert list(it) == [16, 17, 18, 19]
-            >>> assert list(it) == []
-            >>> assert list(it) == []
+        ```python
+        >>> it = iterum(Alternator())
+        >>> assert list(it) == [1, 2, 3, 4]
+        >>> assert list(it) == [6, 7, 8, 9]
+        >>> assert list(it) == [11, 12, 13, 14]
+
+        ```
+
+        ```python
+        >>> it = it.fuse()
+        >>> assert list(it) == [16, 17, 18, 19]
+        >>> assert list(it) == []
+        >>> assert list(it) == []
+
+        ```
         """
         return Fuse(self)
 
@@ -593,12 +692,15 @@ class Iterum(Iterator[T_co]):
         Determines if the elements of this Iterator are lexicographically
         greater than or equal to those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1]).ge([1])
-            >>> assert not iterum([1]).ge([1, 2])
-            >>> assert iterum([1, 2]).ge([1])
-            >>> assert iterum([1, 2]).ge([1, 2])
+        ```python
+        >>> assert iterum([1]).ge([1])
+        >>> assert not iterum([1]).ge([1, 2])
+        >>> assert iterum([1, 2]).ge([1])
+        >>> assert iterum([1, 2]).ge([1, 2])
+
+        ```
         """
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp in (Ordering.Greater, Ordering.Equal)
@@ -622,12 +724,15 @@ class Iterum(Iterator[T_co]):
         Determines if the elements of this Iterator are lexicographically
         greater than those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert not iterum([1]).gt([1])
-            >>> assert not iterum([1]).gt([1, 2])
-            >>> assert iterum([1, 2]).gt([1])
-            >>> assert not iterum([1, 2]).gt([1, 2])
+        ```python
+        >>> assert not iterum([1]).gt([1])
+        >>> assert not iterum([1]).gt([1, 2])
+        >>> assert iterum([1, 2]).gt([1])
+        >>> assert not iterum([1, 2]).gt([1, 2])
+
+        ```
         """
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Greater
@@ -641,36 +746,42 @@ class Iterum(Iterator[T_co]):
         various parts in the pipeline. To do that, insert a call to
         [inspect()][iterum.Iterum.inspect].
 
-        Examples:
+        **Examples:**
 
-            >>> s = (
-            ...    iterum([1, 4, 2, 3])
-            ...    .inspect(lambda x: print(f"about to filter: {x}"))
-            ...    .filter(lambda x: x % 2 == 0)
-            ...    .inspect(lambda x: print(f"made it through filter: {x}"))
-            ...    .fold(0, lambda sum, i: sum + i)
-            ... )
-            ...
-            about to filter: 1
-            about to filter: 4
-            made it through filter: 4
-            about to filter: 2
-            made it through filter: 2
-            about to filter: 3
-            >>> s
-            6
+        ```python
+        >>> s = (
+        ...    iterum([1, 4, 2, 3])
+        ...    .inspect(lambda x: print(f"about to filter: {x}"))
+        ...    .filter(lambda x: x % 2 == 0)
+        ...    .inspect(lambda x: print(f"made it through filter: {x}"))
+        ...    .fold(0, lambda sum, i: sum + i)
+        ... )
+        ...
+        about to filter: 1
+        about to filter: 4
+        made it through filter: 4
+        about to filter: 2
+        made it through filter: 2
+        about to filter: 3
+        >>> s
+        6
 
-            >>> a = [1, 2, 3]
-            >>> b = []
-            >>> c = (
-            ...     iterum(a)
-            ...     .map(lambda x: x * 2)
-            ...     .inspect(b.append)
-            ...     .take_while(lambda x: x < 5)
-            ...     .collect(list)
-            ... )
-            >>> assert b == [2, 4, 6]
-            >>> assert c == [2, 4]
+        ```
+
+        ```python
+        >>> a = [1, 2, 3]
+        >>> b = []
+        >>> c = (
+        ...     iterum(a)
+        ...     .map(lambda x: x * 2)
+        ...     .inspect(b.append)
+        ...     .take_while(lambda x: x < 5)
+        ...     .collect(list)
+        ... )
+        >>> assert b == [2, 4, 6]
+        >>> assert c == [2, 4]
+
+        ```
         """
         return Inspect(self, f)
 
@@ -683,10 +794,13 @@ class Iterum(Iterator[T_co]):
         element. After [nil][iterum.nil] is returned, last() will then return
         the last element it saw.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1, 2, 3]).last() == Some(3)
-            >>> assert iterum([1, 2, 3, 4, 5]).last() == Some(5)
+        ```python
+        >>> assert iterum([1, 2, 3]).last() == Some(3)
+        >>> assert iterum([1, 2, 3, 4, 5]).last() == Some(5)
+
+        ```
         """
         last = nil
         while (nxt := self.next()) is not nil:
@@ -713,12 +827,15 @@ class Iterum(Iterator[T_co]):
         Determines if the elements of this Iterator are lexicographically less
         or equal to those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1]).le([1])
-            >>> assert iterum([1]).le([1, 2])
-            >>> assert not iterum([1, 2]).le([1])
-            >>> assert iterum([1, 2]).le([1, 2])
+        ```python
+        >>> assert iterum([1]).le([1])
+        >>> assert iterum([1]).le([1, 2])
+        >>> assert not iterum([1, 2]).le([1])
+        >>> assert iterum([1, 2]).le([1, 2])
+
+        ```
         """
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp in (Ordering.Less, Ordering.Equal)
@@ -742,12 +859,15 @@ class Iterum(Iterator[T_co]):
         Determines if the elements of this Iterator are lexicographically less
         than those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert not iterum([1]).lt([1])
-            >>> assert iterum([1]).lt([1, 2])
-            >>> assert not iterum([1, 2]).lt([1])
-            >>> assert not iterum([1, 2]).lt([1, 2])
+        ```python
+        >>> assert not iterum([1]).lt([1])
+        >>> assert iterum([1]).lt([1, 2])
+        >>> assert not iterum([1, 2]).lt([1])
+        >>> assert not iterum([1, 2]).lt([1, 2])
+
+        ```
         """
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Less
@@ -761,14 +881,17 @@ class Iterum(Iterator[T_co]):
         means of its argument. It produces a new iterum which calls this
         closure on each element of the original iterum.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> itr = iterum(a).map(lambda x: x * 2)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == Some(4)
-            >>> assert itr.next() == Some(6)
-            >>> assert itr.next() == nil
+        ```python
+        >>> a = [1, 2, 3]
+        >>> itr = iterum(a).map(lambda x: x * 2)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == Some(4)
+        >>> assert itr.next() == Some(6)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return Map(self, f)
 
@@ -780,28 +903,35 @@ class Iterum(Iterator[T_co]):
         It will call this closure on each element of the iterum, and yield
         elements while it returns [Some(_)][iterum.Some].
 
-        Examples:
+        **Examples:**
 
-            >>> from functools import partial
-            >>> def checked_div(num: int, dem: int) -> Option[int]:
-            ...    try:
-            ...        return Some(num // dem)
-            ...    except ZeroDivisionError:
-            ...        return nil
-            ...
-            >>> a = [-1, 4, 0, 1]
-            >>> it = iterum(a).map_while(partial(checked_div, 16))
-            >>> assert it.next() == Some(-16)
-            >>> assert it.next() == Some(4)
-            >>> assert it.next() == nil
+        ```python
+        >>> from functools import partial
+        >>> def checked_div(num: int, dem: int) -> Option[int]:
+        ...    try:
+        ...        return Some(num // dem)
+        ...    except ZeroDivisionError:
+        ...        return nil
+        ...
+        >>> a = [-1, 4, 0, 1]
+        >>> it = iterum(a).map_while(partial(checked_div, 16))
+        >>> assert it.next() == Some(-16)
+        >>> assert it.next() == Some(4)
+        >>> assert it.next() == nil
+
+        ```
 
 
-            Stops after first [nil][iterum.nil]:
-            >>> a = [0, 1, 2, -3, 4, 5, -6]
-            >>> it = iterum(a).map_while(lambda x: Some(x) if x >= 0 else nil)
-            >>> vec = it.collect(list)
-            >>> assert vec == [0, 1, 2]
-            >>> assert it.next() == nil
+        Stops after first [nil][iterum.nil]:
+
+        ```python
+        >>> a = [0, 1, 2, -3, 4, 5, -6]
+        >>> it = iterum(a).map_while(lambda x: Some(x) if x >= 0 else nil)
+        >>> vec = it.collect(list)
+        >>> assert vec == [0, 1, 2]
+        >>> assert it.next() == nil
+
+        ```
         """
         return MapWhile(self, predicate)
 
@@ -814,10 +944,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally maximum, the last element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1, 2, 3]).max() == Some(3)
-            >>> assert iterum([]).max() == nil
+        ```python
+        >>> assert iterum([1, 2, 3]).max() == Some(3)
+        >>> assert iterum([]).max() == nil
+
+        ```
         """
         try:
             return Some(builtins.max(self))
@@ -832,10 +965,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally maximum, the last element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [-3, 0, 1, 5, -10]
-            >>> assert iterum(a).max_by(Ordering.cmp).unwrap() == 5
+        ```python
+        >>> a = [-3, 0, 1, 5, -10]
+        >>> assert iterum(a).max_by(Ordering.cmp).unwrap() == 5
+
+        ```
         """
         max_ = self.next()
         if max_ is nil:
@@ -858,10 +994,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally maximum, the last element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [-3, 0, 1, 5, -10]
-            >>> assert iterum(a).max_by_key(abs).unwrap() == -10
+        ```python
+        >>> a = [-3, 0, 1, 5, -10]
+        >>> assert iterum(a).max_by_key(abs).unwrap() == -10
+
+        ```
         """
 
         def compare(x, y) -> Ordering:
@@ -880,10 +1019,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally minimum, the first element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1, 2, 3]).min() == Some(1)
-            >>> assert iterum([]).min() == nil
+        ```python
+        >>> assert iterum([1, 2, 3]).min() == Some(1)
+        >>> assert iterum([]).min() == nil
+
+        ```
         """
         try:
             return Some(builtins.min(self))
@@ -898,10 +1040,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally minimum, the first element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [-3, 0, 1, 5, -10]
-            >>> assert iterum(a).min_by(Ordering.cmp).unwrap() == -10
+        ```python
+        >>> a = [-3, 0, 1, 5, -10]
+        >>> assert iterum(a).min_by(Ordering.cmp).unwrap() == -10
+
+        ```
         """
         min_ = self.next()
         if min_ is nil:
@@ -924,10 +1069,13 @@ class Iterum(Iterator[T_co]):
         If several elements are equally minimum, the first element is returned.
         If the iterum is empty, [nil][iterum.nil] is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [-3, 0, 1, 5, -10]
-            >>> assert iterum(a).min_by_key(abs).unwrap() == 0
+        ```python
+        >>> a = [-3, 0, 1, 5, -10]
+        >>> assert iterum(a).min_by_key(abs).unwrap() == 0
+
+        ```
         """
 
         def compare(x, y) -> Ordering:
@@ -955,10 +1103,13 @@ class Iterum(Iterator[T_co]):
         """
         Determines if the elements of this Iterator are not equal to those of another.
 
-        Examples:
+        **Examples:**
 
-            >>> assert not iterum([1]).ne([1])
-            >>> assert iterum([1]).ne([1, 2])
+        ```python
+        >>> assert not iterum([1]).ne([1])
+        >>> assert iterum([1]).ne([1, 2])
+
+        ```
         """
         eq = self.eq(other)  # type: ignore | reason: ask for forgiveness not permission
         return not eq
@@ -979,19 +1130,30 @@ class Iterum(Iterator[T_co]):
         [nth()][iterum.Iterum.nth] will return [nil][iterum.nil] if n is greater
         than or equal to the length of the iterum.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> assert iterum(a).nth(1) == Some(2)
+        ```python
+        >>> a = [1, 2, 3]
+        >>> assert iterum(a).nth(1) == Some(2)
 
-            Calling [nth][iterum.Iterum.nth] multiple times doesn't rewind the iterum:
-            >>> itr = iterum([1, 2, 3])
-            >>> assert itr.nth(1) == Some(2)
-            >>> assert itr.nth(1) == nil
+        ```
 
-            Returns [nil][iterum.nil] if there are less than `n + 1` elements:
-            >>> itr = iterum([1, 2, 3])
-            >>> assert itr.nth(3) == nil
+        Calling [nth][iterum.Iterum.nth] multiple times doesn't rewind the iterum:
+
+        ```python
+        >>> itr = iterum([1, 2, 3])
+        >>> assert itr.nth(1) == Some(2)
+        >>> assert itr.nth(1) == nil
+
+        ```
+
+        Returns [nil][iterum.nil] if there are less than `n + 1` elements:
+
+        ```python
+        >>> itr = iterum([1, 2, 3])
+        >>> assert itr.nth(3) == nil
+
+        ```
         """
         for i, x in enumerate(self):
             if i > n:
@@ -1024,16 +1186,23 @@ class Iterum(Iterator[T_co]):
         returning a result without comparing the remaining elements. As soon as
         an order can be determined, the evaluation stops and a result is returned.
 
-        Examples:
+        **Examples:**
 
-            >>> assert iterum([1]).partial_cmp([1]) == Some(Ordering.Equal)
-            >>> assert iterum([1, 2]).partial_cmp([1]) == Some(Ordering.Greater)
-            >>> assert iterum([1]).partial_cmp([1, 2]) == Some(Ordering.Less)
+        ```python
+        >>> assert iterum([1]).partial_cmp([1]) == Some(Ordering.Equal)
+        >>> assert iterum([1, 2]).partial_cmp([1]) == Some(Ordering.Greater)
+        >>> assert iterum([1]).partial_cmp([1, 2]) == Some(Ordering.Less)
 
-            Results are determined by the order of evaluation:
-            >>> assert iterum([1, None]).partial_cmp([2, nil]) == Some(Ordering.Less)
-            >>> assert iterum([2, None]).partial_cmp([1, nil]) == Some(Ordering.Greater)
-            >>> assert iterum([None, 1]).partial_cmp([2, None]) == nil
+        ```
+
+        Results are determined by the order of evaluation:
+
+        ```python
+        >>> assert iterum([1, None]).partial_cmp([2, nil]) == Some(Ordering.Less)
+        >>> assert iterum([2, None]).partial_cmp([1, nil]) == Some(Ordering.Greater)
+        >>> assert iterum([None, 1]).partial_cmp([2, None]) == nil
+
+        ```
         """
         try:
             value = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
@@ -1086,12 +1255,15 @@ class Iterum(Iterator[T_co]):
         returns a pair, all of the elements for which it returned `True`, and
         all of the elements for which it returned `False`.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> even, odd = iterum(a).partition(lambda n: n % 2 == 0)
-            >>> assert even == [2]
-            >>> assert odd == [1, 3]
+        ```python
+        >>> a = [1, 2, 3]
+        >>> even, odd = iterum(a).partition(lambda n: n % 2 == 0)
+        >>> assert even == [2]
+        >>> assert odd == [1, 3]
+
+        ```
         """
         matches, notmatches = [], []
         for x in self:
@@ -1104,27 +1276,33 @@ class Iterum(Iterator[T_co]):
         Creates an iterum which provides a peek attribute for viewing
         and setting the next element of the iterum without consuming it.
 
-        Examples:
+        **Examples:**
 
-            >>> xs = [1, 2, 3]
-            >>> itr = iterum(xs).peekable()
-            >>> assert itr.peek == Some(1)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.peek == Some(3)
-            >>> assert itr.peek == Some(3)
-            >>> assert itr.next() == Some(3)
-            >>> assert itr.peek == nil
-            >>> assert itr.next() == nil
+        ```python
+        >>> xs = [1, 2, 3]
+        >>> itr = iterum(xs).peekable()
+        >>> assert itr.peek == Some(1)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.peek == Some(3)
+        >>> assert itr.peek == Some(3)
+        >>> assert itr.next() == Some(3)
+        >>> assert itr.peek == nil
+        >>> assert itr.next() == nil
 
-            >>> xs = [1, 2, 3]
-            >>> itr = iterum(xs).peekable()
-            >>> assert itr.peek == Some(1)
-            >>> assert itr.peek == Some(1)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.peek == Some(2)
-            >>> itr.peek = 1000
-            >>> assert list(itr) == [1000, 3]
+        ```
+
+        ```python
+        >>> xs = [1, 2, 3]
+        >>> itr = iterum(xs).peekable()
+        >>> assert itr.peek == Some(1)
+        >>> assert itr.peek == Some(1)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.peek == Some(2)
+        >>> itr.peek = 1000
+        >>> assert list(itr) == [1000, 3]
+
+        ```
         """
         return Peekable(self)
 
@@ -1141,17 +1319,22 @@ class Iterum(Iterator[T_co]):
         [position()][iterum.Iterum.position] is short-circuiting; in other
         words, it will stop processing as soon as it finds a `True`.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> assert iterum(a).position(lambda x: x == 2) == Some(1)
-            >>> assert iterum(a).position(lambda x: x == 5) == nil
+        ```python
+        >>> a = [1, 2, 3]
+        >>> assert iterum(a).position(lambda x: x == 2) == Some(1)
+        >>> assert iterum(a).position(lambda x: x == 5) == nil
 
+        ```
 
-            >>> it = iterum([1, 2, 3, 4])
-            >>> assert it.position(lambda x: x >= 2) == Some(1)
-            >>> assert it.next() == Some(3)
-            >>> assert it.position(lambda x: x == 4) == Some(0)
+        ```python
+        >>> it = iterum([1, 2, 3, 4])
+        >>> assert it.position(lambda x: x >= 2) == Some(1)
+        >>> assert it.next() == Some(3)
+        >>> assert it.position(lambda x: x == 4) == Some(0)
+
+        ```
         """
         for i, x in enumerate(self):
             if predicate(x):
@@ -1164,14 +1347,17 @@ class Iterum(Iterator[T_co]):
 
         An empty iterum returns [nil][iterum.nil].
 
-        Examples:
+        **Examples:**
 
-            >>> def factorial(n: int) -> int:
-            ...     return seq(1, n + 1).product().unwrap_or(1)
-            ...
-            >>> assert factorial(0) == 1
-            >>> assert factorial(1) == 1
-            >>> assert factorial(5) == 120
+        ```python
+        >>> def factorial(n: int) -> int:
+        ...     return seq(1, n + 1).product().unwrap_or(1)
+        ...
+        >>> assert factorial(0) == 1
+        >>> assert factorial(1) == 1
+        >>> assert factorial(5) == 120
+
+        ```
         """
         return self.reduce(lambda acc, x: acc * x)
 
@@ -1189,10 +1375,13 @@ class Iterum(Iterator[T_co]):
         iterum as the initial accumulator value, folding every subsequent
         element into it.
 
-        Examples:
+        **Examples:**
 
-            >>> reduced = seq(1, 10).reduce(lambda acc, e: acc + e).unwrap()
-            >>> assert reduced == 45
+        ```python
+        >>> reduced = seq(1, 10).reduce(lambda acc, e: acc + e).unwrap()
+        >>> assert reduced == 45
+
+        ```
         """
         first = self.next()
         if first is nil:
@@ -1210,20 +1399,23 @@ class Iterum(Iterator[T_co]):
         being the internal state and the second an iterum element.
         The closure can assign to the internal state to share state between iterations.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([1, 2, 3, 4])
-            >>> def scanner(state: State, x: int) -> Option[int]:
-            ...     state.value *= x
-            ...     if state.value > 6:
-            ...         return nil
-            ...     return Some(-state.value)
-            ...
-            >>> scan = itr.scan(1, scanner)
-            >>> assert scan.next() == Some(-1)
-            >>> assert scan.next() == Some(-2)
-            >>> assert scan.next() == Some(-6)
-            >>> assert scan.next() == nil
+        ```python
+        >>> itr = iterum([1, 2, 3, 4])
+        >>> def scanner(state: State, x: int) -> Option[int]:
+        ...     state.value *= x
+        ...     if state.value > 6:
+        ...         return nil
+        ...     return Some(-state.value)
+        ...
+        >>> scan = itr.scan(1, scanner)
+        >>> assert scan.next() == Some(-1)
+        >>> assert scan.next() == Some(-2)
+        >>> assert scan.next() == Some(-6)
+        >>> assert scan.next() == nil
+
+        ```
         """
         return Scan(self, init, f)
 
@@ -1239,16 +1431,23 @@ class Iterum(Iterator[T_co]):
         After that, all the remaining elements are yielded. In particular, if
         the original iterum is too short, then the returned iterum is empty.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([1, 2, 3]).skip(2)
-            >>> assert itr.next() == Some(3)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = iterum([1, 2, 3]).skip(2)
+        >>> assert itr.next() == Some(3)
+        >>> assert itr.next() == nil
 
-            Skipping past end:
-            >>> itr = iterum([1, 2, 3]).skip(10)
-            >>> assert itr.next() == nil
-            >>> assert itr.next() == nil
+        ```
+
+        Skipping past end:
+
+        ```python
+        >>> itr = iterum([1, 2, 3]).skip(10)
+        >>> assert itr.next() == nil
+        >>> assert itr.next() == nil
+
+        ```
         """
         return Skip(self, n)
 
@@ -1263,18 +1462,25 @@ class Iterum(Iterator[T_co]):
         After `False` is returned, [skip_while()][iterum.Iterum.skip_while]'s
         job is over, and the rest of the elements are yielded.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([-1, 0, 1]).skip_while(lambda x: x < 0)
-            >>> assert itr.next() == Some(0)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = iterum([-1, 0, 1]).skip_while(lambda x: x < 0)
+        >>> assert itr.next() == Some(0)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == nil
 
-            After first `False` condition is hit, no further elements are checked:
-            >>> itr = iterum([-1, 0, 1, -3]).skip_while(lambda x: x < 0)
-            >>> assert itr.next() == Some(0)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(-3)
+        ```
+
+        After first `False` condition is hit, no further elements are checked:
+
+        ```python
+        >>> itr = iterum([-1, 0, 1, -3]).skip_while(lambda x: x < 0)
+        >>> assert itr.next() == Some(0)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(-3)
+
+        ```
         """
         return SkipWhile(self, predicate)
 
@@ -1283,13 +1489,16 @@ class Iterum(Iterator[T_co]):
         Creates an iterum starting at the same point, but stepping by the
         given amount at each iteration. This always includes the first element.
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([0, 1, 2, 3, 4, 5]).step_by(2)
-            >>> assert itr.next() == Some(0)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == Some(4)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = iterum([0, 1, 2, 3, 4, 5]).step_by(2)
+        >>> assert itr.next() == Some(0)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == Some(4)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return StepBy(self, step)
 
@@ -1301,14 +1510,20 @@ class Iterum(Iterator[T_co]):
 
         An empty iterum returns [nil][iterum.nil].
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> sum_ = iterum(a).sum().unwrap_or(0)
-            >>> assert sum_ == 6
+        ```python
+        >>> a = [1, 2, 3]
+        >>> sum_ = iterum(a).sum().unwrap_or(0)
+        >>> assert sum_ == 6
 
-            >>> sum_ = iterum([]).sum().unwrap_or(0)
-            >>> assert sum_ == 0
+        ```
+
+        ```python
+        >>> sum_ = iterum([]).sum().unwrap_or(0)
+        >>> assert sum_ == 0
+
+        ```
         """
         # NOTE: This forces users to pick a default or suffer the unwrapping
         #       consequences a more reasonable interface since an implicit
@@ -1330,33 +1545,45 @@ class Iterum(Iterator[T_co]):
         contains at least n elements, otherwise it contains all of the (fewer
         than n) elements of the original iterum.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [1, 2, 3]
-            >>> itr = iterum(a).take(2)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == nil
+        ```python
+        >>> a = [1, 2, 3]
+        >>> itr = iterum(a).take(2)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == nil
 
+        ```
 
-            >>> a = [1, 2, 3]
-            >>> itr = iterum(a).take(2)
-            >>> assert list(itr) == [1, 2]
-            >>> assert itr.next() == nil
+        ```python
+        >>> a = [1, 2, 3]
+        >>> itr = iterum(a).take(2)
+        >>> assert list(itr) == [1, 2]
+        >>> assert itr.next() == nil
 
+        ```
 
-            Truncate an infinite iterum:
-            >>> itr = seq(...).take(3)
-            >>> assert itr.next() == Some(0)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == nil
+        Truncate an infinite iterum:
 
-            Taking more than you have:
-            >>> itr = iterum([1, 2]).take(5)
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = seq(...).take(3)
+        >>> assert itr.next() == Some(0)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == nil
+
+        ```
+
+        Taking more than you have:
+
+        ```python
+        >>> itr = iterum([1, 2]).take(5)
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return Take(self, n)
 
@@ -1371,18 +1598,25 @@ class Iterum(Iterator[T_co]):
         After `False` is returned, [take_while()][iterum.Iterum.take_while]'s
         job is over, and the rest of the elements are ignored.
 
-        Examples:
+        **Examples:**
 
-            >>> a = [-1, 0, 1]
-            >>> itr = iterum(a).take_while(lambda x: x < 0)
-            >>> assert itr.next() == Some(-1)
-            >>> assert itr.next() == nil
+        ```python
+        >>> a = [-1, 0, 1]
+        >>> itr = iterum(a).take_while(lambda x: x < 0)
+        >>> assert itr.next() == Some(-1)
+        >>> assert itr.next() == nil
 
-            Stop after first `False`:
-            >>> a = [-1, 0, 1, -2]
-            >>> itr = iterum(a).take_while(lambda x: x < 0)
-            >>> assert itr.next() == Some(-1)
-            >>> assert itr.next() == nil
+        ```
+
+        Stop after first `False`:
+
+        ```python
+        >>> a = [-1, 0, 1, -2]
+        >>> itr = iterum(a).take_while(lambda x: x < 0)
+        >>> assert itr.next() == Some(-1)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return TakeWhile(self, predicate)
 
@@ -1404,24 +1638,31 @@ class Iterum(Iterator[T_co]):
         the accumulator should have for the next iteration, or it raises an
         exception which short-circuits the iteration.
 
-        Examples:
+        **Examples:**
 
-            >>> def checked_add_i8(lhs: int, rhs: int) -> int:
-            ...     value = lhs + rhs
-            ...     if -128 <= value <= 127:
-            ...         return value
-            ...     else:
-            ...         raise ValueError("Overflow!")
-            ...
-            >>> a = [1, 2, 3]
-            >>> sum = iterum(a).try_fold(0, checked_add_i8)
-            >>> assert sum == Some(6)
+        ```python
+        >>> def checked_add_i8(lhs: int, rhs: int) -> int:
+        ...     value = lhs + rhs
+        ...     if -128 <= value <= 127:
+        ...         return value
+        ...     else:
+        ...         raise ValueError("Overflow!")
+        ...
+        >>> a = [1, 2, 3]
+        >>> sum = iterum(a).try_fold(0, checked_add_i8)
+        >>> assert sum == Some(6)
 
-            short-circuit after a failure:
-            >>> it = iterum([10, 20, 30, 100, 40, 50])
-            >>> sum = it.try_fold(0, checked_add_i8)
-            >>> assert sum == nil
-            >>> assert list(it) == [40, 50]
+        ```
+
+        short-circuit after a failure:
+
+        ```python
+        >>> it = iterum([10, 20, 30, 100, 40, 50])
+        >>> sum = it.try_fold(0, checked_add_i8)
+        >>> assert sum == nil
+        >>> assert list(it) == [40, 50]
+
+        ```
         """
         acc = init
         for x in self:
@@ -1479,12 +1720,15 @@ class Iterum(Iterator[T_co]):
 
         This function is, in some sense, the opposite of [zip][iterum.Iterum.zip].
 
-        Examples:
+        **Examples:**
 
-            >>> a = [(1, 2), (3, 4), (5, 6)]
-            >>> left, right = iterum(a).unzip()
-            >>> assert left == [1, 3, 5]
-            >>> assert right == [2, 4, 6]
+        ```python
+        >>> a = [(1, 2), (3, 4), (5, 6)]
+        >>> left, right = iterum(a).unzip()
+        >>> assert left == [1, 3, 5]
+        >>> assert right == [2, 4, 6]
+
+        ```
         """
         left, right = map(container, zip(*self, strict=False))
         return left, right
@@ -1506,42 +1750,53 @@ class Iterum(Iterator[T_co]):
         To 'undo' the result of zipping up two iterables, see
         [unzip][iterum.Iterum.unzip].
 
-        Examples:
+        **Examples:**
 
-            >>> a1 = [1, 2, 3]
-            >>> a2 = [4, 5, 6]
-            >>> itr = iterum(a1).zip(a2)
-            >>> assert itr.next() == Some((1, 4))
-            >>> assert itr.next() == Some((2, 5))
-            >>> assert itr.next() == Some((3, 6))
-            >>> assert itr.next() == nil
+        ```python
+        >>> a1 = [1, 2, 3]
+        >>> a2 = [4, 5, 6]
+        >>> itr = iterum(a1).zip(a2)
+        >>> assert itr.next() == Some((1, 4))
+        >>> assert itr.next() == Some((2, 5))
+        >>> assert itr.next() == Some((3, 6))
+        >>> assert itr.next() == nil
 
-            zip smaller with larger:
-            >>> inf_itr = seq(...)
-            >>> foo_itr = iterum("foo")
-            >>> zip_itr = foo_itr.zip(inf_itr)
-            >>> assert zip_itr.next() == Some(("f", 0))
-            >>> assert zip_itr.next() == Some(("o", 1))
-            >>> assert zip_itr.next() == Some(("o", 2))
-            >>> assert zip_itr.next() == nil
-            >>> assert foo_itr.next() == nil
-            >>> assert inf_itr.next() == Some(3)
+        ```
 
-            zip larger with smaller:
-            >>> inf_itr = seq(...)
-            >>> foo_itr = iterum("foo")
-            >>> zip_itr = inf_itr.zip(foo_itr)
-            >>> assert zip_itr.next() == Some((0, "f"))
-            >>> assert zip_itr.next() == Some((1, "o"))
-            >>> assert zip_itr.next() == Some((2, "o"))
-            >>> assert zip_itr.next() == nil
-            >>> assert foo_itr.next() == nil
-            >>> assert inf_itr.next() == Some(4)
+        zip smaller with larger:
+
+        ```python
+        >>> inf_itr = seq(...)
+        >>> foo_itr = iterum("foo")
+        >>> zip_itr = foo_itr.zip(inf_itr)
+        >>> assert zip_itr.next() == Some(("f", 0))
+        >>> assert zip_itr.next() == Some(("o", 1))
+        >>> assert zip_itr.next() == Some(("o", 2))
+        >>> assert zip_itr.next() == nil
+        >>> assert foo_itr.next() == nil
+        >>> assert inf_itr.next() == Some(3)
+
+        ```
+
+        zip larger with smaller:
+
+        ```python
+        >>> inf_itr = seq(...)
+        >>> foo_itr = iterum("foo")
+        >>> zip_itr = inf_itr.zip(foo_itr)
+        >>> assert zip_itr.next() == Some((0, "f"))
+        >>> assert zip_itr.next() == Some((1, "o"))
+        >>> assert zip_itr.next() == Some((2, "o"))
+        >>> assert zip_itr.next() == nil
+        >>> assert foo_itr.next() == nil
+        >>> assert inf_itr.next() == Some(4)
+
+        ```
         """
         return Zip(self, other)
 
 
-def _try_next(itr: Iterator[T], /) -> Option[T]:
+def _try_next[T](itr: Iterator[T], /) -> Option[T]:
     try:
         nxt = next(itr)
     except StopIteration:
@@ -1722,7 +1977,7 @@ class Peekable(Iterum[T_co]):
 
 
 @dataclass
-class State(Generic[T]):
+class State[T]:
     """
     Simple class which holds some mutable state.
     """
@@ -1860,24 +2115,33 @@ class iterum(Iterum[T_co]):
     """
     Implements an [Iterum][iterum.Iterum] interface from an iterable object.
 
-    Examples:
+    **Examples:**
 
-        >>> itr = iterum([1, 2])
-        >>> assert itr.next() == Some(1)
-        >>> assert itr.next() == Some(2)
-        >>> assert itr.next() == nil
+    ```python
+    >>> itr = iterum([1, 2])
+    >>> assert itr.next() == Some(1)
+    >>> assert itr.next() == Some(2)
+    >>> assert itr.next() == nil
 
-        >>> itr = iterum([1, 2, 3, 4])
-        >>> assert itr.fold(0, lambda acc, x: acc + x) == 10
+    ```
 
-        >>> x = [0, 1, 2, 3, 4]
-        >>> y = (
-        ...     iterum(x)
-        ...     .map(lambda x: x**2 + 1)
-        ...     .filter(lambda x: x % 2)
-        ...     .collect()
-        ... )
-        >>> assert y == [1, 5, 17]
+    ```python
+    >>> itr = iterum([1, 2, 3, 4])
+    >>> assert itr.fold(0, lambda acc, x: acc + x) == 10
+
+    ```
+
+    ```python
+    >>> x = [0, 1, 2, 3, 4]
+    >>> y = (
+    ...     iterum(x)
+    ...     .map(lambda x: x**2 + 1)
+    ...     .filter(lambda x: x % 2)
+    ...     .collect()
+    ... )
+    >>> assert y == [1, 5, 17]
+
+    ```
     """
 
     __slots__ = ("_iter",)
@@ -1889,22 +2153,27 @@ class iterum(Iterum[T_co]):
         """
         Returns the next value in the iterable if present, otherwise [nil][iterum.nil].
 
-        Examples:
+        **Examples:**
 
-            >>> itr = iterum([1, 2])
-            >>> assert itr.next() == Some(1)
-            >>> assert itr.next() == Some(2)
-            >>> assert itr.next() == nil
+        ```python
+        >>> itr = iterum([1, 2])
+        >>> assert itr.next() == Some(1)
+        >>> assert itr.next() == Some(2)
+        >>> assert itr.next() == nil
+
+        ```
         """
         return _try_next(self._iter)
 
 
-def seq(*args, **kwargs):
-    """
-    During doctests seq is required to be in the globals
-    This does so while avoiding importing seq during initial
-    module load which would result in a circular import.
-    """
-    from iterum import seq
+if not TYPE_CHECKING:
 
-    return seq(*args, **kwargs)
+    def seq(*args, **kwargs):
+        """
+        During doctests seq is required to be in the globals
+        This does so while avoiding importing seq during initial
+        module load which would result in a circular import.
+        """
+        from iterum import seq
+
+        return seq(*args, **kwargs)

@@ -1,0 +1,42 @@
+[project]
+site_name = "iterum"
+site_description = "Rusty iterators in Python."
+site_author = "Tyler Smart"
+site_url = "https://tjsmart.github.io/iterum"
+
+repo_url = "https://github.com/tjsmart/iterum"
+repo_name = "tjsmart/iterum"
+
+copyright = "&copy; 2023 <a href=\"https://github.com/tjsmart\" target=\"_blank\" rel=\"noopener\">Tyler Smart</a>"
+
+extra_css = ["stylesheets/extra.css"]
+
+nav = [
+  { "Overview" = "index.md" },
+  { "API" = "api.md" },
+]
+
+[project.theme]
+logo = "assets/logo.png"
+favicon = "assets/logo.png"
+
+[project.theme.palette]
+scheme = "slate"
+primary = "red"
+accent = "red"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+show_root_heading = true
+show_root_full_path = true
+show_source = true
+show_bases = true
+members_order = "source"
+show_if_no_docstring = true
+show_signature_annotations = true
+separate_signature = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
