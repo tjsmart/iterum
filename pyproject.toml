@@ -29,18 +29,8 @@ dev = [
 ]
 
 docs = [
-    "mkdocs~=1.6",
-    "mkdocs-material~=9.5",
-    "mkdocs-minify-plugin~=0.8",
-    "mkdocs-git-revision-date-localized-plugin~=1.4",
-    "mkdocstrings[python]~=0.30",
-    "mkdocs-redirects~=1.2",
-    "mkdocs-glightbox~=0.4",
-    "mike~=2.1",
-    "mkdocs-click~=0.8",
-    "pymdown-extensions~=10.7",
-    "pygments~=2.18",
-    "linkchecker>=10,<11",
+    "zensical",
+    "mkdocstrings-python",
 ]
 
 [tool.ruff.lint]

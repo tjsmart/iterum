@@ -26,7 +26,7 @@ pip install iterum
 
 ## Documentation
 
-The [documentation](https://tjsmart.github.io/iterum) is made with [Material for MkDocs](https://github.com/squidfunk/mkdocs-material) and is hosted by [GitHub Pages](https://docs.github.com/en/pages).
+The [documentation](https://tjsmart.github.io/iterum) is made with [Zensical](https://zensical.org) and is hosted by [GitHub Pages](https://docs.github.com/en/pages).
 
 
 ## Example
