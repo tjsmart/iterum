@@ -11,13 +11,7 @@ from ._option import Nil, Option, Some, nil
 from ._ordering import Ordering
 
 if TYPE_CHECKING:
-    from ._type_helpers import (
-        SupportsMulT,
-        SupportsRichComparison,
-        SupportsRichComparisonT,
-        SupportsSumNoDefaultT,
-    )
-
+    from _typeshed import SupportsAdd, SupportsMul, SupportsRichComparison
 
 T_co = TypeVar("T_co", covariant=True)
 T = TypeVar("T")
@@ -933,9 +927,7 @@ class Iterum(Iterator[T_co]):
         """
         return MapWhile(self, predicate)
 
-    def max(
-        self: Iterum[SupportsRichComparisonT],
-    ) -> Option[SupportsRichComparisonT]:
+    def max[C: SupportsRichComparison](self: Iterum[C]) -> Option[C]:
         """
         Returns the maximum element of an iterum.
 
@@ -1008,9 +1000,7 @@ class Iterum(Iterator[T_co]):
 
         return self.max_by(compare)
 
-    def min(
-        self: Iterum[SupportsRichComparisonT],
-    ) -> Option[SupportsRichComparisonT]:
+    def min[C: SupportsRichComparison](self: Iterum[C]) -> Option[C]:
         """
         Returns the minimum element of an iterum.
 
@@ -1339,7 +1329,7 @@ class Iterum(Iterator[T_co]):
                 return Some(i)
         return nil
 
-    def product(self: Iterum[SupportsMulT]) -> Option[SupportsMulT]:
+    def product[M: SupportsMul](self: Iterum[M]) -> Option[M]:
         """
         Iterates over the entire iterum, multiplying all the elements
 
@@ -1500,7 +1490,7 @@ class Iterum(Iterator[T_co]):
         """
         return StepBy(self, step)
 
-    def sum(self: Iterum[SupportsSumNoDefaultT]) -> Option[SupportsSumNoDefaultT]:
+    def sum[S: SupportsAdd](self: Iterum[S]) -> Option[S]:
         """
         Sums the elements of an iterum.
 
