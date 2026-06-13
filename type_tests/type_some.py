@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Literal, TypeVar, assert_type
 
 from iterum import Nil, Option, Some, Swap, iterum, nil

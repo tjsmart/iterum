@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import assert_type
 
 from iterum import InfSeq, Seq, seq

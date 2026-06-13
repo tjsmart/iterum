@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import operator
 from types import EllipsisType
 from typing import Literal, SupportsIndex, overload
