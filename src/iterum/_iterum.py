@@ -14,9 +14,6 @@ if TYPE_CHECKING:
     from _typeshed import SupportsAdd, SupportsMul, SupportsRichComparison
 
 T_co = TypeVar("T_co", covariant=True)
-T = TypeVar("T")
-U = TypeVar("U")
-V = TypeVar("V")
 
 
 class Iterum(Iterator[T_co]):
@@ -249,14 +246,16 @@ class Iterum(Iterator[T_co]):
     def collect(self: Iterum[T_co], container: type[tuple], /) -> tuple[T_co, ...]: ...
 
     @overload
-    def collect(self: Iterum[tuple[U, V]], container: type[dict], /) -> dict[U, V]: ...
+    def collect[U, V](
+        self: Iterum[tuple[U, V]], container: type[dict], /
+    ) -> dict[U, V]: ...
 
     @overload
-    def collect(
+    def collect[U](
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U], /
     ) -> U: ...
 
-    def collect(  # type: ignore
+    def collect[U](  # type: ignore
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U] = list, /
     ) -> U:
         """
@@ -405,7 +404,7 @@ class Iterum(Iterator[T_co]):
         """
         return Filter(self, predicate)
 
-    def filter_map(
+    def filter_map[U](
         self: Iterum[T_co], predicate: Callable[[T_co], Option[U]], /
     ) -> FilterMap[U]:
         """
@@ -478,7 +477,7 @@ class Iterum(Iterator[T_co]):
                 return Some(x)
         return nil
 
-    def find_map(self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
+    def find_map[U](self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
         """
         Applies function to the elements of iterum and returns the first
         non-nil result.
@@ -504,7 +503,7 @@ class Iterum(Iterator[T_co]):
         """
         return self.filter_map(predicate).next()
 
-    def flat_map(self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
+    def flat_map[U](self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
         """
         Creates an iterum that works like map, but flattens nested structure.
 
@@ -527,7 +526,7 @@ class Iterum(Iterator[T_co]):
         """
         return FlatMap(self, f)
 
-    def flatten(self: Iterum[Iterable[U]]) -> Flatten[U]:
+    def flatten[U](self: Iterum[Iterable[U]]) -> Flatten[U]:
         """
         Creates an iterum that flattens nested structure.
 
@@ -554,7 +553,7 @@ class Iterum(Iterator[T_co]):
         """
         return Flatten(self)
 
-    def fold(self, init: U, f: Callable[[U, T_co], U], /) -> U:
+    def fold[U](self, init: U, f: Callable[[U, T_co], U], /) -> U:
         """
         Folds every element into an accumulator by applying an operation,
         returning the final result.
@@ -864,7 +863,7 @@ class Iterum(Iterator[T_co]):
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Less
 
-    def map(self, f: Callable[[T_co], U], /) -> Map[U]:
+    def map[U](self, f: Callable[[T_co], U], /) -> Map[U]:
         """
         Takes a closure and creates an iterum which calls that closure on
         each element.
@@ -887,7 +886,7 @@ class Iterum(Iterator[T_co]):
         """
         return Map(self, f)
 
-    def map_while(self, predicate: Callable[[T_co], Option[U]], /) -> MapWhile[U]:
+    def map_while[U](self, predicate: Callable[[T_co], Option[U]], /) -> MapWhile[U]:
         """
         Creates an iterum that both yields elements based on a predicate and maps.
 
@@ -1220,16 +1219,16 @@ class Iterum(Iterator[T_co]):
     ) -> tuple[tuple[T_co, ...], tuple[T_co, ...]]: ...
 
     @overload
-    def partition(
+    def partition[U, V](
         self: Iterum[tuple[U, V]], f: Callable[[T_co], object], container: type[dict], /
     ) -> tuple[dict[U, V], dict[U, V]]: ...
 
     @overload
-    def partition(
+    def partition[U](
         self, f: Callable[[T_co], object], container: Callable[[Iterable[T_co]], U], /
     ) -> tuple[U, U]: ...
 
-    def partition(  # type: ignore
+    def partition[U](  # type: ignore
         self,
         f: Callable[[T_co], object],
         container: Callable[[Iterable[T_co]], U] = list,
@@ -1377,7 +1376,9 @@ class Iterum(Iterator[T_co]):
         else:
             return Some(self.fold(first.unwrap(), f))
 
-    def scan(self, init: U, f: Callable[[State[U], T_co], Option[V]], /) -> Scan[V]:
+    def scan[U, V](
+        self, init: U, f: Callable[[State[U], T_co], Option[V]], /
+    ) -> Scan[V]:
         """
         An iterum adapter which, like fold, holds internal state, but unlike
         fold, produces a new iterum.
@@ -1608,7 +1609,7 @@ class Iterum(Iterator[T_co]):
         """
         return TakeWhile(self, predicate)
 
-    def try_fold(
+    def try_fold[U](
         self,
         init: U,
         f: Callable[[U, T_co], U],
@@ -1670,31 +1671,31 @@ class Iterum(Iterator[T_co]):
     #             return
 
     @overload
-    def unzip(self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]: ...
+    def unzip[U, V](self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[list], /
     ) -> tuple[list[U], list[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[set], /
     ) -> tuple[set[U], set[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[tuple], /
     ) -> tuple[tuple[U, ...], tuple[V, ...]]: ...
 
     @overload
-    def unzip(
+    def unzip[U](
         self: Iterum[tuple[object, object]],
         container: Callable[[Iterable[object]], U],
         /,
     ) -> tuple[U, U]: ...
 
-    def unzip(
+    def unzip[U](
         self: Iterum[tuple[object, object]],
         container: Callable[[Iterable[object]], U] = list,
         /,
@@ -1721,7 +1722,7 @@ class Iterum(Iterator[T_co]):
         left, right = map(container, zip(*self, strict=False))
         return left, right
 
-    def zip(self, other: Iterable[U], /) -> Zip[T_co, U]:
+    def zip[U](self, other: Iterable[U], /) -> Zip[T_co, U]:
         """
         'Zips up' two iterables into a single iterum of pairs.
 
@@ -1834,7 +1835,7 @@ class Filter(_IterumAdapter[T_co]):
 class FlatMap(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], f: Callable[[U], Iterable[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable).map(f).flatten()
@@ -1843,7 +1844,7 @@ class FlatMap(_IterumAdapter[T_co]):
 class FilterMap(Iterum[T_co]):
     __slots__ = ("_iter", "_predicate")
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable)
@@ -1904,7 +1905,7 @@ class Inspect(Iterum[T_co]):
 class Map(Iterum[T_co]):
     __slots__ = ("_f", "_iter")
 
-    def __init__(self, __iterable: Iterable[U], f: Callable[[U], T_co], /) -> None:
+    def __init__[U](self, __iterable: Iterable[U], f: Callable[[U], T_co], /) -> None:
         self._iter = iterum(__iterable)
         self._f = f
 
@@ -1915,7 +1916,7 @@ class Map(Iterum[T_co]):
 class MapWhile(Iterum[T_co]):
     __slots__ = ("_fuse", "_iter", "_predicate")
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable)
@@ -1979,7 +1980,7 @@ class State[T]:
 class Scan(Iterum[T_co]):
     __slots__ = ("_f", "_iter", "_state")
 
-    def __init__(
+    def __init__[U, V](
         self,
         __iterable: Iterable[U],
         init: V,
@@ -2092,7 +2093,7 @@ class TakeWhile(Iterum[T_co]):
         return nil
 
 
-class Zip(_IterumAdapter[tuple[U, V]]):
+class Zip[U, V](_IterumAdapter[tuple[U, V]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[U], other: Iterable[V], /) -> None:

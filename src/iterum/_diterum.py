@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
 
-from ._iterum import Iterum, T_co, U
+from ._iterum import Iterum, T_co
 from ._option import Option, Some, nil
 
 
@@ -200,7 +200,7 @@ class Diterum(Iterum[T_co]):
         """
         return self.rev().find(predicate)
 
-    def rfold(self, init: U, f: Callable[[U, T_co], U], /) -> U:
+    def rfold[U](self, init: U, f: Callable[[U, T_co], U], /) -> U:
         """
         A diterum method that reduces the diterum's elements to a single,
         final value, starting from the back.
@@ -239,7 +239,7 @@ class Diterum(Iterum[T_co]):
         """
         return self.rev().fold(init, f)
 
-    def try_rfold(
+    def try_rfold[U](
         self,
         init: U,
         f: Callable[[U, T_co], U],
