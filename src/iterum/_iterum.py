@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import builtins
 import itertools
 from abc import abstractmethod
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload, override
 
 from ._helpers import check_methods
 from ._notset import NotSet, NotSetType
@@ -13,18 +11,9 @@ from ._option import Nil, Option, Some, nil
 from ._ordering import Ordering
 
 if TYPE_CHECKING:
-    from ._type_helpers import (
-        SupportsMulT,
-        SupportsRichComparison,
-        SupportsRichComparisonT,
-        SupportsSumNoDefaultT,
-    )
-
+    from _typeshed import SupportsAdd, SupportsMul, SupportsRichComparison
 
 T_co = TypeVar("T_co", covariant=True)
-T = TypeVar("T")
-U = TypeVar("U")
-V = TypeVar("V")
 
 
 class Iterum(Iterator[T_co]):
@@ -88,6 +77,7 @@ class Iterum(Iterator[T_co]):
             return check_methods(C, "next")
         return NotImplemented
 
+    @override
     def __next__(self) -> T_co:
         return self.next().ok_or_else(StopIteration)
 
@@ -257,14 +247,16 @@ class Iterum(Iterator[T_co]):
     def collect(self: Iterum[T_co], container: type[tuple], /) -> tuple[T_co, ...]: ...
 
     @overload
-    def collect(self: Iterum[tuple[U, V]], container: type[dict], /) -> dict[U, V]: ...
+    def collect[U, V](
+        self: Iterum[tuple[U, V]], container: type[dict], /
+    ) -> dict[U, V]: ...
 
     @overload
-    def collect(
+    def collect[U](
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U], /
     ) -> U: ...
 
-    def collect(  # type: ignore
+    def collect[U](  # type: ignore
         self: Iterum[T_co], container: Callable[[Iterable[T_co]], U] = list, /
     ) -> U:
         """
@@ -413,7 +405,7 @@ class Iterum(Iterator[T_co]):
         """
         return Filter(self, predicate)
 
-    def filter_map(
+    def filter_map[U](
         self: Iterum[T_co], predicate: Callable[[T_co], Option[U]], /
     ) -> FilterMap[U]:
         """
@@ -486,7 +478,7 @@ class Iterum(Iterator[T_co]):
                 return Some(x)
         return nil
 
-    def find_map(self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
+    def find_map[U](self, predicate: Callable[[T_co], Option[U]], /) -> Option[U]:
         """
         Applies function to the elements of iterum and returns the first
         non-nil result.
@@ -512,7 +504,7 @@ class Iterum(Iterator[T_co]):
         """
         return self.filter_map(predicate).next()
 
-    def flat_map(self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
+    def flat_map[U](self, f: Callable[[T_co], Iterable[U]], /) -> FlatMap[U]:
         """
         Creates an iterum that works like map, but flattens nested structure.
 
@@ -535,7 +527,7 @@ class Iterum(Iterator[T_co]):
         """
         return FlatMap(self, f)
 
-    def flatten(self: Iterum[Iterable[U]]) -> Flatten[U]:
+    def flatten[U](self: Iterum[Iterable[U]]) -> Flatten[U]:
         """
         Creates an iterum that flattens nested structure.
 
@@ -562,7 +554,7 @@ class Iterum(Iterator[T_co]):
         """
         return Flatten(self)
 
-    def fold(self, init: U, f: Callable[[U, T_co], U], /) -> U:
+    def fold[U](self, init: U, f: Callable[[U, T_co], U], /) -> U:
         """
         Folds every element into an accumulator by applying an operation,
         returning the final result.
@@ -872,7 +864,7 @@ class Iterum(Iterator[T_co]):
         cmp = self.cmp(other)  # type: ignore | reason: ask for forgiveness not permission
         return cmp == Ordering.Less
 
-    def map(self, f: Callable[[T_co], U], /) -> Map[U]:
+    def map[U](self, f: Callable[[T_co], U], /) -> Map[U]:
         """
         Takes a closure and creates an iterum which calls that closure on
         each element.
@@ -895,7 +887,7 @@ class Iterum(Iterator[T_co]):
         """
         return Map(self, f)
 
-    def map_while(self, predicate: Callable[[T_co], Option[U]], /) -> MapWhile[U]:
+    def map_while[U](self, predicate: Callable[[T_co], Option[U]], /) -> MapWhile[U]:
         """
         Creates an iterum that both yields elements based on a predicate and maps.
 
@@ -935,9 +927,7 @@ class Iterum(Iterator[T_co]):
         """
         return MapWhile(self, predicate)
 
-    def max(
-        self: Iterum[SupportsRichComparisonT],
-    ) -> Option[SupportsRichComparisonT]:
+    def max[C: SupportsRichComparison](self: Iterum[C]) -> Option[C]:
         """
         Returns the maximum element of an iterum.
 
@@ -1010,9 +1000,7 @@ class Iterum(Iterator[T_co]):
 
         return self.max_by(compare)
 
-    def min(
-        self: Iterum[SupportsRichComparisonT],
-    ) -> Option[SupportsRichComparisonT]:
+    def min[C: SupportsRichComparison](self: Iterum[C]) -> Option[C]:
         """
         Returns the minimum element of an iterum.
 
@@ -1232,16 +1220,16 @@ class Iterum(Iterator[T_co]):
     ) -> tuple[tuple[T_co, ...], tuple[T_co, ...]]: ...
 
     @overload
-    def partition(
+    def partition[U, V](
         self: Iterum[tuple[U, V]], f: Callable[[T_co], object], container: type[dict], /
     ) -> tuple[dict[U, V], dict[U, V]]: ...
 
     @overload
-    def partition(
+    def partition[U](
         self, f: Callable[[T_co], object], container: Callable[[Iterable[T_co]], U], /
     ) -> tuple[U, U]: ...
 
-    def partition(  # type: ignore
+    def partition[U](  # type: ignore
         self,
         f: Callable[[T_co], object],
         container: Callable[[Iterable[T_co]], U] = list,
@@ -1341,7 +1329,7 @@ class Iterum(Iterator[T_co]):
                 return Some(i)
         return nil
 
-    def product(self: Iterum[SupportsMulT]) -> Option[SupportsMulT]:
+    def product[M: SupportsMul](self: Iterum[M]) -> Option[M]:
         """
         Iterates over the entire iterum, multiplying all the elements
 
@@ -1389,7 +1377,9 @@ class Iterum(Iterator[T_co]):
         else:
             return Some(self.fold(first.unwrap(), f))
 
-    def scan(self, init: U, f: Callable[[State[U], T_co], Option[V]], /) -> Scan[V]:
+    def scan[U, V](
+        self, init: U, f: Callable[[State[U], T_co], Option[V]], /
+    ) -> Scan[V]:
         """
         An iterum adapter which, like fold, holds internal state, but unlike
         fold, produces a new iterum.
@@ -1502,7 +1492,7 @@ class Iterum(Iterator[T_co]):
         """
         return StepBy(self, step)
 
-    def sum(self: Iterum[SupportsSumNoDefaultT]) -> Option[SupportsSumNoDefaultT]:
+    def sum[S: SupportsAdd](self: Iterum[S]) -> Option[S]:
         """
         Sums the elements of an iterum.
 
@@ -1620,7 +1610,7 @@ class Iterum(Iterator[T_co]):
         """
         return TakeWhile(self, predicate)
 
-    def try_fold(
+    def try_fold[U](
         self,
         init: U,
         f: Callable[[U, T_co], U],
@@ -1682,31 +1672,31 @@ class Iterum(Iterator[T_co]):
     #             return
 
     @overload
-    def unzip(self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]: ...
+    def unzip[U, V](self: Iterum[tuple[U, V]], /) -> tuple[list[U], list[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[list], /
     ) -> tuple[list[U], list[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[set], /
     ) -> tuple[set[U], set[V]]: ...
 
     @overload
-    def unzip(
+    def unzip[U, V](
         self: Iterum[tuple[U, V]], container: type[tuple], /
     ) -> tuple[tuple[U, ...], tuple[V, ...]]: ...
 
     @overload
-    def unzip(
+    def unzip[U](
         self: Iterum[tuple[object, object]],
         container: Callable[[Iterable[object]], U],
         /,
     ) -> tuple[U, U]: ...
 
-    def unzip(
+    def unzip[U](
         self: Iterum[tuple[object, object]],
         container: Callable[[Iterable[object]], U] = list,
         /,
@@ -1733,7 +1723,7 @@ class Iterum(Iterator[T_co]):
         left, right = map(container, zip(*self, strict=False))
         return left, right
 
-    def zip(self, other: Iterable[U], /) -> Zip[T_co, U]:
+    def zip[U](self, other: Iterable[U], /) -> Zip[T_co, U]:
         """
         'Zips up' two iterables into a single iterum of pairs.
 
@@ -1809,6 +1799,7 @@ class _IterumAdapter(Iterum[T_co]):
     __slots__ = ()
     _iter: Iterator[T_co]
 
+    @override
     def next(self) -> Option[T_co]:
         return _try_next(self._iter)
 
@@ -1846,7 +1837,7 @@ class Filter(_IterumAdapter[T_co]):
 class FlatMap(_IterumAdapter[T_co]):
     __slots__ = ("_iter",)
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], f: Callable[[U], Iterable[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable).map(f).flatten()
@@ -1855,12 +1846,13 @@ class FlatMap(_IterumAdapter[T_co]):
 class FilterMap(Iterum[T_co]):
     __slots__ = ("_iter", "_predicate")
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable)
         self._predicate = predicate
 
+    @override
     def next(self) -> Option[T_co]:
         while True:
             x = self._iter.next()
@@ -1886,6 +1878,7 @@ class Fuse(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return nil
@@ -1907,6 +1900,7 @@ class Inspect(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         nxt = self._iter.next()
         nxt.map(self._f)
@@ -1916,10 +1910,11 @@ class Inspect(Iterum[T_co]):
 class Map(Iterum[T_co]):
     __slots__ = ("_f", "_iter")
 
-    def __init__(self, __iterable: Iterable[U], f: Callable[[U], T_co], /) -> None:
+    def __init__[U](self, __iterable: Iterable[U], f: Callable[[U], T_co], /) -> None:
         self._iter = iterum(__iterable)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         return self._iter.next().map(self._f)
 
@@ -1927,13 +1922,14 @@ class Map(Iterum[T_co]):
 class MapWhile(Iterum[T_co]):
     __slots__ = ("_fuse", "_iter", "_predicate")
 
-    def __init__(
+    def __init__[U](
         self, __iterable: Iterable[U], predicate: Callable[[U], Option[T_co]], /
     ) -> None:
         self._iter = iterum(__iterable)
         self._predicate = predicate
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return nil
@@ -1952,6 +1948,7 @@ class Peekable(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._peek: Option[T_co] | NotSetType = NotSet
 
+    @override
     def next(self) -> Option[T_co]:
         if isinstance(self._peek, NotSetType):
             return self._iter.next()
@@ -1991,7 +1988,7 @@ class State[T]:
 class Scan(Iterum[T_co]):
     __slots__ = ("_f", "_iter", "_state")
 
-    def __init__(
+    def __init__[U, V](
         self,
         __iterable: Iterable[U],
         init: V,
@@ -2002,6 +1999,7 @@ class Scan(Iterum[T_co]):
         self._state = State(init)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         def scan(val) -> Option[T_co]:
             return self._f(self._state, val)
@@ -2021,6 +2019,7 @@ class Skip(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._n = n
 
+    @override
     def next(self) -> Option[T_co]:
         if self._n:
             self._iter.nth(self._n - 1)
@@ -2042,6 +2041,7 @@ class SkipWhile(Iterum[T_co]):
         self._predicate = predicate
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return self._iter.next()
@@ -2064,6 +2064,7 @@ class StepBy(Iterum[T_co]):
         self._iter = iterum(__iterable).enumerate()
         self._step = step
 
+    @override
     def next(self) -> Option[T_co]:
         idx, nxt = self._iter.next().unzip()
         while nxt.is_some() and idx.is_some_and(lambda idx: idx % self._step):
@@ -2080,6 +2081,7 @@ class Take(Iterum[T_co]):
         self._max = n
         self._idx = 0
 
+    @override
     def next(self) -> Option[T_co]:
         if self._idx >= self._max:
             return nil
@@ -2097,6 +2099,7 @@ class TakeWhile(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._predicate = predicate
 
+    @override
     def next(self) -> Option[T_co]:
         nxt = self._iter.next()
         if nxt.is_some_and(self._predicate):
@@ -2104,7 +2107,7 @@ class TakeWhile(Iterum[T_co]):
         return nil
 
 
-class Zip(_IterumAdapter[tuple[U, V]]):
+class Zip[U, V](_IterumAdapter[tuple[U, V]]):
     __slots__ = ("_iter",)
 
     def __init__(self, __iterable: Iterable[U], other: Iterable[V], /) -> None:
@@ -2149,6 +2152,7 @@ class iterum(Iterum[T_co]):
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
         self._iter = iter(__iterable)
 
+    @override
     def next(self) -> Option[T_co]:
         """
         Returns the next value in the iterable if present, otherwise [nil][iterum.nil].

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections.abc import Callable
 from typing import (
     TYPE_CHECKING,
@@ -7,7 +5,7 @@ from typing import (
     Literal,
     NamedTuple,
     NoReturn,
-    TypeVar,
+    TypeIs,
     overload,
 )
 
@@ -15,14 +13,6 @@ from ._singleton import Singleton
 
 if TYPE_CHECKING:
     from ._iterum import iterum
-
-
-T = TypeVar("T")
-U = TypeVar("U")
-V = TypeVar("V")
-
-S = TypeVar("S", bound="Some")
-O = TypeVar("O", bound="Option")  # noqa: E741
 
 
 class Swap[T, U](NamedTuple):
@@ -95,7 +85,7 @@ class Nil(Singleton):
     def __bool__(self) -> Literal[False]:
         return False
 
-    def and_(self, optb: Option[U], /) -> Nil:
+    def and_[U](self, optb: Option[U], /) -> Nil:
         """
         Returns [nil][iterum.nil] if the option is [nil][iterum.nil], otherwise
         returns optb.
@@ -119,7 +109,7 @@ class Nil(Singleton):
         # 'and' is a keyword, so instead we use 'and_'
         return self
 
-    def and_then(self, f: Callable[[Any], Option[U]], /) -> Nil:
+    def and_then[U](self, f: Callable[[Any], Option[U]], /) -> Nil:
         """
         Returns [nil][iterum.nil] if the option is [nil][iterum.nil], otherwise
         calls `f` with the wrapped value and returns the result.
@@ -204,7 +194,7 @@ class Nil(Singleton):
         """
         return self
 
-    def get_or_insert(self, value: T, /) -> Swap[Some[T], T]:
+    def get_or_insert[T](self, value: T, /) -> Swap[Some[T], T]:
         """
         Inserts value into the option if it is [nil][iterum.nil], then returns a
         tuple of the resulting option and the returned value.
@@ -247,7 +237,7 @@ class Nil(Singleton):
         """
         return Swap(Some(value), value)
 
-    def get_or_insert_with(self, f: Callable[[], T], /) -> Swap[Some[T], T]:
+    def get_or_insert_with[T](self, f: Callable[[], T], /) -> Swap[Some[T], T]:
         """
         Inserts a value computed from `f` into the option if it is
         [nil][iterum.nil], then returns a tuple of the resulting option and the
@@ -290,7 +280,7 @@ class Nil(Singleton):
         """
         return Swap(Some(value := f()), value)
 
-    def insert(self, value: T, /) -> Swap[Some[T], T]:
+    def insert[T](self, value: T, /) -> Swap[Some[T], T]:
         """
         Inserts value into the option, then returns a tuple of the resulting
         option and the returned value.
@@ -413,7 +403,7 @@ class Nil(Singleton):
         """
         return self
 
-    def map_or(self, default: U, f: Callable[[Any], U], /) -> U:
+    def map_or[U](self, default: U, f: Callable[[Any], U], /) -> U:
         """
         Returns the provided default result (if [nil][iterum.nil]), or applies a
         function to the contained value (if any).
@@ -432,7 +422,7 @@ class Nil(Singleton):
         """
         return default
 
-    def map_or_else(self, default: Callable[[], U], f: Callable[[Any], U], /) -> U:
+    def map_or_else[U](self, default: Callable[[], U], f: Callable[[Any], U], /) -> U:
         """
         Computes a default function result (if [nil][iterum.nil]), or applies a
         different function to the contained value (if any).
@@ -500,7 +490,7 @@ class Nil(Singleton):
         """
         raise err()
 
-    def or_(self, optb: O, /) -> O:
+    def or_[O: Option](self, optb: O, /) -> O:
         """
         Returns the option if it contains a value, otherwise returns optb.
 
@@ -523,7 +513,7 @@ class Nil(Singleton):
         # 'or' is a keyword, so instead we use 'or_'
         return optb
 
-    def or_else(self, f: Callable[[], O], /) -> O:
+    def or_else[O: Option](self, f: Callable[[], O], /) -> O:
         """
         Returns the option if it contains a value, otherwise calls `f` and
         returns the result.
@@ -545,7 +535,7 @@ class Nil(Singleton):
         """
         return f()
 
-    def replace(self, value: T, /) -> Swap[Some[T], Nil]:
+    def replace[T](self, value: T, /) -> Swap[Some[T], Nil]:
         """
         Replaces the actual value in the option by the value given in parameter,
         returning a tuple of the resulting option and the returned old value if
@@ -658,7 +648,7 @@ class Nil(Singleton):
         """
         raise UnwrapNilError()
 
-    def unwrap_or(self, default: T, /) -> T:
+    def unwrap_or[T](self, default: T, /) -> T:
         """
         Returns the contained [Some][iterum.Some] value or a provided default.
 
@@ -687,7 +677,7 @@ class Nil(Singleton):
     # If I wanted to get real fancy could provide user way to register defaults
     # for their custom types.
 
-    def unwrap_or_else(self, f: Callable[[], T], /) -> T:
+    def unwrap_or_else[T](self, f: Callable[[], T], /) -> T:
         """
         Returns the contained [Some][iterum.Some] value or computes it from a closure.
 
@@ -720,12 +710,12 @@ class Nil(Singleton):
         return (nil, nil)
 
     @overload
-    def xor(self, optb: S, /) -> S: ...
+    def xor[S: Some](self, optb: S, /) -> S: ...
 
     @overload
     def xor(self, optb: Nil, /) -> Nil: ...
 
-    def xor(self, optb: O, /) -> O | Nil:
+    def xor[O: Option](self, optb: O, /) -> O | Nil:
         """
         Returns [Some][iterum.Some] if exactly one of `self`, `optb` is
         [Some][iterum.Some], otherwise returns [nil][iterum.nil].
@@ -742,7 +732,7 @@ class Nil(Singleton):
         """
         return nil if isinstance(optb, Nil) else optb
 
-    def zip(self, other: Option[U], /) -> Nil:
+    def zip[U](self, other: Option[U], /) -> Nil:
         """
         Zips `self` with another option.
 
@@ -802,7 +792,7 @@ class Some[T]:
     def __bool__(self) -> Literal[True]:
         return True
 
-    def and_(self, optb: O, /) -> O:
+    def and_[O: Option](self, optb: O, /) -> O:
         """Returns [nil][iterum.nil] if the option is [nil][iterum.nil], otherwise
         returns optb.
 
@@ -824,7 +814,7 @@ class Some[T]:
         """
         return optb
 
-    def and_then(self, f: Callable[[T], O], /) -> O:
+    def and_then[O: Option](self, f: Callable[[T], O], /) -> O:
         """Returns [nil][iterum.nil] if the option is [nil][iterum.nil], otherwise
         calls `f` with the wrapped value and returns the result.
 
@@ -891,7 +881,7 @@ class Some[T]:
         """
         return self if predicate(self._value) else Nil()
 
-    def flatten(self: Some[O]) -> O:
+    def flatten[O: Option](self: Some[O]) -> O:
         """Converts from `Option[Option[T]]` to `Option[T]`.
 
         **Examples:**
@@ -1095,7 +1085,7 @@ class Some[T]:
 
         return iterum([self._value])
 
-    def map(self, f: Callable[[T], U], /) -> Some[U]:
+    def map[U](self, f: Callable[[T], U], /) -> Some[U]:
         """Maps an [Option[T]][iterum.Option] to [Option[U]][iterum.Option] by
         applying a function to a contained value (if [Some][iterum.Some]) or
         returns [nil][iterum.nil] (if [Nil][iterum.Nil]).
@@ -1110,7 +1100,7 @@ class Some[T]:
         """
         return Some(f(self._value))
 
-    def map_or(self, default: U, f: Callable[[T], U], /) -> U:
+    def map_or[U](self, default: U, f: Callable[[T], U], /) -> U:
         """
         Returns the provided default result (if [nil][iterum.nil]), or applies a
         function to the contained value (if any).
@@ -1129,7 +1119,7 @@ class Some[T]:
         """
         return f(self._value)
 
-    def map_or_else(self, default: Callable[[], U], f: Callable[[T], U], /) -> U:
+    def map_or_else[U](self, default: Callable[[], U], f: Callable[[T], U], /) -> U:
         """
         Computes a default function result (if [nil][iterum.nil]), or applies a
         different function to the contained value (if any).
@@ -1385,7 +1375,7 @@ class Some[T]:
         """
         return self._value
 
-    def unzip(self: Some[tuple[U, V]]) -> tuple[Some[U], Some[V]]:
+    def unzip[U, V](self: Some[tuple[U, V]]) -> tuple[Some[U], Some[V]]:
         """Unzips an option containing a tuple of two options.
 
         If `self` is `Some((a, b))` this method returns `(Some(a), Some(b))`.
@@ -1426,12 +1416,12 @@ class Some[T]:
         return self if isinstance(optb, Nil) else nil
 
     @overload
-    def zip(self, other: Some[U], /) -> Some[tuple[T, U]]: ...
+    def zip[U](self, other: Some[U], /) -> Some[tuple[T, U]]: ...
 
     @overload
     def zip(self, other: Nil, /) -> Nil: ...
 
-    def zip(self, other: Option[U], /) -> Option[tuple[T, U]]:
+    def zip[U](self, other: Option[U], /) -> Option[tuple[T, U]]:
         """
         Zips `self` with another option.
 
@@ -1495,3 +1485,37 @@ Alternatively use pattern matching:
 
 ```
 """
+
+
+def is_some[T](o: Option[T], /) -> TypeIs[Some[T]]:
+    """Returns `True` if the option is a Some value.
+
+    **Examples:**
+
+    ```python
+    >>> assert is_some(Some(2)) is True
+    >>> assert is_some(nil) is False
+
+    ```
+
+    Note: This method is provided as a standalone function in order
+          to leverage `TypeIs`, which provides better typing.
+    """
+    return o is not nil
+
+
+def is_nil[T](o: Option[T], /) -> TypeIs[Nil]:
+    """Returns `True` if the option is a [nil][iterum.nil] value.
+
+    **Examples:**
+
+    ```python
+    >>> assert is_nil(Some(2)) is False
+    >>> assert is_nil(nil) is True
+
+    ```
+
+    Note: This method is provided as a standalone function in order
+          to leverage `TypeIs`, which provides better typing.
+    """
+    return o is nil

@@ -1,8 +1,6 @@
-from __future__ import annotations
+from typing import Literal, Never, TypeVar, assert_type
 
-from typing import Literal, TypeVar, assert_type
-
-from iterum import Nil, Option, Some, Swap, iterum, nil
+from iterum import Nil, Option, Some, Swap, is_some, iterum, nil
 
 from .option_helpers import (
     create_nil,
@@ -140,3 +138,10 @@ def some_xor():
 def some_zip():
     assert_type(some.zip(Some("test")), Some[tuple[int, str]])
     assert_type(some.zip(nil), Nil)
+
+
+def some_is_some_standalone():
+    if is_some(some):
+        assert_type(some, Some[int])
+    else:
+        assert_type(some, Never)

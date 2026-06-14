@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import pytest
 
 from iterum import ExpectNilError, Option, Some, UnwrapNilError, nil

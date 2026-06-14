@@ -1,8 +1,6 @@
-from __future__ import annotations
+from typing import Literal, Never, NoReturn, TypeVar, assert_type
 
-from typing import Literal, NoReturn, TypeVar, assert_type
-
-from iterum import Nil, Option, Some, Swap, iterum, nil
+from iterum import Nil, Option, Some, Swap, is_nil, iterum, nil
 
 from .option_helpers import (
     create_nil,
@@ -125,3 +123,10 @@ def nil_xor():
 
 def nil_zip():
     assert_type(nil.zip(Some(1)), Nil)
+
+
+def nil_is_nil_standalone():
+    if is_nil(nil):
+        assert_type(nil, Nil)
+    else:
+        assert_type(nil, Never)

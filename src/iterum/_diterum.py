@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 from abc import abstractmethod
 from collections.abc import Callable, Sequence
+from typing import override
 
-from ._iterum import Iterum, T_co, U
+from ._iterum import Iterum, T_co
 from ._option import Option, Some, nil
 
 
@@ -202,7 +201,7 @@ class Diterum(Iterum[T_co]):
         """
         return self.rev().find(predicate)
 
-    def rfold(self, init: U, f: Callable[[U, T_co], U], /) -> U:
+    def rfold[U](self, init: U, f: Callable[[U, T_co], U], /) -> U:
         """
         A diterum method that reduces the diterum's elements to a single,
         final value, starting from the back.
@@ -241,7 +240,7 @@ class Diterum(Iterum[T_co]):
         """
         return self.rev().fold(init, f)
 
-    def try_rfold(
+    def try_rfold[U](
         self,
         init: U,
         f: Callable[[U, T_co], U],
@@ -278,12 +277,15 @@ class Rev(Diterum[T_co]):
     def __init__(self, __x: Diterum[T_co] | Sequence[T_co]) -> None:
         self._x = __x if isinstance(__x, Diterum) else diterum(__x)
 
+    @override
     def next(self) -> Option[T_co]:
         return self._x.next_back()
 
+    @override
     def next_back(self) -> Option[T_co]:
         return self._x.next()
 
+    @override
     def len(self) -> int:
         return self._x.len()
 
@@ -331,6 +333,7 @@ class diterum(Diterum[T_co]):
         self._front = 0
         self._back = len(__seq) - 1
 
+    @override
     def next(self) -> Option[T_co]:
         """
         Returns the next value in the sequence from the front if present,
@@ -354,6 +357,7 @@ class diterum(Diterum[T_co]):
         self._front += 1
         return Some(nxt)
 
+    @override
     def next_back(self) -> Option[T_co]:
         """
         Returns the next value in the sequence from the back if present,
@@ -377,6 +381,7 @@ class diterum(Diterum[T_co]):
         self._back -= 1
         return Some(nxt)
 
+    @override
     def len(self) -> int:
         """
         Returns the remaining length of the sequence.

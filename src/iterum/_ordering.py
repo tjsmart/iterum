@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from enum import Enum, unique
 
 from ._singleton import create_singleton

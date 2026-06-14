@@ -23,7 +23,17 @@ from ._iterum import (
     Zip,
     iterum,
 )
-from ._option import ExpectNilError, Nil, Option, Some, Swap, UnwrapNilError, nil
+from ._option import (
+    ExpectNilError,
+    Nil,
+    Option,
+    Some,
+    Swap,
+    UnwrapNilError,
+    is_nil,
+    is_some,
+    nil,
+)
 from ._ordering import Ordering
 from ._seq import InfSeq, Seq, seq
 
@@ -42,6 +52,8 @@ __all__ = [
     "nil",
     "ExpectNilError",
     "UnwrapNilError",
+    "is_nil",
+    "is_some",
     # Ordering
     "Ordering",
     # special Iterum implementations
