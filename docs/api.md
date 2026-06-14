@@ -31,6 +31,9 @@
 ::: iterum.Nil
 ::: iterum.nil
 
+::: iterum.is_some
+::: iterum.is_nil
+
 ::: iterum.ExpectNilError
 ::: iterum.UnwrapNilError
 

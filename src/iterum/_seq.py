@@ -213,7 +213,7 @@ class InfSeq(Iterum[int]):
     def __repr__(self) -> str:
         return f"{type(self).__name__}(start={self._front}, step={self._step})"
 
-    def __bool__(self) -> bool:
+    def __bool__(self) -> Literal[True]:
         return True
 
     def __eq__(self, other: object) -> bool:

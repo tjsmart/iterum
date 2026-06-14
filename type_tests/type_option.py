@@ -1,6 +1,6 @@
 from typing import Any, TypeVar, assert_type
 
-from iterum import Nil, Option, Some, Swap, iterum, nil
+from iterum import Nil, Option, Some, Swap, is_nil, is_some, iterum, nil
 
 from .option_helpers import (
     create_nil,
@@ -157,3 +157,17 @@ def option_xor():
 def option_zip():
     assert_type(option.zip(Some("test")), Option[tuple[int, str]])
     assert_type(option.zip(nil), Nil)
+
+
+def option_is_some_standalone():
+    if is_some(option):
+        assert_type(option, Some[int])
+    else:
+        assert_type(option, Nil)
+
+
+def option_is_nil_standalone():
+    if is_nil(option):
+        assert_type(option, Nil)
+    else:
+        assert_type(option, Some[int])

@@ -5,6 +5,7 @@ from typing import (
     Literal,
     NamedTuple,
     NoReturn,
+    TypeIs,
     overload,
 )
 
@@ -1484,3 +1485,37 @@ Alternatively use pattern matching:
 
 ```
 """
+
+
+def is_some[T](o: Option[T], /) -> TypeIs[Some[T]]:
+    """Returns `True` if the option is a Some value.
+
+    **Examples:**
+
+    ```python
+    >>> assert is_some(Some(2)) is True
+    >>> assert is_some(nil) is False
+
+    ```
+
+    Note: This method is provided as a standalone function in order
+          to leverage `TypeIs`, which provides better typing.
+    """
+    return o is not nil
+
+
+def is_nil[T](o: Option[T], /) -> TypeIs[Nil]:
+    """Returns `True` if the option is a [nil][iterum.nil] value.
+
+    **Examples:**
+
+    ```python
+    >>> assert is_nil(Some(2)) is False
+    >>> assert is_nil(nil) is True
+
+    ```
+
+    Note: This method is provided as a standalone function in order
+          to leverage `TypeIs`, which provides better typing.
+    """
+    return o is nil
