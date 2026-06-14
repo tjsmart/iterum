@@ -1,6 +1,6 @@
 import operator
 from types import EllipsisType
-from typing import Literal, SupportsIndex, overload
+from typing import Literal, SupportsIndex, overload, override
 
 from ._diterum import Diterum
 from ._iterum import Iterum
@@ -150,6 +150,7 @@ class Seq(Diterum[int]):
         self._step = step
         self._dir = _sign(step)
 
+    @override
     def next(self) -> Option[int]:
         if self._dir * (self._back - self._front) < 0:
             return nil
@@ -158,6 +159,7 @@ class Seq(Diterum[int]):
         self._front += self._step
         return nxt
 
+    @override
     def next_back(self) -> Option[int]:
         if self._dir * (self._back - self._front) < 0:
             return nil
@@ -166,6 +168,7 @@ class Seq(Diterum[int]):
         self._back -= self._step
         return nxt_bk
 
+    @override
     def len(self) -> int:
         if self._dir * (self._back - self._front) < 0:
             return 0
@@ -201,6 +204,7 @@ class InfSeq(Iterum[int]):
         self._front = start
         self._step = step
 
+    @override
     def next(self) -> Option[int]:
         nxt = Some(self._front)
         self._front += self._step

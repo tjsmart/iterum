@@ -3,7 +3,7 @@ import itertools
 from abc import abstractmethod
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload, override
 
 from ._helpers import check_methods
 from ._notset import NotSet, NotSetType
@@ -77,6 +77,7 @@ class Iterum(Iterator[T_co]):
             return check_methods(C, "next")
         return NotImplemented
 
+    @override
     def __next__(self) -> T_co:
         return self.next().ok_or_else(StopIteration)
 
@@ -1798,6 +1799,7 @@ class _IterumAdapter(Iterum[T_co]):
     __slots__ = ()
     _iter: Iterator[T_co]
 
+    @override
     def next(self) -> Option[T_co]:
         return _try_next(self._iter)
 
@@ -1850,6 +1852,7 @@ class FilterMap(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._predicate = predicate
 
+    @override
     def next(self) -> Option[T_co]:
         while True:
             x = self._iter.next()
@@ -1875,6 +1878,7 @@ class Fuse(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return nil
@@ -1896,6 +1900,7 @@ class Inspect(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         nxt = self._iter.next()
         nxt.map(self._f)
@@ -1909,6 +1914,7 @@ class Map(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         return self._iter.next().map(self._f)
 
@@ -1923,6 +1929,7 @@ class MapWhile(Iterum[T_co]):
         self._predicate = predicate
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return nil
@@ -1941,6 +1948,7 @@ class Peekable(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._peek: Option[T_co] | NotSetType = NotSet
 
+    @override
     def next(self) -> Option[T_co]:
         if isinstance(self._peek, NotSetType):
             return self._iter.next()
@@ -1991,6 +1999,7 @@ class Scan(Iterum[T_co]):
         self._state = State(init)
         self._f = f
 
+    @override
     def next(self) -> Option[T_co]:
         def scan(val) -> Option[T_co]:
             return self._f(self._state, val)
@@ -2010,6 +2019,7 @@ class Skip(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._n = n
 
+    @override
     def next(self) -> Option[T_co]:
         if self._n:
             self._iter.nth(self._n - 1)
@@ -2031,6 +2041,7 @@ class SkipWhile(Iterum[T_co]):
         self._predicate = predicate
         self._fuse = True
 
+    @override
     def next(self) -> Option[T_co]:
         if not self._fuse:
             return self._iter.next()
@@ -2053,6 +2064,7 @@ class StepBy(Iterum[T_co]):
         self._iter = iterum(__iterable).enumerate()
         self._step = step
 
+    @override
     def next(self) -> Option[T_co]:
         idx, nxt = self._iter.next().unzip()
         while nxt.is_some() and idx.is_some_and(lambda idx: idx % self._step):
@@ -2069,6 +2081,7 @@ class Take(Iterum[T_co]):
         self._max = n
         self._idx = 0
 
+    @override
     def next(self) -> Option[T_co]:
         if self._idx >= self._max:
             return nil
@@ -2086,6 +2099,7 @@ class TakeWhile(Iterum[T_co]):
         self._iter = iterum(__iterable)
         self._predicate = predicate
 
+    @override
     def next(self) -> Option[T_co]:
         nxt = self._iter.next()
         if nxt.is_some_and(self._predicate):
@@ -2138,6 +2152,7 @@ class iterum(Iterum[T_co]):
     def __init__(self, __iterable: Iterable[T_co], /) -> None:
         self._iter = iter(__iterable)
 
+    @override
     def next(self) -> Option[T_co]:
         """
         Returns the next value in the iterable if present, otherwise [nil][iterum.nil].
